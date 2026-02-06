@@ -1,6 +1,6 @@
-# O'Kampus - Orientation pour les bacheliers de Guinée 🇬🇳
+# O'Kampus - Plateforme de l’étudiant guinéen 🇬🇳
 
-Plateforme complète d'aide à l'orientation et de conseil pour les nouveaux bacheliers en République de Guinée. Du succès au bac jusqu'à l'obtention du diplôme.
+O'Kampus est une **plateforme complète pour l’étudiant guinéen** : de la réussite au bac jusqu’à l’insertion professionnelle.
 
 ## ✨ Fonctionnalités
 
@@ -23,6 +23,7 @@ Plateforme complète d'aide à l'orientation et de conseil pour les nouveaux bac
 - Inscription en tant que **Nouveau bachelier** ou **Étudiant**
 - Les étudiants peuvent devenir conseillers
 - Gestion du profil et des disponibilités
+- Informations CV (formation, expériences, projets) + génération via OpenAI
 
 ## 🚀 Démarrage
 
@@ -71,10 +72,11 @@ src/
 
 ## 🎯 Vision
 
-O'Kampus vise à être la plateforme unique pour l'étudiant guinéen :
-- **Préparation au bac** : Ressources, annales, quiz
-- **Pendant les études** : Suivi de parcours, calendrier académique
-- **Insertion professionnelle** : Offres de stage, bourses, témoignages
+O'Kampus vise à être la plateforme unique pour l’étudiant guinéen :
+- **Préparation au bac** : ressources, annales, quiz, méthodologie
+- **Orientation** : assistant IA + conseillers étudiants
+- **Pendant les études** : suivi de parcours, ressources par filière, groupes d’étude
+- **Insertion professionnelle** : CV, stages, bourses, opportunités, préparation entretiens
 
 Voir [PROPOSITIONS_AMELIORATIONS.md](../PROPOSITIONS_AMELIORATIONS.md) pour la feuille de route complète.
 

@@ -10,8 +10,9 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "O'Kampus - Orientation et conseil pour les bacheliers | Guinée",
-  description: "Plateforme d'aide à l'orientation pour les nouveaux bacheliers en République de Guinée. Conseils personnalisés, forum et accompagnement vers votre avenir.",
+  title: "O'Kampus - Plateforme de l'étudiant guinéen | Bac → Études → Emploi",
+  description:
+    "O'Kampus est une plateforme complète pour l'étudiant guinéen : préparation au bac, orientation, conseils (chat & rendez-vous), forum, CV et insertion professionnelle.",
 };
 
 export default function RootLayout({

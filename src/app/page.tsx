@@ -19,7 +19,7 @@ export default function Home() {
             <div className="space-y-8">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-100 text-amber-800 text-sm font-medium">
                 <span className="w-2 h-2 bg-amber-500 rounded-full animate-pulse" />
-                Pour les nouveaux bacheliers de Guinée
+                La plateforme de l’étudiant guinéen
               </div>
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight">
                 <span className="text-gray-900">Trouvez votre</span>
@@ -29,9 +29,9 @@ export default function Home() {
                 </span>
               </h1>
               <p className="text-xl text-gray-600 max-w-xl">
-                O&apos;Kampus vous accompagne dans votre orientation post-bac. 
-                Discutez avec des étudiants de votre filière rêvée, posez vos questions 
-                sur les universités et construisez votre avenir en toute confiance.
+                O&apos;Kampus accompagne l&apos;étudiant guinéen de la réussite au bac jusqu&apos;à
+                l&apos;insertion professionnelle. Orientation, conseils (chat & rendez-vous),
+                forum, CV… tout au même endroit.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link
@@ -92,27 +92,27 @@ export default function Home() {
               Comment ça marche ?
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Trois façons simples de trouver votre orientation
+              Une plateforme, pour tout votre parcours étudiant
             </p>
           </div>
           <div className="grid md:grid-cols-3 gap-8">
             {[
               {
                 icon: "🤖",
-                title: "Assistant IA d'orientation",
-                desc: "Présentez votre projet, vos forces, faiblesses et notes du lycée. Recevez des recommandations personnalisées de filières.",
+                title: "Orientation + Plan d’action",
+                desc: "Définissez votre projet, vos forces/faiblesses et vos notes. Recevez des recommandations et les prochaines étapes pour avancer.",
                 link: "/assistant",
               },
               {
                 icon: "💬",
-                title: "Conseil & Rendez-vous Meet",
-                desc: "Chattez avec des étudiants-conseillers ou prenez RDV pour un appel vidéo. Chaque conseiller a sa description.",
+                title: "Mentorat & Rendez-vous",
+                desc: "Discutez avec des étudiants-conseillers, puis prenez rendez-vous pour un appel (Meet) plus approfondi.",
                 link: "/conseil",
               },
               {
                 icon: "📚",
-                title: "Forum communautaire",
-                desc: "Posez vos questions sur les universités, filières et débouchés. La communauté O'Kampus vous répond.",
+                title: "Communauté & Ressources",
+                desc: "Posez vos questions sur les universités et les filières. Bientôt : ressources bac, bourses, stages et opportunités.",
                 link: "/forum",
               },
             ].map((feature, i) => (
@@ -136,10 +136,10 @@ export default function Home() {
       <section className="py-24 bg-gradient-to-r from-[#c41e3a] to-[#9e1830]">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
-            Prêt à découvrir votre avenir ?
+            Prêt à construire ton parcours ?
           </h2>
           <p className="text-xl text-white/90 mb-8">
-            Rejoignez la communauté O&apos;Kampus et commencez votre parcours d&apos;orientation dès aujourd&apos;hui.
+            Rejoins O&apos;Kampus et avance du bac à l&apos;emploi : orientation, communauté, CV et opportunités.
           </p>
           <Link
             href="/conseil"
@@ -161,7 +161,7 @@ export default function Home() {
               O&apos;Kampus
             </span>
             <p className="text-gray-400 text-sm">
-              Orientation et conseil pour les bacheliers • République de Guinée
+              Plateforme de l’étudiant guinéen • République de Guinée
             </p>
           </div>
         </div>
