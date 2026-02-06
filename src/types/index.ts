@@ -7,7 +7,38 @@ export interface User {
   role: UserRole;
   isAdvisor?: boolean;
   advisorProfile?: AdvisorProfile;
+  cvProfile?: CvProfile;
   createdAt: string;
+}
+
+export interface CvProfile {
+  phone?: string;
+  location?: string;
+  headline?: string; // ex: "Étudiant en Informatique"
+  about?: string;
+  skills: string[];
+  languages: string[]; // ex: "Français (courant)"
+  education: Array<{
+    degree: string;
+    school: string;
+    startYear?: string;
+    endYear?: string;
+    details?: string;
+  }>;
+  experiences: Array<{
+    title: string;
+    company: string;
+    location?: string;
+    start?: string; // ex: "2024-06"
+    end?: string; // ex: "2024-09" ou "Présent"
+    bullets: string[];
+  }>;
+  projects: Array<{
+    name: string;
+    description?: string;
+    link?: string;
+    bullets: string[];
+  }>;
 }
 
 export interface AdvisorProfile {
