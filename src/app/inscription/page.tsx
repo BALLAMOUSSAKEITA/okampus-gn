@@ -3,12 +3,11 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/context/AuthContext";
+import { signIn } from "next-auth/react";
 import type { UserRole } from "@/types";
 
 export default function InscriptionPage() {
   const router = useRouter();
-  const { register, login } = useAuth();
   const [mode, setMode] = useState<"login" | "register">("register");
   const [role, setRole] = useState<UserRole>("bachelier");
   const [formData, setFormData] = useState({
@@ -17,25 +16,64 @@ export default function InscriptionPage() {
     password: "",
   });
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setLoading(true);
 
-    if (mode === "register") {
-      if (!formData.name || !formData.email || !formData.password) {
-        setError("Tous les champs sont requis");
-        return;
-      }
-      register(formData.email, formData.password, formData.name, role);
-      router.push("/profil");
-    } else {
-      const success = login(formData.email, formData.password);
-      if (success) {
-        router.push("/");
+    try {
+      if (mode === "register") {
+        if (!formData.name || !formData.email || !formData.password) {
+          setError("Tous les champs sont requis");
+          return;
+        }
+
+        // Inscription
+        const res = await fetch("/api/auth/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...formData, role }),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          setError(data.error || "Erreur lors de l'inscription");
+          return;
+        }
+
+        // Connexion automatique après inscription
+        const signInRes = await signIn("credentials", {
+          email: formData.email,
+          password: formData.password,
+          redirect: false,
+        });
+
+        if (signInRes?.ok) {
+          router.push("/profil");
+        } else {
+          setError("Inscription réussie mais connexion échouée");
+        }
       } else {
-        setError("Email ou mot de passe incorrect. Inscrivez-vous si vous n'avez pas de compte.");
+        // Connexion
+        const res = await signIn("credentials", {
+          email: formData.email,
+          password: formData.password,
+          redirect: false,
+        });
+
+        if (res?.ok) {
+          router.push("/");
+        } else {
+          setError("Email ou mot de passe incorrect");
+        }
       }
+    } catch (err) {
+      setError("Une erreur est survenue");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -140,9 +178,14 @@ export default function InscriptionPage() {
 
             <button
               type="submit"
-              className="w-full py-3 bg-gradient-to-r from-[#c41e3a] to-[#9e1830] text-white rounded-xl font-semibold hover:shadow-lg transition-all"
+              disabled={loading}
+              className="w-full py-3 bg-gradient-to-r from-[#c41e3a] to-[#9e1830] text-white rounded-xl font-semibold hover:shadow-lg transition-all disabled:opacity-50"
             >
-              {mode === "register" ? "S&apos;inscrire" : "Se connecter"}
+              {loading
+                ? "Chargement..."
+                : mode === "register"
+                ? "S'inscrire"
+                : "Se connecter"}
             </button>
           </form>
 

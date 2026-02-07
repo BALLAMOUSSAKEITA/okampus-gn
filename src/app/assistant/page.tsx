@@ -17,48 +17,39 @@ interface ChatMessage {
   content: string;
 }
 
-// Moteur d'orientation basé sur les données (simule une IA)
 function generateOrientationAdvice(data: OrientationData): string {
   const forces = data.forces.split(",").map((f) => f.trim()).filter(Boolean);
   const faiblesses = data.faiblesses.split(",").map((f) => f.trim()).filter(Boolean);
   const passions = data.passions.split(",").map((p) => p.trim()).filter(Boolean);
   
-  // Parser les notes (format: "Math: 14, Physique: 12, ...")
   const notesMap: Record<string, number> = {};
   data.notes.split(",").forEach((n) => {
     const [mat, val] = n.split(":").map((s) => s.trim());
     if (mat && val) notesMap[mat] = parseFloat(val) || 0;
   });
 
-  const filieresScience = ["Médecine", "Pharmacie", "Sciences", "Génie", "Informatique"];
-  const filieresLettre = ["Droit", "Lettres", "Commerce", "Sciences Économiques", "Sciences Politiques"];
-  const filieresTechnique = ["Génie Civil", "Électrotechnique", "Mécanique"];
-
   let recommandations: string[] = [];
   let conseils: string[] = [];
 
-  // Analyse des forces/faiblesses
   const bonEnMath = (notesMap["Math"] || notesMap["Mathématiques"] || 0) >= 12;
   const bonEnScience = (notesMap["Physique"] || 0) >= 12 || (notesMap["SVT"] || notesMap["Sciences"] || 0) >= 12;
-  const bonEnLettre = (notesMap["Français"] || notesMap["Philosophie"] || 0) >= 12;
 
-  if (data.serieBac?.toLowerCase().includes("scientifique") || data.serieBac?.toLowerCase().includes("sciences")) {
+  if (data.serieBac?.toLowerCase().includes("scientifique") || data.serieBac?.toLowerCase().includes("mathématiques")) {
     if (bonEnMath && bonEnScience) {
-      recommandations.push("Médecine", "Pharmacie", "Sciences Exactes", "Génie Civil", "Informatique");
+      recommandations.push("Médecine", "Pharmacie", "Sciences", "Génie Civil", "Informatique");
     } else if (bonEnMath) {
       recommandations.push("Informatique", "Sciences Économiques", "Génie");
     } else if (bonEnScience) {
       recommandations.push("Sciences de la Vie", "Agronomie");
     }
-  } else if (data.serieBac?.toLowerCase().includes("lettre") || data.serieBac?.toLowerCase().includes("littéraire")) {
-    recommandations.push("Droit", "Lettres Modernes", "Sciences Politiques", "Commerce", "Journalisme");
+  } else if (data.serieBac?.toLowerCase().includes("sociale") || data.serieBac?.toLowerCase().includes("lettre")) {
+    recommandations.push("Droit", "Lettres", "Sciences Politiques", "Commerce", "Journalisme");
   } else if (data.serieBac?.toLowerCase().includes("technique")) {
     recommandations.push("Génie Civil", "Électrotechnique", "Mécanique", "Informatique");
   } else {
-    recommandations = [...filieresScience, ...filieresLettre].slice(0, 5);
+    recommandations = ["Médecine", "Droit", "Informatique", "Commerce", "Génie Civil"];
   }
 
-  // Ajuster selon le projet
   if (data.projectEtudes) {
     const projet = data.projectEtudes.toLowerCase();
     if (projet.includes("médecin") || projet.includes("santé")) {
@@ -70,36 +61,18 @@ function generateOrientationAdvice(data: OrientationData): string {
     }
   }
 
-  // Conseils personnalisés
   if (faiblesses.length > 0) {
-    conseils.push(`Pour tes points à améliorer (${faiblesses.join(", ")}), je te recommande de renforcer ces matières avant la rentrée. Des ressources sont disponibles sur le forum.`);
+    conseils.push(`Points à améliorer : ${faiblesses.join(", ")}. Renforce ces matières avant la rentrée.`);
   }
   if (forces.length > 0) {
-    conseils.push(`Tes forces (${forces.join(", ")}) sont un atout majeur ! Elles correspondent bien aux filières recommandées.`);
+    conseils.push(`Tes forces : ${forces.join(", ")}. Elles correspondent bien aux filières recommandées.`);
   }
-  conseils.push("Je te conseille de discuter avec un conseiller étudiant dans les filières qui t'intéressent pour avoir un retour terrain.");
-  conseils.push("Consulte le forum pour les témoignages sur les universités guinéennes (UGANC, Gamal, etc.).");
+  conseils.push("Discute avec un conseiller étudiant pour un retour terrain.");
+  conseils.push("Consulte le forum pour les témoignages sur les universités.");
 
   const recoText = [...new Set(recommandations)].slice(0, 5).join(", ");
   
-  return `## 🎯 Mon analyse de ton profil
-
-**Projet d'études :** ${data.projectEtudes || "À définir"}
-
-**Série au bac :** ${data.serieBac || "Non précisé"}
-
-### Filières recommandées pour toi
-${recoText}
-
-### Mes conseils personnalisés
-${conseils.join("\n\n")}
-
-### Prochaines étapes
-1. **Parle à un conseiller** – Choisis une filière ci-dessus et discute avec un étudiant qui la fait
-2. **Pose tes questions** – Utilise le forum pour les universités et les concours
-3. **Prends rendez-vous** – Pour un appel vidéo plus approfondi avec un conseiller
-
-Souhaites-tu que je t'oriente vers un conseiller en particulier ?`;
+  return `Mon analyse de ton profil\n\nProjet : ${data.projectEtudes || "À définir"}\nSérie : ${data.serieBac || "Non précisé"}\n\nFilières recommandées\n${recoText}\n\nConseils personnalisés\n${conseils.join("\n")}\n\nProchaines étapes\n1. Parle à un conseiller (section Conseillers)\n2. Pose tes questions sur le forum\n3. Prends rendez-vous pour un appel approfondi`;
 }
 
 export default function AssistantPage() {
@@ -121,7 +94,7 @@ export default function AssistantPage() {
     setMessages([
       {
         role: "assistant",
-        content: `Bonjour ! J'ai analysé ton profil d'orientation. Voici mes recommandations personnalisées :\n\n${advice}`,
+        content: `Bonjour ! J'ai analysé ton profil. Voici mes recommandations :\n\n${advice}`,
       },
     ]);
     setStep("chat");
@@ -137,17 +110,16 @@ export default function AssistantPage() {
     ]);
     setInputMessage("");
 
-    // Réponses contextuelles simulées
     const lower = inputMessage.toLowerCase();
     let response = "";
     if (lower.includes("conseiller") || lower.includes("parler")) {
-      response = "Excellente idée ! Va dans la section **Conseil** et choisis un conseiller dans une des filières que je t'ai recommandées. Tu peux aussi **prendre rendez-vous** pour un appel Meet si tu préfères une discussion plus longue.";
+      response = "Va dans la section Conseillers et choisis un étudiant dans les filières recommandées. Tu peux aussi prendre rendez-vous pour un appel Meet.";
     } else if (lower.includes("universit") || lower.includes("uganc") || lower.includes("gamal")) {
-      response = "Consulte le **Forum** où tu trouveras des discussions sur les universités guinéennes. Tu peux aussi poser ta propre question ! Les conseillers étudiants ont une expérience terrain à partager.";
-    } else if (lower.includes("merci") || lower.includes("ok") || lower.includes("d'accord")) {
-      response = "Avec plaisir ! N'hésite pas à revenir si tu as d'autres questions. Bonne chance pour ton orientation ! 🎓";
+      response = "Consulte le Forum pour les discussions sur les universités guinéennes. Tu peux aussi poser ta propre question.";
+    } else if (lower.includes("merci") || lower.includes("ok")) {
+      response = "Avec plaisir ! Bonne chance pour ton orientation.";
     } else {
-      response = "Je te recommande de discuter avec un conseiller étudiant dans la filière qui t'intéresse - ils pourront te donner des conseils très concrets. Tu peux aussi explorer le forum pour plus d'informations. Que puis-je faire d'autre pour toi ?";
+      response = "Je te recommande de discuter avec un conseiller étudiant pour des conseils concrets. Explore aussi le forum. Que puis-je faire d'autre ?";
     }
 
     setTimeout(() => {
@@ -155,17 +127,17 @@ export default function AssistantPage() {
         ...prev,
         { role: "assistant", content: response },
       ]);
-    }, 800);
+    }, 700);
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-violet-50 to-white">
-      <div className="max-w-4xl mx-auto px-4 py-12">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            🤖 Assistant IA d&apos;orientation
+    <div className="min-h-screen bg-slate-50">
+      <div className="max-w-4xl mx-auto px-4 py-6 md:py-12">
+        <div className="mb-6 md:mb-8">
+          <h1 className="text-2xl md:text-3xl font-bold text-slate-900 mb-2">
+            Assistant orientation
           </h1>
-          <p className="text-gray-600">
+          <p className="text-slate-600 text-sm md:text-base">
             Présente ton profil et reçois des recommandations personnalisées
           </p>
         </div>
@@ -173,11 +145,11 @@ export default function AssistantPage() {
         {step === "form" ? (
           <form
             onSubmit={handleSubmitProfile}
-            className="bg-white rounded-2xl shadow-xl border border-violet-100 p-8 space-y-6"
+            className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 md:p-8 space-y-5"
           >
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Ton projet d&apos;études (ce que tu aimerais faire)
+              <label className="block text-sm font-medium text-slate-700 mb-2">
+                Ton projet d'études
               </label>
               <input
                 type="text"
@@ -186,12 +158,12 @@ export default function AssistantPage() {
                   setOrientationData({ ...orientationData, projectEtudes: e.target.value })
                 }
                 placeholder="Ex: Médecin, Avocat, Développeur..."
-                className="w-full px-4 py-3 rounded-xl border border-violet-200 focus:border-violet-500 focus:ring-2 focus:ring-violet-200 outline-none"
+                className="w-full px-4 py-2.5 text-sm rounded-lg border border-slate-300 focus:border-violet-500 focus:ring-2 focus:ring-violet-200 outline-none"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-slate-700 mb-2">
                 Série au bac
               </label>
               <select
@@ -199,7 +171,7 @@ export default function AssistantPage() {
                 onChange={(e) =>
                   setOrientationData({ ...orientationData, serieBac: e.target.value })
                 }
-                className="w-full px-4 py-3 rounded-xl border border-violet-200 focus:border-violet-500 outline-none"
+                className="w-full px-4 py-2.5 text-sm rounded-lg border border-slate-300 focus:border-violet-500 outline-none"
               >
                 <option value="">Sélectionne ta série</option>
                 <option value="Sciences Mathématiques">Sciences Mathématiques</option>
@@ -212,8 +184,8 @@ export default function AssistantPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Tes notes au lycée (format: Math: 14, Physique: 12, Français: 11...)
+              <label className="block text-sm font-medium text-slate-700 mb-2">
+                Tes notes (format: Math: 14, Physique: 12...)
               </label>
               <input
                 type="text"
@@ -222,43 +194,44 @@ export default function AssistantPage() {
                   setOrientationData({ ...orientationData, notes: e.target.value })
                 }
                 placeholder="Math: 14, Physique: 12, SVT: 15, Français: 11"
-                className="w-full px-4 py-3 rounded-xl border border-violet-200 focus:border-violet-500 focus:ring-2 focus:ring-violet-200 outline-none"
+                className="w-full px-4 py-2.5 text-sm rounded-lg border border-slate-300 focus:border-violet-500 focus:ring-2 focus:ring-violet-200 outline-none"
               />
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Tes forces (séparées par des virgules)
-              </label>
-              <input
-                type="text"
-                value={orientationData.forces}
-                onChange={(e) =>
-                  setOrientationData({ ...orientationData, forces: e.target.value })
-                }
-                placeholder="Ex: Analyse, Rédaction, Travail en équipe..."
-                className="w-full px-4 py-3 rounded-xl border border-violet-200 focus:border-violet-500 focus:ring-2 focus:ring-violet-200 outline-none"
-              />
+            <div className="grid sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">
+                  Tes forces
+                </label>
+                <input
+                  type="text"
+                  value={orientationData.forces}
+                  onChange={(e) =>
+                    setOrientationData({ ...orientationData, forces: e.target.value })
+                  }
+                  placeholder="Analyse, Rédaction..."
+                  className="w-full px-4 py-2.5 text-sm rounded-lg border border-slate-300 focus:border-violet-500 outline-none"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">
+                  Points à améliorer
+                </label>
+                <input
+                  type="text"
+                  value={orientationData.faiblesses}
+                  onChange={(e) =>
+                    setOrientationData({ ...orientationData, faiblesses: e.target.value })
+                  }
+                  placeholder="Gestion du temps..."
+                  className="w-full px-4 py-2.5 text-sm rounded-lg border border-slate-300 focus:border-violet-500 outline-none"
+                />
+              </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Tes points à améliorer
-              </label>
-              <input
-                type="text"
-                value={orientationData.faiblesses}
-                onChange={(e) =>
-                  setOrientationData({ ...orientationData, faiblesses: e.target.value })
-                }
-                placeholder="Ex: Gestion du temps, Mathématiques..."
-                className="w-full px-4 py-3 rounded-xl border border-violet-200 focus:border-violet-500 focus:ring-2 focus:ring-violet-200 outline-none"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Tes passions / centres d&apos;intérêt
+              <label className="block text-sm font-medium text-slate-700 mb-2">
+                Tes centres d'intérêt
               </label>
               <input
                 type="text"
@@ -266,67 +239,53 @@ export default function AssistantPage() {
                 onChange={(e) =>
                   setOrientationData({ ...orientationData, passions: e.target.value })
                 }
-                placeholder="Ex: Sciences, Lecture, Sport..."
-                className="w-full px-4 py-3 rounded-xl border border-violet-200 focus:border-violet-500 focus:ring-2 focus:ring-violet-200 outline-none"
+                placeholder="Sciences, Lecture, Sport..."
+                className="w-full px-4 py-2.5 text-sm rounded-lg border border-slate-300 focus:border-violet-500 outline-none"
               />
             </div>
 
             <button
               type="submit"
-              className="w-full py-4 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl font-bold text-lg hover:shadow-lg hover:shadow-violet-200 transition-all"
+              className="w-full py-3.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-lg font-bold hover:shadow-lg transition-all"
             >
-              Obtenir mon orientation personnalisée
+              Obtenir mon orientation
             </button>
           </form>
         ) : (
-          <div className="bg-white rounded-2xl shadow-xl border border-violet-100 overflow-hidden flex flex-col min-h-[500px]">
-            <div className="flex-1 p-6 overflow-y-auto space-y-4">
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 flex flex-col h-[calc(100vh-250px)] md:h-[600px]">
+            <div className="flex-1 p-4 md:p-6 overflow-y-auto space-y-4 bg-slate-50">
               {messages.map((msg, i) => (
                 <div
                   key={i}
                   className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
                 >
                   <div
-                    className={`max-w-[85%] rounded-2xl px-4 py-3 ${
+                    className={`max-w-[90%] md:max-w-[80%] rounded-xl px-4 py-3 ${
                       msg.role === "user"
-                        ? "bg-violet-600 text-white rounded-br-md"
-                        : "bg-violet-50 text-gray-900 rounded-bl-md"
+                        ? "bg-violet-600 text-white"
+                        : "bg-white border border-slate-200 text-slate-900"
                     }`}
                   >
-                    <div className="prose prose-sm max-w-none">
-                      {msg.content.split("\n").map((line, j) => {
-                        if (line.startsWith("## ")) {
-                          return <h3 key={j} className="text-lg font-bold mt-2 first:mt-0">{line.replace("## ", "")}</h3>;
-                        }
-                        if (line.startsWith("### ")) {
-                          return <h4 key={j} className="text-base font-semibold mt-3">{line.replace("### ", "")}</h4>;
-                        }
-                        if (line.startsWith("**") && line.endsWith("**")) {
-                          return <p key={j} className="font-semibold">{line.replace(/\*\*/g, "")}</p>;
-                        }
-                        if (line.startsWith("- ")) {
-                          return <li key={j} className="ml-4">{line.replace("- ", "")}</li>;
-                        }
-                        return <p key={j} className="mb-1">{line}</p>;
-                      })}
+                    <div className="text-sm leading-relaxed whitespace-pre-line">
+                      {msg.content}
                     </div>
                   </div>
                 </div>
               ))}
             </div>
 
-            <form onSubmit={handleSendMessage} className="p-4 border-t border-violet-100">
-              <div className="flex gap-3">
+            <form onSubmit={handleSendMessage} className="p-3 md:p-4 border-t border-slate-200 bg-white">
+              <div className="flex gap-2">
                 <input
                   type="text"
                   value={inputMessage}
                   onChange={(e) => setInputMessage(e.target.value)}
                   placeholder="Pose une question..."
-                  className="flex-1 px-4 py-3 rounded-xl border border-violet-200 focus:border-violet-500 focus:ring-2 focus:ring-violet-200 outline-none"
+                  className="flex-1 px-4 py-2.5 text-sm rounded-lg border border-slate-300 focus:border-violet-500 focus:ring-2 focus:ring-violet-200 outline-none"
                 />
                 <button
                   type="submit"
-                  className="px-6 py-3 bg-violet-600 text-white rounded-xl font-semibold hover:bg-violet-700"
+                  className="px-5 md:px-6 py-2.5 bg-violet-600 text-white rounded-lg font-semibold text-sm hover:bg-violet-700 transition-colors"
                 >
                   Envoyer
                 </button>
@@ -335,12 +294,12 @@ export default function AssistantPage() {
           </div>
         )}
 
-        <div className="mt-6 flex gap-4">
+        <div className="mt-6 flex flex-wrap gap-4 text-sm">
           <Link
             href="/conseil"
             className="text-violet-600 font-medium hover:underline"
           >
-            → Parler à un conseiller humain
+            → Parler à un conseiller
           </Link>
           <Link href="/forum" className="text-violet-600 font-medium hover:underline">
             → Explorer le forum

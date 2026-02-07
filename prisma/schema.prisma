@@ -1,0 +1,322 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String   // hashed avec bcrypt
+  name      String
+  role      String   // "bachelier" | "etudiant"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  cvProfile      CvProfile?
+  advisorProfile AdvisorProfile?
+  appointments   Appointment[]   @relation("UserAppointments")
+  parcours       Parcours?
+  stageApplications StageApplication[]
+  resourcesShared Resource[] @relation("ResourceAuthor")
+  resourcePurchases ResourcePurchase[]
+  entrepreneurProjects EntrepreneurProject[]
+  successStories SuccessStory[]
+
+  @@map("users")
+}
+
+model CvProfile {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  phone     String?
+  location  String?
+  headline  String?
+  about     String?
+  skills    String[] // array de strings
+  languages String[]
+  
+  // JSON fields pour structures complexes
+  education   Json? // Array<{ degree, school, startYear, endYear, details }>
+  experiences Json? // Array<{ title, company, location, start, end, bullets }>
+  projects    Json? // Array<{ name, description, link, bullets }>
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("cv_profiles")
+}
+
+model AdvisorProfile {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  field           String
+  university      String
+  year            String
+  description     String
+  meetLink        String?
+  availableSlots  String[] // Array de créneaux (ex: "Lundi 14h-16h")
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  appointments Appointment[] @relation("AdvisorAppointments")
+
+  @@map("advisor_profiles")
+}
+
+model Appointment {
+  id        String   @id @default(cuid())
+  userId    String
+  advisorId String
+  date      String
+  time      String
+  meetLink  String
+  status    String   // "pending" | "confirmed" | "completed" | "cancelled"
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user    User           @relation("UserAppointments", fields: [userId], references: [id], onDelete: Cascade)
+  advisor AdvisorProfile @relation("AdvisorAppointments", fields: [advisorId], references: [userId], onDelete: Cascade)
+
+  @@map("appointments")
+}
+
+model ForumPost {
+  id        String   @id @default(cuid())
+  title     String
+  content   String
+  author    String   // Nom de l'auteur (peut être lié à User plus tard)
+  category  String
+  replies   Int      @default(0)
+  views     Int      @default(0)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("forum_posts")
+}
+
+// Suivi de parcours étudiant
+model Parcours {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  university String?
+  filiere    String?
+  anneeEnCours String? // ex: "1ère année", "3ème année"
+  
+  // Objectifs et notes (JSON pour flexibilité)
+  objectifs Json? // Array<{ id, titre, description, statut, semestre }>
+  notes     Json? // Array<{ matiere, note, coefficient, semestre }>
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("parcours")
+}
+
+// Offres de stage
+model StageOffer {
+  id          String   @id @default(cuid())
+  title       String
+  company     String
+  location    String
+  type        String   // "stage", "job_etudiant", "alternance"
+  domain      String   // "Informatique", "Santé", "Commerce", etc.
+  description String
+  requirements String?
+  duration    String?  // ex: "3 mois"
+  remuneration String? // ex: "200 000 GNF/mois"
+  contactEmail String?
+  contactPhone String?
+  externalLink String?
+  
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  applications StageApplication[]
+
+  @@map("stage_offers")
+}
+
+// Candidatures aux stages
+model StageApplication {
+  id        String   @id @default(cuid())
+  userId    String
+  offerId   String
+  status    String   @default("pending") // "pending", "accepted", "rejected"
+  message   String?  // Message de motivation
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  user  User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  offer StageOffer @relation(fields: [offerId], references: [id], onDelete: Cascade)
+
+  @@map("stage_applications")
+}
+
+// Ressources partagées (payant)
+model Resource {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  category    String   // "TD", "Cours", "Sujet", "Correction", "Autre"
+  subject     String   // Matière (ex: "Mathématiques", "Physique")
+  filiere     String?  // Filière concernée
+  university  String?  // Université d'origine
+  year        String?  // Année (ex: "L1", "L2")
+  
+  fileUrl     String   // URL du fichier uploadé
+  fileType    String   // "pdf", "docx", "pptx", etc.
+  fileSize    Int      // Taille en bytes
+  
+  price       Float    @default(0) // Prix en GNF (0 = gratuit)
+  isPremium   Boolean  @default(false)
+  
+  downloads   Int      @default(0)
+  rating      Float    @default(0)
+  
+  authorId    String
+  author      User     @relation("ResourceAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+  
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  purchases   ResourcePurchase[]
+
+  @@map("resources")
+}
+
+// Achats de ressources
+model ResourcePurchase {
+  id         String   @id @default(cuid())
+  userId     String
+  resourceId String
+  amount     Float    // Montant payé
+  
+  createdAt  DateTime @default(now())
+  
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  resource Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, resourceId]) // Un utilisateur ne peut acheter qu'une fois
+  @@map("resource_purchases")
+}
+
+// Calendrier universitaire et événements
+model CalendarEvent {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  type        String   // "universitaire", "national", "examen", "vacances", "autre"
+  startDate   DateTime
+  endDate     DateTime?
+  location    String?
+  university  String?  // Si spécifique à une université
+  
+  isRecurrent Boolean  @default(false) // Pour les événements annuels
+  color       String?  // Couleur dans le calendrier
+  
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("calendar_events")
+}
+
+// Projets entrepreneuriaux
+model EntrepreneurProject {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  category    String   // "Tech", "Commerce", "Service", "Social", etc.
+  status      String   // "idea", "in_progress", "launched"
+  
+  teamSize    Int      @default(1)
+  seeking     String?  // Ce qu'ils cherchent (ex: "Co-fondateur", "Financement")
+  website     String?
+  contactInfo String?
+  
+  authorId    String
+  author      User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  
+  likes       Int      @default(0)
+  views       Int      @default(0)
+  
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("entrepreneur_projects")
+}
+
+// Bourses et concours
+model Scholarship {
+  id          String   @id @default(cuid())
+  title       String
+  type        String   // "bourse", "concours"
+  organization String  // Organisme
+  description String
+  eligibility String?  // Critères d'éligibilité
+  
+  amount      String?  // Montant (ex: "5 000 000 GNF")
+  deadline    DateTime?
+  applyLink   String?
+  contactInfo String?
+  
+  domain      String?  // Domaine (ex: "Tous", "Sciences", "Arts")
+  location    String?  // Lieu (ex: "Guinée", "International")
+  
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("scholarships")
+}
+
+// Success Stories
+model SuccessStory {
+  id          String   @id @default(cuid())
+  title       String
+  content     String   // Histoire complète
+  category    String   // "Academic", "Career", "Entrepreneur", "Other"
+  
+  authorId    String
+  author      User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  
+  authorName  String   // Nom affiché (peut différer du User.name)
+  authorRole  String?  // Ex: "Ingénieur chez Orange", "Médecin"
+  university  String?
+  graduationYear String?
+  
+  imageUrl    String?  // Photo de l'auteur
+  
+  likes       Int      @default(0)
+  views       Int      @default(0)
+  
+  isFeatured  Boolean  @default(false)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("success_stories")
+}

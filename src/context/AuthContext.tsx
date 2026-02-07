@@ -1,84 +1,128 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from "react";
-import type { User, UserRole } from "@/types";
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+import { prisma } from "@/lib/prisma";
+
+// Types locaux (frontend)
+export type UserRole = "bachelier" | "etudiant";
+
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+  role: UserRole;
+  isAdvisor?: boolean;
+  advisorProfile?: AdvisorProfile | null;
+  cvProfile?: CvProfile | null;
+  createdAt: string;
+}
+
+export interface AdvisorProfile {
+  field: string;
+  university: string;
+  year: string;
+  description: string;
+  meetLink?: string;
+  availableSlots: string[];
+}
+
+export interface CvProfile {
+  phone?: string;
+  location?: string;
+  headline?: string;
+  about?: string;
+  skills: string[];
+  languages: string[];
+  education: Array<{
+    degree: string;
+    school: string;
+    startYear?: string;
+    endYear?: string;
+    details?: string;
+  }>;
+  experiences: Array<{
+    title: string;
+    company: string;
+    location?: string;
+    start?: string;
+    end?: string;
+    bullets: string[];
+  }>;
+  projects: Array<{
+    name: string;
+    description?: string;
+    link?: string;
+    bullets: string[];
+  }>;
+}
 
 interface AuthContextType {
   user: User | null;
   isLoaded: boolean;
-  login: (email: string, password: string) => boolean;
-  register: (email: string, password: string, name: string, role: UserRole) => void;
-  logout: () => void;
-  updateUser: (updates: Partial<User>) => void;
+  updateUser: (updates: Partial<User>) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const STORAGE_KEY = "okampus_user";
-
 export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const { data: session, status } = useSession();
   const [user, setUser] = useState<User | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
+    const fetchUserData = async () => {
+      if (status === "loading") {
+        setIsLoaded(false);
+        return;
+      }
+
+      if (!session?.user?.id) {
+        setUser(null);
+        setIsLoaded(true);
+        return;
+      }
+
       try {
-        setUser(JSON.parse(stored));
-      } catch {
-        localStorage.removeItem(STORAGE_KEY);
+        const res = await fetch(`/api/user/${session.user.id}`);
+        if (res.ok) {
+          const data = await res.json();
+          setUser(data.user);
+        } else {
+          setUser(null);
+        }
+      } catch (error) {
+        console.error("Failed to fetch user", error);
+        setUser(null);
+      } finally {
+        setIsLoaded(true);
       }
-    }
-    setIsLoaded(true);
-  }, []);
-
-  useEffect(() => {
-    if (user) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
-    } else {
-      localStorage.removeItem(STORAGE_KEY);
-    }
-  }, [user]);
-
-  const login = (email: string, password: string) => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      const parsed = JSON.parse(stored);
-      if (parsed.email === email) {
-        setUser(parsed);
-        return true;
-      }
-    }
-    return false;
-  };
-
-  const register = (
-    email: string,
-    _password: string,
-    name: string,
-    role: UserRole
-  ) => {
-    const newUser: User = {
-      id: crypto.randomUUID(),
-      email,
-      name,
-      role,
-      isAdvisor: false,
-      createdAt: new Date().toISOString(),
     };
-    setUser(newUser);
-  };
 
-  const logout = () => setUser(null);
+    fetchUserData();
+  }, [session, status]);
 
-  const updateUser = (updates: Partial<User>) => {
-    if (user) setUser({ ...user, ...updates });
+  const updateUser = async (updates: Partial<User>) => {
+    if (!user) return;
+
+    try {
+      const res = await fetch(`/api/user/${user.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updates),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setUser(data.user);
+      }
+    } catch (error) {
+      console.error("Failed to update user", error);
+    }
   };
 
   return (
-    <AuthContext.Provider
-      value={{ user, isLoaded, login, register, logout, updateUser }}
-    >
+    <AuthContext.Provider value={{ user, isLoaded, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

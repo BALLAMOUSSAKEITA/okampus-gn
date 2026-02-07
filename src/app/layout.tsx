@@ -3,6 +3,7 @@ import { Outfit } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import { AuthProvider } from "@/context/AuthContext";
+import { SessionProvider } from "next-auth/react";
 
 const outfit = Outfit({
   variable: "--font-outfit",
@@ -23,10 +24,12 @@ export default function RootLayout({
   return (
     <html lang="fr">
       <body className={`${outfit.variable} antialiased`}>
-        <AuthProvider>
-          <Navbar />
-          <main className="pt-16 min-h-screen">{children}</main>
-        </AuthProvider>
+        <SessionProvider>
+          <AuthProvider>
+            <Navbar />
+            <main className="pt-16 min-h-screen">{children}</main>
+          </AuthProvider>
+        </SessionProvider>
       </body>
     </html>
   );

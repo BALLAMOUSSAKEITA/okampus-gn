@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { signOut } from "next-auth/react";
 import { useAuth } from "@/context/AuthContext";
 import type { CvProfile } from "@/types";
 
@@ -22,7 +23,7 @@ function emptyCvProfile(): CvProfile {
 
 export default function ProfilPage() {
   const router = useRouter();
-  const { user, isLoaded, logout, updateUser } = useAuth();
+  const { user, isLoaded, updateUser } = useAuth();
   const [showAdvisorForm, setShowAdvisorForm] = useState(false);
   const [advisorForm, setAdvisorForm] = useState({
     field: "",
@@ -309,8 +310,8 @@ export default function ProfilPage() {
 
           <div className="border-t border-amber-100 pt-6 mt-6">
             <button
-              onClick={() => {
-                logout();
+              onClick={async () => {
+                await signOut({ redirect: false });
                 router.push("/");
               }}
               className="text-red-600 hover:underline text-sm"

@@ -27,11 +27,52 @@ O'Kampus est une **plateforme complète pour l’étudiant guinéen** : de la r�
 
 ## 🚀 Démarrage
 
-```bash
-# Installer les dépendances
-npm install
+### 1. Cloner et installer
 
-# Lancer le serveur de développement
+```bash
+git clone https://github.com/VOTRE_USERNAME/okampus-gn.git
+cd okampus-gn/okampus-app
+npm install
+```
+
+### 2. Configurer la base de données (Neon)
+
+1. Crée un compte sur [Neon](https://neon.tech)
+2. Crée un nouveau projet PostgreSQL
+3. Copie l'URL de connexion
+
+### 3. Variables d'environnement
+
+Crée un fichier `.env.local` à la racine de `okampus-app/` :
+
+```env
+# OpenAI (pour génération CV)
+OPENAI_API_KEY=your_openai_api_key_here
+OPENAI_MODEL=gpt-4o-mini
+
+# Database (Neon PostgreSQL)
+DATABASE_URL=postgresql://user:password@host/database?sslmode=require
+
+# Next-Auth
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=generate_with_openssl_rand_base64_32
+```
+
+Pour générer `NEXTAUTH_SECRET` :
+```bash
+openssl rand -base64 32
+```
+
+### 4. Créer les tables (migration Prisma)
+
+```bash
+npx prisma migrate dev --name init
+npx prisma generate
+```
+
+### 5. Lancer le serveur
+
+```bash
 npm run dev
 ```
 
@@ -63,12 +104,37 @@ src/
 - **React 19** - Bibliothèque UI
 - **TypeScript** - Typage statique
 - **Tailwind CSS** - Styles utilitaires
+- **Prisma** - ORM pour PostgreSQL
+- **Next-Auth v5** - Authentification
+- **Neon** - Base de données PostgreSQL serverless
+- **OpenAI** - Génération de CV
+
+## 📝 Architecture
+
+### Backend
+- **Base de données** : Neon (PostgreSQL serverless)
+- **ORM** : Prisma
+- **Auth** : Next-Auth (Credentials + sessions JWT)
+- **API Routes** : Next.js App Router
+
+### Authentification
+- Inscription : email/password (hash bcrypt)
+- Connexion : Next-Auth Credentials provider
+- Sessions : JWT stockées côté client
+- Routes protégées : middleware Next-Auth (`/profil`, `/cv`)
+
+### Modèles de données
+- **User** : id, email, password, name, role, timestamps
+- **CvProfile** : infos CV liées à User (1-to-1)
+- **AdvisorProfile** : profil conseiller lié à User (1-to-1)
+- **Appointment** : rendez-vous entre User et Advisor
+- **ForumPost** : posts du forum
 
 ## 📝 Notes
 
-- L'authentification utilise actuellement `localStorage` (démo)
-- Pour la production, intégrer un backend (Supabase, Firebase, etc.)
-- Les conseillers et messages sont simulés pour la démo
+- Les conseillers et messages du chat sont encore simulés (frontend)
+- Les posts du forum seront bientôt connectés à la BDD
+- Pour la production : configurer `NEXTAUTH_URL` avec l'URL de prod
 
 ## 🎯 Vision
 
