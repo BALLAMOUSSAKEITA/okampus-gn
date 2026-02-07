@@ -15,11 +15,12 @@ const parcoursSchema = z.object({
 // GET /api/parcours/[userId] - Récupérer le parcours d'un utilisateur
 export async function GET(
   request: Request,
-  { params }: { params: { userId: string } }
+  { params }: { params: Promise<{ userId: string }> }
 ) {
   try {
+    const { userId } = await params;
     const parcours = await prisma.parcours.findUnique({
-      where: { userId: params.userId },
+      where: { userId },
     });
 
     if (!parcours) {
@@ -42,14 +43,15 @@ export async function GET(
 // PUT /api/parcours/[userId] - Créer ou mettre à jour le parcours
 export async function PUT(
   request: Request,
-  { params }: { params: { userId: string } }
+  { params }: { params: Promise<{ userId: string }> }
 ) {
   try {
+    const { userId } = await params;
     const body = await request.json();
     const validated = parcoursSchema.parse(body);
 
     const parcours = await prisma.parcours.upsert({
-      where: { userId: params.userId },
+      where: { userId },
       update: {
         university: validated.university,
         filiere: validated.filiere,
@@ -58,7 +60,7 @@ export async function PUT(
         notes: validated.notes || [],
       },
       create: {
-        userId: params.userId,
+        userId,
         university: validated.university,
         filiere: validated.filiere,
         anneeEnCours: validated.anneeEnCours,

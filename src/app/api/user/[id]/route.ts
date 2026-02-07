@@ -3,11 +3,12 @@ import { prisma } from "@/lib/prisma";
 
 export async function GET(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const user = await prisma.user.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         cvProfile: true,
         advisorProfile: true,
@@ -51,14 +52,15 @@ export async function GET(
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const body = await req.json();
     const { isAdvisor, advisorProfile, cvProfile } = body;
 
     const user = await prisma.user.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: { advisorProfile: true, cvProfile: true },
     });
 
@@ -92,7 +94,7 @@ export async function PATCH(
 
     // Récupérer l'utilisateur mis à jour
     const updatedUser = await prisma.user.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         cvProfile: true,
         advisorProfile: true,

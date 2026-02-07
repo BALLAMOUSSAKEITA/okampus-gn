@@ -10,15 +10,16 @@ const purchaseSchema = z.object({
 // POST /api/resources/[resourceId]/purchase - Acheter une ressource
 export async function POST(
   request: Request,
-  { params }: { params: { resourceId: string } }
+  { params }: { params: Promise<{ resourceId: string }> }
 ) {
   try {
+    const { resourceId } = await params;
     const body = await request.json();
     const validated = purchaseSchema.parse(body);
 
     // Vérifier si la ressource existe
     const resource = await prisma.resource.findUnique({
-      where: { id: params.resourceId },
+      where: { id: resourceId },
     });
 
     if (!resource || !resource.isActive) {
@@ -32,7 +33,7 @@ export async function POST(
     const existing = await prisma.resourcePurchase.findFirst({
       where: {
         userId: validated.userId,
-        resourceId: params.resourceId,
+        resourceId,
       },
     });
 
@@ -47,14 +48,14 @@ export async function POST(
     const purchase = await prisma.resourcePurchase.create({
       data: {
         userId: validated.userId,
-        resourceId: params.resourceId,
+        resourceId,
         amount: validated.amount,
       },
     });
 
     // Incrémenter les téléchargements
     await prisma.resource.update({
-      where: { id: params.resourceId },
+      where: { id: resourceId },
       data: { downloads: { increment: 1 } },
     });
 

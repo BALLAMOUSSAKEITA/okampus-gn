@@ -11,15 +11,16 @@ const applicationSchema = z.object({
 // POST /api/stages/[offerId]/apply - Postuler à une offre
 export async function POST(
   request: Request,
-  { params }: { params: { offerId: string } }
+  { params }: { params: Promise<{ offerId: string }> }
 ) {
   try {
+    const { offerId } = await params;
     const body = await request.json();
     const validated = applicationSchema.parse(body);
 
     // Vérifier si l'offre existe
     const offer = await prisma.stageOffer.findUnique({
-      where: { id: params.offerId },
+      where: { id: offerId },
     });
 
     if (!offer || !offer.isActive) {
@@ -33,7 +34,7 @@ export async function POST(
     const existingApplication = await prisma.stageApplication.findFirst({
       where: {
         userId: validated.userId,
-        offerId: params.offerId,
+        offerId,
       },
     });
 
@@ -48,7 +49,7 @@ export async function POST(
     const application = await prisma.stageApplication.create({
       data: {
         userId: validated.userId,
-        offerId: params.offerId,
+        offerId,
         message: validated.message,
         status: "pending",
       },
@@ -73,9 +74,10 @@ export async function POST(
 // GET /api/stages/[offerId]/apply - Récupérer les candidatures d'un utilisateur
 export async function GET(
   request: Request,
-  { params }: { params: { offerId: string } }
+  { params }: { params: Promise<{ offerId: string }> }
 ) {
   try {
+    const { offerId } = await params;
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get("userId");
 
@@ -89,7 +91,7 @@ export async function GET(
     const application = await prisma.stageApplication.findFirst({
       where: {
         userId,
-        offerId: params.offerId,
+        offerId,
       },
       include: {
         offer: true,
