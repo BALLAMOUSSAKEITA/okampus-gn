@@ -1,9 +1,24 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.database import engine, Base
 from app.routers import auth, calendar, cv, entrepreneur, parcours, resources, scholarships, stages, success_stories, users
 
-app = FastAPI(title="O'Kampus API", version="1.0.0")
+# Importer tous les modèles pour que Base.metadata les connaisse
+import app.models  # noqa: F401
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Créer toutes les tables au démarrage (si elles n'existent pas)
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+    yield
+
+
+app = FastAPI(title="O'Kampus API", version="1.0.0", lifespan=lifespan)
 
 # CORS — autorise le frontend Next.js
 app.add_middleware(
