@@ -19,15 +19,20 @@ async def register(body: RegisterRequest, db: AsyncSession = Depends(get_db)):
     if result.scalar_one_or_none():
         raise HTTPException(status_code=400, detail="Cet email est déjà utilisé")
 
-    user = User(
-        name=body.name,
-        email=body.email,
-        password=hash_password(body.password),
-        role=body.role,
-    )
-    db.add(user)
-    await db.commit()
-    await db.refresh(user)
+    try:
+        user = User(
+            name=body.name,
+            email=body.email,
+            password=hash_password(body.password),
+            role=body.role,
+        )
+        db.add(user)
+        await db.commit()
+        await db.refresh(user)
+    except Exception as e:
+        await db.rollback()
+        print(f"[REGISTER ERROR] {type(e).__name__}: {e}")
+        raise HTTPException(status_code=500, detail=f"Erreur serveur: {type(e).__name__}")
 
     return UserOut(
         id=user.id,
