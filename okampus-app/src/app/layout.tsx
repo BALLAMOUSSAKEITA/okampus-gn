@@ -9,12 +9,13 @@ import { SessionProvider } from "next-auth/react";
 const outfit = Outfit({
   variable: "--font-outfit",
   subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700", "800"],
 });
 
 export const metadata: Metadata = {
-  title: "O'Kampus - Plateforme de l'étudiant guinéen | Bac → Études → Emploi",
+  title: "O'Kampus - La plateforme de l'etudiant guineen",
   description:
-    "O'Kampus est une plateforme complète pour l'étudiant guinéen : préparation au bac, orientation, conseils (chat & rendez-vous), forum, CV et insertion professionnelle.",
+    "O'Kampus accompagne chaque etudiant guineen : orientation IA, mentorat, forum, CV, stages, bourses et insertion professionnelle.",
   manifest: "/manifest.json",
   themeColor: "#c41e3a",
   appleWebApp: {
@@ -45,7 +46,7 @@ export default function RootLayout({
         <SessionProvider>
           <AuthProvider>
             <Navbar />
-            <main className="pt-16 min-h-screen">{children}</main>
+            <main className="pt-[72px] min-h-screen">{children}</main>
             <PWAInstallPrompt />
           </AuthProvider>
         </SessionProvider>

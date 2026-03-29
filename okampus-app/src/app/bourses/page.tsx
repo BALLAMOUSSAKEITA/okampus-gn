@@ -130,36 +130,44 @@ export default function BoursesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <div className="max-w-7xl mx-auto px-4 py-6 md:py-12">
+    <div className="min-h-screen bg-white">
+      <div className="max-w-7xl mx-auto px-4 py-8 md:py-14">
         {/* Header */}
-        <div className="mb-6 md:mb-8">
-          <h1 className="text-2xl md:text-3xl font-bold text-slate-900 mb-2">
+        <div className="mb-10">
+          <span className="inline-block px-3 py-1 bg-red-50 text-[#c41e3a] text-xs font-semibold rounded-full uppercase tracking-wider mb-4">
+            Opportunites
+          </span>
+          <h1 className="text-3xl md:text-4xl font-bold text-slate-900 mb-3">
             Bourses & Concours
           </h1>
-          <p className="text-slate-600 text-sm md:text-base">
+          <p className="text-slate-500 text-base md:text-lg max-w-xl">
             Toutes les opportunités de bourses d'études et concours disponibles
           </p>
         </div>
 
         {/* Filtres */}
-        <div className="bg-white rounded-xl border border-slate-200 p-4 md:p-6 mb-6">
-          <div className="grid md:grid-cols-3 gap-4">
+        <div className="card bg-white rounded-2xl border border-slate-200 p-5 md:p-7 mb-8">
+          <div className="grid md:grid-cols-3 gap-5">
             <div className="md:col-span-3">
-              <input
-                type="text"
-                placeholder="Rechercher une bourse ou un concours..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#c41e3a] text-sm"
-              />
+              <div className="relative">
+                <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input
+                  type="text"
+                  placeholder="Rechercher une bourse ou un concours..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 focus:outline-none focus:ring-2 focus:ring-[#c41e3a] focus:border-transparent text-sm transition-all"
+                />
+              </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">Type</label>
+              <label className="block text-sm font-semibold text-slate-700 mb-2">Type</label>
               <select
                 value={selectedType}
                 onChange={(e) => setSelectedType(e.target.value)}
-                className="w-full px-3 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#c41e3a] text-sm"
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 focus:outline-none focus:ring-2 focus:ring-[#c41e3a] text-sm"
               >
                 <option value="all">Tous</option>
                 <option value="bourse">Bourses</option>
@@ -167,11 +175,11 @@ export default function BoursesPage() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">Localisation</label>
+              <label className="block text-sm font-semibold text-slate-700 mb-2">Localisation</label>
               <select
                 value={selectedLocation}
                 onChange={(e) => setSelectedLocation(e.target.value)}
-                className="w-full px-3 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#c41e3a] text-sm"
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 focus:outline-none focus:ring-2 focus:ring-[#c41e3a] text-sm"
               >
                 <option value="all">Toutes</option>
                 {locations.map((loc) => (
@@ -182,7 +190,7 @@ export default function BoursesPage() {
               </select>
             </div>
             <div className="flex items-end">
-              <div className="text-sm text-slate-600">
+              <div className="text-sm text-slate-500">
                 <span className="font-bold text-slate-900">{filteredScholarships.length}</span> opportunité{filteredScholarships.length > 1 ? "s" : ""}
               </div>
             </div>
@@ -190,83 +198,91 @@ export default function BoursesPage() {
         </div>
 
         {/* Liste */}
-        <div className="space-y-4">
+        <div className="space-y-5">
           {filteredScholarships.map((scholarship) => (
             <div
               key={scholarship.id}
-              className="bg-white rounded-xl border border-slate-200 p-5 md:p-6 hover:shadow-lg transition-all"
+              className="card bg-white rounded-2xl border border-slate-200 p-6 md:p-8 hover:shadow-lg hover:border-red-100 transition-all group"
             >
-              <div className="flex flex-col lg:flex-row lg:items-start gap-4">
+              <div className="flex flex-col lg:flex-row lg:items-start gap-6">
                 {/* Contenu principal */}
                 <div className="flex-1">
-                  <div className="flex flex-wrap items-start gap-2 mb-3">
+                  <div className="flex flex-wrap items-start gap-2 mb-4">
                     <span
-                      className={`px-3 py-1.5 rounded-md text-xs font-medium border ${
+                      className={`px-3 py-1.5 rounded-full text-xs font-semibold ${
                         scholarship.type === "bourse"
-                          ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                          : "bg-blue-50 text-blue-700 border-blue-200"
+                          ? "bg-emerald-50 text-emerald-600"
+                          : "bg-red-50 text-[#c41e3a]"
                       }`}
                     >
                       {scholarship.type === "bourse" ? "Bourse" : "Concours"}
                     </span>
-                    <span className="px-3 py-1.5 bg-violet-50 text-violet-700 border border-violet-200 rounded-md text-xs font-medium">
+                    <span className="px-3 py-1.5 bg-violet-50 text-[#9e1830] rounded-full text-xs font-semibold">
                       {scholarship.location}
                     </span>
                     {scholarship.deadline && isDeadlineSoon(scholarship.deadline) && (
-                      <span className="px-3 py-1.5 bg-amber-50 text-amber-700 border border-amber-200 rounded-md text-xs font-bold animate-pulse">
+                      <span className="px-3 py-1.5 bg-amber-50 text-amber-600 rounded-full text-xs font-bold animate-pulse">
                         Date limite proche !
                       </span>
                     )}
                   </div>
 
-                  <h3 className="text-lg md:text-xl font-bold text-slate-900 mb-2">{scholarship.title}</h3>
-                  <p className="text-sm font-medium text-slate-700 mb-2">{scholarship.organization}</p>
-                  <p className="text-sm text-slate-600 leading-relaxed mb-4">{scholarship.description}</p>
+                  <h3 className="text-lg md:text-xl font-bold text-slate-900 mb-2 group-hover:text-[#c41e3a] transition-colors">{scholarship.title}</h3>
+                  <p className="text-sm font-medium text-slate-600 mb-2">{scholarship.organization}</p>
+                  <p className="text-sm text-slate-500 leading-relaxed mb-5">{scholarship.description}</p>
 
                   {/* Détails */}
-                  <div className="space-y-2 text-sm">
+                  <div className="space-y-3 text-sm">
                     {scholarship.eligibility && (
-                      <div className="flex items-start gap-2">
-                        <svg className="w-4 h-4 text-slate-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
+                      <div className="flex items-start gap-3 p-3 bg-slate-50/80 rounded-xl">
+                        <div className="w-7 h-7 rounded-lg bg-red-50 flex items-center justify-center flex-shrink-0">
+                          <svg className="w-3.5 h-3.5 text-[#c41e3a]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                        </div>
                         <div>
-                          <span className="font-medium text-slate-700">Éligibilité :</span>
-                          <span className="text-slate-600 ml-1">{scholarship.eligibility}</span>
+                          <span className="font-semibold text-slate-700">Éligibilité :</span>
+                          <span className="text-slate-500 ml-1">{scholarship.eligibility}</span>
                         </div>
                       </div>
                     )}
                     {scholarship.amount && (
-                      <div className="flex items-start gap-2">
-                        <svg className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                          <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z" />
-                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clipRule="evenodd" />
-                        </svg>
+                      <div className="flex items-start gap-3 p-3 bg-emerald-50/50 rounded-xl">
+                        <div className="w-7 h-7 rounded-lg bg-emerald-50 flex items-center justify-center flex-shrink-0">
+                          <svg className="w-3.5 h-3.5 text-emerald-600" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z" />
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clipRule="evenodd" />
+                          </svg>
+                        </div>
                         <div>
-                          <span className="font-medium text-slate-700">Montant :</span>
+                          <span className="font-semibold text-slate-700">Montant :</span>
                           <span className="text-emerald-600 font-bold ml-1">{scholarship.amount}</span>
                         </div>
                       </div>
                     )}
                     {scholarship.deadline && (
-                      <div className="flex items-start gap-2">
-                        <svg className="w-4 h-4 text-slate-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
+                      <div className="flex items-start gap-3 p-3 bg-slate-50/80 rounded-xl">
+                        <div className="w-7 h-7 rounded-lg bg-amber-50 flex items-center justify-center flex-shrink-0">
+                          <svg className="w-3.5 h-3.5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          </svg>
+                        </div>
                         <div>
-                          <span className="font-medium text-slate-700">Date limite :</span>
-                          <span className="text-slate-600 ml-1">{formatDeadline(scholarship.deadline)}</span>
+                          <span className="font-semibold text-slate-700">Date limite :</span>
+                          <span className="text-slate-500 ml-1">{formatDeadline(scholarship.deadline)}</span>
                         </div>
                       </div>
                     )}
                     {scholarship.domain && (
-                      <div className="flex items-start gap-2">
-                        <svg className="w-4 h-4 text-slate-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                        </svg>
+                      <div className="flex items-start gap-3 p-3 bg-slate-50/80 rounded-xl">
+                        <div className="w-7 h-7 rounded-lg bg-violet-50 flex items-center justify-center flex-shrink-0">
+                          <svg className="w-3.5 h-3.5 text-[#9e1830]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                          </svg>
+                        </div>
                         <div>
-                          <span className="font-medium text-slate-700">Domaine :</span>
-                          <span className="text-slate-600 ml-1">{scholarship.domain}</span>
+                          <span className="font-semibold text-slate-700">Domaine :</span>
+                          <span className="text-slate-500 ml-1">{scholarship.domain}</span>
                         </div>
                       </div>
                     )}
@@ -274,13 +290,13 @@ export default function BoursesPage() {
                 </div>
 
                 {/* Actions */}
-                <div className="flex flex-row lg:flex-col gap-2 lg:w-48">
+                <div className="flex flex-row lg:flex-col gap-3 lg:w-52">
                   {scholarship.applyLink && (
                     <a
                       href={scholarship.applyLink}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex-1 lg:flex-none px-4 py-2.5 bg-[#c41e3a] text-white rounded-lg font-medium hover:bg-[#a01828] transition-colors text-center text-sm"
+                      className="btn-primary flex-1 lg:flex-none px-5 py-3 bg-gradient-to-r from-[#c41e3a] to-[#9e1830] text-white rounded-xl font-semibold hover:from-[#9e1830] hover:to-[#c41e3a] transition-all text-center text-sm shadow-lg shadow-red-200"
                     >
                       Postuler en ligne
                     </a>
@@ -288,7 +304,7 @@ export default function BoursesPage() {
                   {scholarship.contactInfo && (
                     <a
                       href={scholarship.contactInfo.includes("@") ? `mailto:${scholarship.contactInfo}` : `tel:${scholarship.contactInfo}`}
-                      className="flex-1 lg:flex-none px-4 py-2.5 bg-slate-100 text-slate-700 rounded-lg font-medium hover:bg-slate-200 transition-colors text-center text-sm"
+                      className="btn-secondary flex-1 lg:flex-none px-5 py-3 bg-slate-50 text-slate-700 rounded-xl font-semibold hover:bg-slate-100 transition-all text-center text-sm border border-slate-200"
                     >
                       Contact
                     </a>
@@ -300,13 +316,16 @@ export default function BoursesPage() {
         </div>
 
         {filteredScholarships.length === 0 && (
-          <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
-            <p className="text-slate-600">Aucune opportunité trouvée</p>
+          <div className="card bg-white rounded-2xl border border-slate-200 p-16 text-center">
+            <div className="w-16 h-16 rounded-2xl bg-slate-50 flex items-center justify-center mx-auto mb-4">
+              <svg className="w-8 h-8 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+            </div>
+            <p className="text-slate-500 font-medium">Aucune opportunité trouvée</p>
           </div>
         )}
 
-        <div className="mt-8 text-sm">
-          <Link href="/" className="text-slate-600 hover:text-[#c41e3a] font-medium">
+        <div className="mt-10 text-sm">
+          <Link href="/" className="text-slate-400 hover:text-[#c41e3a] font-medium transition-colors">
             ← Retour à l'accueil
           </Link>
         </div>

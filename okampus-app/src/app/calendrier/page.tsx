@@ -110,11 +110,19 @@ export default function CalendrierPage() {
   };
 
   const typeColors: Record<string, string> = {
-    universitaire: "bg-blue-50 text-blue-700 border-blue-200",
-    national: "bg-emerald-50 text-emerald-700 border-emerald-200",
-    examen: "bg-red-50 text-red-700 border-red-200",
-    vacances: "bg-purple-50 text-purple-700 border-purple-200",
-    autre: "bg-slate-50 text-slate-700 border-slate-200",
+    universitaire: "bg-red-50 text-[#c41e3a]",
+    national: "bg-emerald-50 text-emerald-600",
+    examen: "bg-red-50 text-red-600",
+    vacances: "bg-violet-50 text-[#9e1830]",
+    autre: "bg-slate-50 text-slate-600",
+  };
+
+  const typeDotColors: Record<string, string> = {
+    universitaire: "bg-[#c41e3a]",
+    national: "bg-emerald-500",
+    examen: "bg-red-500",
+    vacances: "bg-[#9e1830]",
+    autre: "bg-slate-400",
   };
 
   const formatDate = (dateStr: string) => {
@@ -127,27 +135,30 @@ export default function CalendrierPage() {
   );
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <div className="max-w-7xl mx-auto px-4 py-6 md:py-12">
+    <div className="min-h-screen bg-white">
+      <div className="max-w-7xl mx-auto px-4 py-8 md:py-14">
         {/* Header */}
-        <div className="mb-6 md:mb-8">
-          <h1 className="text-2xl md:text-3xl font-bold text-slate-900 mb-2">
+        <div className="mb-10">
+          <span className="inline-block px-3 py-1 bg-red-50 text-[#c41e3a] text-xs font-semibold rounded-full uppercase tracking-wider mb-4">
+            Calendrier
+          </span>
+          <h1 className="text-3xl md:text-4xl font-bold text-slate-900 mb-3">
             Calendrier universitaire
           </h1>
-          <p className="text-slate-600 text-sm md:text-base">
+          <p className="text-slate-500 text-base md:text-lg max-w-xl">
             Tous les événements importants : rentrées, examens, jours fériés
           </p>
         </div>
 
         {/* Filtres */}
-        <div className="bg-white rounded-xl border border-slate-200 p-4 md:p-6 mb-6">
+        <div className="card bg-white rounded-2xl border border-slate-200 p-5 md:p-7 mb-8">
           <div className="flex flex-wrap gap-2">
             <button
               onClick={() => setSelectedType("all")}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+              className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all ${
                 selectedType === "all"
-                  ? "bg-[#c41e3a] text-white"
-                  : "bg-slate-50 text-slate-600 hover:bg-slate-100"
+                  ? "bg-[#c41e3a] text-white shadow-lg shadow-red-200"
+                  : "bg-white border border-slate-200 text-slate-600 hover:border-red-200 hover:text-[#c41e3a]"
               }`}
             >
               Tous
@@ -156,17 +167,17 @@ export default function CalendrierPage() {
               <button
                 key={key}
                 onClick={() => setSelectedType(key)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all ${
                   selectedType === key
-                    ? "bg-[#c41e3a] text-white"
-                    : "bg-slate-50 text-slate-600 hover:bg-slate-100"
+                    ? "bg-[#c41e3a] text-white shadow-lg shadow-red-200"
+                    : "bg-white border border-slate-200 text-slate-600 hover:border-red-200 hover:text-[#c41e3a]"
                 }`}
               >
                 {label}
               </button>
             ))}
           </div>
-          <div className="mt-4 text-sm text-slate-600">
+          <div className="mt-5 text-sm text-slate-500">
             <span className="font-bold text-slate-900">{sortedEvents.length}</span> événement{sortedEvents.length > 1 ? "s" : ""}
           </div>
         </div>
@@ -176,38 +187,41 @@ export default function CalendrierPage() {
           {sortedEvents.map((event) => (
             <div
               key={event.id}
-              className="bg-white rounded-xl border border-slate-200 p-5 md:p-6 hover:shadow-lg transition-all"
+              className="card bg-white rounded-2xl border border-slate-200 p-6 md:p-7 hover:shadow-lg hover:border-red-100 transition-all group"
             >
-              <div className="flex flex-col md:flex-row md:items-start gap-4">
+              <div className="flex flex-col md:flex-row md:items-start gap-5">
                 {/* Date */}
                 <div className="flex-shrink-0">
-                  <div className="w-full md:w-20 text-center">
-                    <div className="text-3xl font-bold text-[#c41e3a]">
+                  <div className="w-full md:w-24 text-center md:text-center p-3 bg-slate-50 rounded-2xl border border-slate-100">
+                    <div className="text-3xl font-bold bg-gradient-to-r from-[#c41e3a] to-[#9e1830] bg-clip-text text-transparent">
                       {new Date(event.startDate).getDate()}
                     </div>
-                    <div className="text-sm text-slate-600">
+                    <div className="text-sm text-slate-500 font-medium mt-0.5">
                       {new Date(event.startDate).toLocaleDateString("fr-FR", { month: "short" })}
                     </div>
-                    <div className="text-xs text-slate-500">
+                    <div className="text-xs text-slate-400">
                       {new Date(event.startDate).getFullYear()}
                     </div>
                   </div>
                 </div>
 
                 {/* Séparateur */}
-                <div className="hidden md:block w-px bg-slate-200 self-stretch" />
+                <div className="hidden md:flex flex-col items-center self-stretch py-2">
+                  <div className={`w-3 h-3 rounded-full ${typeDotColors[event.type]}`} />
+                  <div className="w-px flex-1 bg-slate-200 mt-1" />
+                </div>
 
                 {/* Contenu */}
                 <div className="flex-1">
                   <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-3">
                     <div>
-                      <h3 className="text-lg font-bold text-slate-900 mb-1">{event.title}</h3>
+                      <h3 className="text-lg font-bold text-slate-900 mb-1 group-hover:text-[#c41e3a] transition-colors">{event.title}</h3>
                       {event.description && (
-                        <p className="text-sm text-slate-600">{event.description}</p>
+                        <p className="text-sm text-slate-500 leading-relaxed">{event.description}</p>
                       )}
                     </div>
                     <span
-                      className={`px-3 py-1.5 rounded-md text-xs font-medium border whitespace-nowrap ${
+                      className={`px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap ${
                         typeColors[event.type]
                       }`}
                     >
@@ -215,9 +229,9 @@ export default function CalendrierPage() {
                     </span>
                   </div>
 
-                  <div className="flex flex-wrap gap-4 text-sm text-slate-600">
+                  <div className="flex flex-wrap gap-4 text-sm text-slate-500">
                     <div className="flex items-center gap-1.5">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path
                           strokeLinecap="round"
                           strokeLinejoin="round"
@@ -235,7 +249,7 @@ export default function CalendrierPage() {
                     </div>
                     {event.location && (
                       <div className="flex items-center gap-1.5">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path
                             strokeLinecap="round"
                             strokeLinejoin="round"
@@ -254,7 +268,7 @@ export default function CalendrierPage() {
                     )}
                     {event.university && (
                       <div className="flex items-center gap-1.5">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path
                             strokeLinecap="round"
                             strokeLinejoin="round"
@@ -273,18 +287,22 @@ export default function CalendrierPage() {
         </div>
 
         {sortedEvents.length === 0 && (
-          <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
-            <p className="text-slate-600">Aucun événement trouvé</p>
+          <div className="card bg-white rounded-2xl border border-slate-200 p-16 text-center">
+            <div className="w-16 h-16 rounded-2xl bg-slate-50 flex items-center justify-center mx-auto mb-4">
+              <svg className="w-8 h-8 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+            </div>
+            <p className="text-slate-500 font-medium">Aucun événement trouvé</p>
           </div>
         )}
 
         {/* Légende */}
-        <div className="mt-8 bg-white rounded-xl border border-slate-200 p-5 md:p-6">
-          <h3 className="font-bold text-slate-900 mb-4">Légende</h3>
+        <div className="mt-8 card bg-white rounded-2xl border border-slate-200 p-6 md:p-8">
+          <h3 className="font-bold text-slate-900 mb-5">Légende</h3>
           <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-3">
             {Object.entries(typeLabels).map(([key, label]) => (
-              <div key={key} className="flex items-center gap-2">
-                <span className={`px-3 py-1.5 rounded-md text-xs font-medium border ${typeColors[key as keyof typeof typeColors]}`}>
+              <div key={key} className="flex items-center gap-2.5">
+                <span className={`w-2.5 h-2.5 rounded-full ${typeDotColors[key]}`} />
+                <span className={`px-3 py-1.5 rounded-full text-xs font-semibold ${typeColors[key as keyof typeof typeColors]}`}>
                   {label}
                 </span>
               </div>
@@ -292,8 +310,8 @@ export default function CalendrierPage() {
           </div>
         </div>
 
-        <div className="mt-8 text-sm">
-          <Link href="/" className="text-slate-600 hover:text-[#c41e3a] font-medium">
+        <div className="mt-10 text-sm">
+          <Link href="/" className="text-slate-400 hover:text-[#c41e3a] font-medium transition-colors">
             ← Retour à l'accueil
           </Link>
         </div>
