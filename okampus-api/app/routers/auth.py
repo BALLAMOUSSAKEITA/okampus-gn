@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, Request, status
+from loguru import logger
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -31,9 +32,10 @@ async def register(request: Request, body: RegisterRequest, db: AsyncSession = D
         db.add(user)
         await db.commit()
         await db.refresh(user)
+        logger.info("Inscription reussie: {email} (role={role})", email=body.email, role=body.role)
     except Exception as e:
         await db.rollback()
-        print(f"[REGISTER ERROR] {type(e).__name__}: {e}")
+        logger.error("Echec inscription {email}: {err}", email=body.email, err=e)
         raise HTTPException(status_code=500, detail=f"Erreur serveur: {type(e).__name__}")
 
     return UserOut(
@@ -55,6 +57,7 @@ async def login(request: Request, body: LoginRequest, db: AsyncSession = Depends
         raise HTTPException(status_code=401, detail="Email ou mot de passe incorrect")
 
     token = create_access_token({"sub": user.id, "role": user.role})
+    logger.info("Connexion reussie: {email}", email=user.email)
 
     return TokenResponse(
         access_token=token,
