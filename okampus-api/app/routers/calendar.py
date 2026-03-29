@@ -2,8 +2,9 @@ from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
+from app.auth import require_role
 from app.database import get_db
-from app.models import CalendarEvent
+from app.models import CalendarEvent, User
 from app.schemas import CalendarEventCreate, CalendarEventOut
 
 router = APIRouter(prefix="/calendar", tags=["calendar"])
@@ -22,7 +23,11 @@ async def get_events(
 
 
 @router.post("", response_model=CalendarEventOut, status_code=201)
-async def create_event(body: CalendarEventCreate, db: AsyncSession = Depends(get_db)):
+async def create_event(
+    body: CalendarEventCreate,
+    current_user: User = Depends(require_role("admin")),
+    db: AsyncSession = Depends(get_db),
+):
     event = CalendarEvent(**body.model_dump())
     db.add(event)
     await db.commit()

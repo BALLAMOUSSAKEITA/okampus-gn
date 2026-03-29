@@ -2,9 +2,10 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
+from app.auth import get_current_user
 from app.database import get_db
-from app.models import Resource, ResourcePurchase
-from app.schemas import PurchaseRequest, ResourceCreate, ResourceOut
+from app.models import Resource, ResourcePurchase, User
+from app.schemas import ResourceCreate, ResourceOut
 
 router = APIRouter(prefix="/resources", tags=["resources"])
 
@@ -25,8 +26,12 @@ async def get_resources(
 
 
 @router.post("", response_model=ResourceOut, status_code=201)
-async def create_resource(body: ResourceCreate, db: AsyncSession = Depends(get_db)):
-    resource = Resource(**body.model_dump())
+async def create_resource(
+    body: ResourceCreate,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    resource = Resource(**body.model_dump(), author_id=current_user.id)
     db.add(resource)
     await db.commit()
     await db.refresh(resource)
@@ -36,7 +41,7 @@ async def create_resource(body: ResourceCreate, db: AsyncSession = Depends(get_d
 @router.post("/{resource_id}/purchase", status_code=201)
 async def purchase_resource(
     resource_id: str,
-    body: PurchaseRequest,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     result = await db.execute(select(Resource).where(Resource.id == resource_id))
@@ -46,14 +51,14 @@ async def purchase_resource(
 
     existing = await db.execute(
         select(ResourcePurchase).where(
-            ResourcePurchase.user_id == body.user_id,
+            ResourcePurchase.user_id == current_user.id,
             ResourcePurchase.resource_id == resource_id,
         )
     )
     if existing.scalar_one_or_none():
         raise HTTPException(status_code=400, detail="Ressource déjà achetée")
 
-    purchase = ResourcePurchase(user_id=body.user_id, resource_id=resource_id, amount=resource.price)
+    purchase = ResourcePurchase(user_id=current_user.id, resource_id=resource_id, amount=resource.price)
     resource.downloads += 1
     db.add(purchase)
     await db.commit()

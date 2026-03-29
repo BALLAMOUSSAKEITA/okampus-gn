@@ -2,8 +2,9 @@ from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
+from app.auth import get_current_user
 from app.database import get_db
-from app.models import SuccessStory
+from app.models import SuccessStory, User
 from app.schemas import SuccessStoryCreate, SuccessStoryOut
 
 router = APIRouter(prefix="/success-stories", tags=["success-stories"])
@@ -29,8 +30,12 @@ async def get_stories(
 
 
 @router.post("", response_model=SuccessStoryOut, status_code=201)
-async def create_story(body: SuccessStoryCreate, db: AsyncSession = Depends(get_db)):
-    story = SuccessStory(**body.model_dump())
+async def create_story(
+    body: SuccessStoryCreate,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    story = SuccessStory(**body.model_dump(), author_id=current_user.id)
     db.add(story)
     await db.commit()
     await db.refresh(story)

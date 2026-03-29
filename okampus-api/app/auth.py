@@ -43,6 +43,17 @@ def decode_token(token: str) -> dict:
         )
 
 
+def require_role(*roles: str):
+    async def dependency(current_user=Depends(get_current_user)):
+        if current_user.role not in roles:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Accès refusé : rôle insuffisant",
+            )
+        return current_user
+    return dependency
+
+
 async def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(security),
     db: AsyncSession = Depends(get_db),

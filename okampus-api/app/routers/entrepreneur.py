@@ -2,8 +2,9 @@ from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
+from app.auth import get_current_user
 from app.database import get_db
-from app.models import EntrepreneurProject
+from app.models import EntrepreneurProject, User
 from app.schemas import EntrepreneurProjectCreate, EntrepreneurProjectOut
 
 router = APIRouter(prefix="/entrepreneur", tags=["entrepreneur"])
@@ -25,8 +26,12 @@ async def get_projects(
 
 
 @router.post("", response_model=EntrepreneurProjectOut, status_code=201)
-async def create_project(body: EntrepreneurProjectCreate, db: AsyncSession = Depends(get_db)):
-    project = EntrepreneurProject(**body.model_dump())
+async def create_project(
+    body: EntrepreneurProjectCreate,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    project = EntrepreneurProject(**body.model_dump(), author_id=current_user.id)
     db.add(project)
     await db.commit()
     await db.refresh(project)

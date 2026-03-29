@@ -1,7 +1,11 @@
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from slowapi import Limiter
+from slowapi.errors import RateLimitExceeded
+from slowapi.util import get_remote_address
 
 from app.database import engine, Base
 from app.routers import auth, calendar, cv, entrepreneur, parcours, resources, scholarships, stages, success_stories, users
@@ -18,7 +22,21 @@ async def lifespan(app: FastAPI):
     yield
 
 
+limiter = Limiter(key_func=get_remote_address)
+
 app = FastAPI(title="O'Kampus API", version="1.0.0", lifespan=lifespan)
+app.state.limiter = limiter
+
+
+@app.exception_handler(RateLimitExceeded)
+async def rate_limit_handler(request: Request, exc: RateLimitExceeded):
+    retry_after = exc.detail.split(" ")[-1] if exc.detail else "60"
+    return JSONResponse(
+        status_code=429,
+        content={"detail": "Trop de requêtes. Veuillez réessayer plus tard."},
+        headers={"Retry-After": retry_after},
+    )
+
 
 # CORS — autorise le frontend Next.js
 app.add_middleware(

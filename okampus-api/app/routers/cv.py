@@ -1,8 +1,12 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from openai import AsyncOpenAI
+from slowapi import Limiter
+from slowapi.util import get_remote_address
 
 from app.config import settings
 from app.schemas import GenerateCvRequest
+
+limiter = Limiter(key_func=get_remote_address)
 
 router = APIRouter(prefix="/cv", tags=["cv"])
 
@@ -12,7 +16,7 @@ def _build_prompt(body: GenerateCvRequest) -> str:
     safe = lambda v: v.strip() if v and str(v).strip() else "—"
 
     skills = "\n".join(f"- {s}" for s in cv.get("skills", [])) or "—"
-    languages = "\n".join(f"- l" for l in cv.get("languages", [])) or "—"
+    languages = "\n".join(f"- {l}" for l in cv.get("languages", [])) or "—"
 
     education_lines = []
     for e in cv.get("education", []):
@@ -80,7 +84,8 @@ Contraintes:
 
 
 @router.post("")
-async def generate_cv(body: GenerateCvRequest):
+@limiter.limit("10/hour")
+async def generate_cv(request: Request, body: GenerateCvRequest):
     if not settings.openai_api_key:
         raise HTTPException(status_code=500, detail="OPENAI_API_KEY manquant")
 

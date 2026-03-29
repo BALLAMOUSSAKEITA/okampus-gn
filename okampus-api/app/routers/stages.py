@@ -2,8 +2,9 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
+from app.auth import get_current_user, require_role
 from app.database import get_db
-from app.models import StageApplication, StageOffer
+from app.models import StageApplication, StageOffer, User
 from app.schemas import ApplyRequest, ApplicationOut, StageOfferCreate, StageOfferOut
 
 router = APIRouter(prefix="/stages", tags=["stages"])
@@ -25,7 +26,11 @@ async def get_stages(
 
 
 @router.post("", response_model=StageOfferOut, status_code=201)
-async def create_stage(body: StageOfferCreate, db: AsyncSession = Depends(get_db)):
+async def create_stage(
+    body: StageOfferCreate,
+    current_user: User = Depends(require_role("admin")),
+    db: AsyncSession = Depends(get_db),
+):
     offer = StageOffer(**body.model_dump())
     db.add(offer)
     await db.commit()
@@ -37,6 +42,7 @@ async def create_stage(body: StageOfferCreate, db: AsyncSession = Depends(get_db
 async def apply_to_stage(
     offer_id: str,
     body: ApplyRequest,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     result = await db.execute(select(StageOffer).where(StageOffer.id == offer_id))
@@ -45,14 +51,14 @@ async def apply_to_stage(
 
     existing = await db.execute(
         select(StageApplication).where(
-            StageApplication.user_id == body.user_id,
+            StageApplication.user_id == current_user.id,
             StageApplication.offer_id == offer_id,
         )
     )
     if existing.scalar_one_or_none():
         raise HTTPException(status_code=400, detail="Candidature déjà envoyée")
 
-    application = StageApplication(user_id=body.user_id, offer_id=offer_id, message=body.message)
+    application = StageApplication(user_id=current_user.id, offer_id=offer_id, message=body.message)
     db.add(application)
     await db.commit()
     await db.refresh(application)
@@ -62,13 +68,13 @@ async def apply_to_stage(
 @router.get("/{offer_id}/apply", response_model=list[ApplicationOut])
 async def get_applications(
     offer_id: str,
-    user_id: str = Query(...),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     result = await db.execute(
         select(StageApplication).where(
             StageApplication.offer_id == offer_id,
-            StageApplication.user_id == user_id,
+            StageApplication.user_id == current_user.id,
         )
     )
     return result.scalars().all()
