@@ -280,6 +280,21 @@ textarea:focus {
   scrollbar-width: none;
 }
 
+@keyframes demoMessageIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.demo-chat-message {
+  animation: demoMessageIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .demo-chat-message {
+    animation: none;
+  }
+}
+
 @keyframes announcement-scroll {
   from { transform: translateX(0); }
   to { transform: translateX(-50%); }

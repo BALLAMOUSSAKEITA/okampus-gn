@@ -12,6 +12,10 @@ export interface User {
   email: string;
   name: string;
   role: UserRole;
+  city?: string;
+  bacOption?: string;
+  university?: string;
+  field?: string;
   isAdvisor?: boolean;
   advisorProfile?: AdvisorProfile | null;
   cvProfile?: CvProfile | null;
@@ -95,6 +99,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             email: data.email,
             name: data.name,
             role: data.role,
+            city: data.city ?? undefined,
+            bacOption: data.bac_option ?? undefined,
+            university: data.university ?? undefined,
+            field: data.field ?? undefined,
             isAdvisor: data.is_advisor,
             advisorProfile: data.advisor_profile,
             cvProfile: data.cv_profile,
@@ -131,6 +139,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           email: data.email,
           name: data.name,
           role: data.role,
+          city: data.city ?? undefined,
+          bacOption: data.bac_option ?? undefined,
+          university: data.university ?? undefined,
+          field: data.field ?? undefined,
           isAdvisor: data.is_advisor,
           advisorProfile: data.advisor_profile,
           cvProfile: data.cv_profile,

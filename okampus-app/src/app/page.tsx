@@ -3,6 +3,7 @@ import Link from "next/link";
 import Logo from "@/components/Logo";
 import SubjectIcon from "@/components/SubjectIcon";
 import UserAvatar from "@/components/UserAvatar";
+import OrientationDemo from "@/components/OrientationDemo";
 import type { AvatarGender } from "@/lib/avatars";
 
 const stats = [
@@ -156,6 +157,8 @@ export default function Home() {
           ))}
         </div>
       </section>
+
+      <OrientationDemo />
 
       {/* Catalogue */}
       <section className="bg-white py-16 sm:py-20 px-4 sm:px-6">

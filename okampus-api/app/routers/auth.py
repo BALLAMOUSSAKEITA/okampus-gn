@@ -25,6 +25,10 @@ async def register(body: RegisterRequest, db: AsyncSession = Depends(get_db)):
             email=body.email,
             password=hash_password(body.password),
             role=body.role,
+            city=body.city,
+            bac_option=body.bac_option,
+            university=body.university,
+            field=body.field,
         )
         db.add(user)
         await db.commit()
@@ -39,6 +43,10 @@ async def register(body: RegisterRequest, db: AsyncSession = Depends(get_db)):
         email=user.email,
         name=user.name,
         role=user.role,
+        city=user.city,
+        bac_option=user.bac_option,
+        university=user.university,
+        field=user.field,
         is_advisor=False,
     )
 
@@ -60,6 +68,10 @@ async def login(body: LoginRequest, db: AsyncSession = Depends(get_db)):
             email=user.email,
             name=user.name,
             role=user.role,
+            city=user.city,
+            bac_option=user.bac_option,
+            university=user.university,
+            field=user.field,
             is_advisor=False,
         ),
     )

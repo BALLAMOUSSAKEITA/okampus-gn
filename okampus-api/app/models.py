@@ -24,6 +24,10 @@ class User(Base):
     password: Mapped[str] = mapped_column("password", String, nullable=False)
     name: Mapped[str] = mapped_column("name", String, nullable=False)
     role: Mapped[str] = mapped_column("role", String, nullable=False)
+    city: Mapped[Optional[str]] = mapped_column("city", String, nullable=True)
+    bac_option: Mapped[Optional[str]] = mapped_column("bacOption", String, nullable=True)
+    university: Mapped[Optional[str]] = mapped_column("university", String, nullable=True)
+    field: Mapped[Optional[str]] = mapped_column("field", String, nullable=True)
     created_at: Mapped[datetime] = mapped_column("createdAt", DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column("updatedAt", DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 

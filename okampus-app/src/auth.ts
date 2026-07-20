@@ -3,6 +3,8 @@ import Credentials from "next-auth/providers/credentials"
 
 const API_URL = process.env.API_URL ?? "http://localhost:8000"
 
+const PUBLIC_PATHS = ["/", "/inscription"]
+
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
     Credentials({
@@ -41,6 +43,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }),
   ],
   callbacks: {
+    authorized({ auth, request: { nextUrl } }) {
+      const { pathname } = nextUrl
+
+      if (pathname.startsWith("/api/auth")) return true
+      if (pathname.startsWith("/api/")) return true
+      if (PUBLIC_PATHS.includes(pathname)) return true
+
+      return !!auth?.user
+    },
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id

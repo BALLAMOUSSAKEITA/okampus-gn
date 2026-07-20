@@ -1,7 +1,14 @@
 from datetime import datetime
 from typing import Any, Optional
 
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, field_validator, model_validator
+
+
+BAC_OPTIONS = (
+    "Sciences Mathématiques",
+    "Sciences Expérimentales",
+    "Sciences Sociales",
+)
 
 
 # ── Auth ──────────────────────────────────────────────────────────────────────
@@ -11,6 +18,39 @@ class RegisterRequest(BaseModel):
     email: EmailStr
     password: str
     role: str  # "bachelier" | "etudiant"
+    city: Optional[str] = None
+    bac_option: Optional[str] = None
+    university: Optional[str] = None
+    field: Optional[str] = None
+
+    @field_validator("name", "password")
+    @classmethod
+    def not_empty(cls, value: str) -> str:
+        value = value.strip()
+        if not value:
+            raise ValueError("Champ requis")
+        return value
+
+    @model_validator(mode="after")
+    def validate_role_fields(self):
+        if self.role == "bachelier":
+            if not self.city or not self.city.strip():
+                raise ValueError("La ville est requise pour un nouveau bachelier")
+            if self.bac_option not in BAC_OPTIONS:
+                raise ValueError("Option du bac invalide")
+            self.city = self.city.strip()
+            self.university = None
+            self.field = None
+        elif self.role == "etudiant":
+            if not self.university or not self.university.strip():
+                raise ValueError("L'universite est requise pour un etudiant")
+            if not self.field or not self.field.strip():
+                raise ValueError("La filiere est requise pour un etudiant")
+            self.university = self.university.strip()
+            self.field = self.field.strip()
+            self.city = None
+            self.bac_option = None
+        return self
 
 
 class LoginRequest(BaseModel):
@@ -60,6 +100,10 @@ class UserOut(BaseModel):
     email: str
     name: str
     role: str
+    city: Optional[str] = None
+    bac_option: Optional[str] = None
+    university: Optional[str] = None
+    field: Optional[str] = None
     is_advisor: bool = False
     advisor_profile: Optional[AdvisorProfileOut] = None
     cv_profile: Optional[CvProfileOut] = None

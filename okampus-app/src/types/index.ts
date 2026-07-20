@@ -5,6 +5,10 @@ export interface User {
   email: string;
   name: string;
   role: UserRole;
+  city?: string;
+  bacOption?: string;
+  university?: string;
+  field?: string;
   isAdvisor?: boolean;
   advisorProfile?: AdvisorProfile;
   cvProfile?: CvProfile;
