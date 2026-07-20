@@ -4,6 +4,7 @@ interface LogoProps {
   size?: "sm" | "md" | "lg" | "xl";
   showText?: boolean;
   className?: string;
+  inverted?: boolean;
 }
 
 const sizes = {
@@ -13,7 +14,7 @@ const sizes = {
   xl: { icon: 56, text: "text-3xl" },
 };
 
-export default function Logo({ size = "md", showText = true, className = "" }: LogoProps) {
+export default function Logo({ size = "md", showText = true, className = "", inverted = false }: LogoProps) {
   const s = sizes[size];
 
   return (
@@ -27,12 +28,12 @@ export default function Logo({ size = "md", showText = true, className = "" }: L
         >
           <defs>
             <linearGradient id="logo-bg" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stopColor="#c41e3a" />
-              <stop offset="100%" stopColor="#9e1830" />
+              <stop offset="0%" stopColor="#14b887" />
+              <stop offset="100%" stopColor="#121117" />
             </linearGradient>
             <linearGradient id="logo-accent" x1="12" y1="8" x2="36" y2="40" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stopColor="#f4c430" />
-              <stop offset="100%" stopColor="#f0b800" />
+              <stop offset="0%" stopColor="#ffdf3d" />
+              <stop offset="100%" stopColor="#99c5ff" />
             </linearGradient>
           </defs>
 
@@ -58,14 +59,14 @@ export default function Logo({ size = "md", showText = true, className = "" }: L
           />
           <circle cx="38" cy="29.5" r="1.8" fill="#f4c430" />
 
-          <circle cx="20" cy="41" r="1.5" fill="#c41e3a" opacity="0.7" />
-          <circle cx="24" cy="41" r="1.5" fill="#f4c430" opacity="0.7" />
-          <circle cx="28" cy="41" r="1.5" fill="#008751" opacity="0.7" />
+          <circle cx="20" cy="41" r="1.5" fill="#14b887" opacity="0.7" />
+          <circle cx="24" cy="41" r="1.5" fill="#ffdf3d" opacity="0.7" />
+          <circle cx="28" cy="41" r="1.5" fill="#99c5ff" opacity="0.7" />
         </svg>
       </div>
 
       {showText && (
-        <span className={`${s.text} font-bold tracking-tight text-gradient-gn`}>
+        <span className={`${s.text} font-bold tracking-tight ${inverted ? "text-[#121117]" : "text-[#121117]"}`}>
           O&apos;Kampus
         </span>
       )}

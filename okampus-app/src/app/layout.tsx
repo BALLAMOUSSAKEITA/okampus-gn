@@ -1,23 +1,30 @@
 import type { Metadata } from "next";
-import { Outfit } from "next/font/google";
+import { Figtree, Manrope } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
+import MainWrapper from "@/components/MainWrapper";
 import PWAInstallPrompt from "@/components/PWAInstallPrompt";
 import { AuthProvider } from "@/context/AuthContext";
 import { SessionProvider } from "next-auth/react";
 
-const outfit = Outfit({
-  variable: "--font-outfit",
+const manrope = Manrope({
+  variable: "--font-manrope",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800"],
+  weight: ["600", "700", "800"],
+});
+
+const figtree = Figtree({
+  variable: "--font-figtree",
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
 });
 
 export const metadata: Metadata = {
-  title: "O'Kampus - La plateforme de l'etudiant guineen",
+  title: "O'Kampus - La plateforme etudiante",
   description:
-    "O'Kampus accompagne chaque etudiant guineen : orientation IA, mentorat, forum, CV, stages, bourses et insertion professionnelle.",
+    "O'Kampus t'accompagne : orientation IA, mentorat, forum, CV, stages, bourses et insertion professionnelle.",
   manifest: "/manifest.json",
-  themeColor: "#c41e3a",
+  themeColor: "#14b887",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
@@ -42,11 +49,11 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
       </head>
-      <body className={`${outfit.variable} antialiased`}>
+      <body className={`${manrope.variable} ${figtree.variable} antialiased`}>
         <SessionProvider>
           <AuthProvider>
             <Navbar />
-            <main className="pt-[72px] min-h-screen">{children}</main>
+            <MainWrapper>{children}</MainWrapper>
             <PWAInstallPrompt />
           </AuthProvider>
         </SessionProvider>

@@ -1,11 +1,13 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { useAuth } from "@/context/AuthContext";
 import type { CvProfile } from "@/types";
+import PageShell from "@/components/ui/PageShell";
+import PageHeader from "@/components/ui/PageHeader";
 
 function emptyCvProfile(): CvProfile {
   return {
@@ -32,11 +34,21 @@ export default function ProfilPage() {
     description: "",
     meetLink: "",
   });
+  const [cvForm, setCvForm] = useState<CvProfile>(emptyCvProfile);
+  const [cvSaved, setCvSaved] = useState(false);
+
+  useEffect(() => {
+    if (user?.cvProfile) {
+      setCvForm(user.cvProfile);
+    } else if (user) {
+      setCvForm(emptyCvProfile());
+    }
+  }, [user]);
 
   if (!isLoaded) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <div className="animate-pulse text-slate-400 text-lg font-medium">Chargement...</div>
+      <div className="min-h-screen flex items-center justify-center bg-[#f4f4f8]">
+        <div className="animate-pulse text-[#6a697c] text-lg font-medium">Chargement...</div>
       </div>
     );
   }
@@ -45,10 +57,6 @@ export default function ProfilPage() {
     router.push("/inscription");
     return null;
   }
-
-  const initialCv = useMemo(() => user.cvProfile ?? emptyCvProfile(), [user]);
-  const [cvForm, setCvForm] = useState<CvProfile>(initialCv);
-  const [cvSaved, setCvSaved] = useState(false);
 
   const handleBecomeAdvisor = (e: React.FormEvent) => {
     e.preventDefault();
@@ -248,28 +256,31 @@ export default function ProfilPage() {
   };
 
   const inputClass =
-    "w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 focus:border-[#c41e3a] focus:ring-2 focus:ring-red-100 outline-none transition-all";
+    "w-full px-4 py-2.5 rounded-lg border border-[#dcdce5] bg-white focus:border-[#121117] focus:ring-2 focus:ring-[#121117]/20 outline-none transition-all";
   const inputSmClass =
-    "w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50/50 focus:border-[#c41e3a] focus:ring-2 focus:ring-red-100 outline-none text-sm transition-all";
+    "w-full px-3 py-2 rounded-lg border border-[#dcdce5] bg-white focus:border-[#121117] focus:ring-2 focus:ring-[#121117]/20 outline-none text-sm transition-all";
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-red-50/30">
-      <div className="max-w-2xl mx-auto px-4 py-14">
-        <h1 className="text-3xl font-bold text-slate-900 mb-10 tracking-tight">Mon profil</h1>
+    <>
+    <PageShell narrow>
+      <PageHeader
+        title="Mon profil"
+        description="Gere ton compte, ton statut conseiller et les infos de ton CV"
+      />
 
         {/* Profile Card */}
-        <div className="card bg-white rounded-2xl shadow-sm border border-slate-200/80 p-8 mb-8">
+        <div className="card border border-[#dcdce5] p-8 mb-8">
           <div className="flex items-center gap-5 mb-8">
-            <div className="w-18 h-18 min-w-[4.5rem] min-h-[4.5rem] rounded-2xl bg-gradient-to-br from-[#c41e3a] to-[#008751] flex items-center justify-center text-2xl text-white font-bold shadow-lg shadow-red-200/50">
+            <div className="w-18 h-18 min-w-[4.5rem] min-h-[4.5rem] rounded-lg bg-[#121117] flex items-center justify-center text-2xl text-white font-bold">
               {user.name.charAt(0)}
             </div>
             <div>
-              <h2 className="text-xl font-bold text-slate-900">{user.name}</h2>
-              <p className="text-slate-500 mt-0.5">{user.email}</p>
+              <h2 className="text-xl font-bold text-[#121117]">{user.name}</h2>
+              <p className="text-[#4d4c5c] mt-0.5">{user.email}</p>
               <span
                 className={`inline-block mt-2 px-3 py-1 rounded-lg text-xs font-semibold ${
                   user.role === "bachelier"
-                    ? "bg-red-50 text-[#9e1830]"
+                    ? "bg-[#f4f4f8] text-[#4d4c5c]"
                     : "bg-emerald-50 text-emerald-700"
                 }`}
               >
@@ -279,16 +290,16 @@ export default function ProfilPage() {
           </div>
 
           {user.role === "etudiant" && (
-            <div className="border-t border-slate-100 pt-7">
-              <h3 className="font-semibold text-slate-800 mb-4 text-sm uppercase tracking-wide">Statut conseiller</h3>
+            <div className="border-t border-[#dcdce5] pt-7">
+              <h3 className="font-semibold text-[#121117] mb-4 text-sm uppercase tracking-wide">Statut conseiller</h3>
               {user.isAdvisor && user.advisorProfile ? (
-                <div className="bg-emerald-50/80 rounded-2xl p-5 mb-4 border border-emerald-100">
+                <div className="bg-emerald-50/80 rounded-lg p-5 mb-4 border border-emerald-100">
                   <p className="text-emerald-700 font-semibold mb-2">Conseiller actif</p>
-                  <p className="text-sm text-slate-700">
+                  <p className="text-sm text-[#4d4c5c]">
                     <strong>{user.advisorProfile.field}</strong> • {user.advisorProfile.university} • {user.advisorProfile.year}
                   </p>
                   {user.advisorProfile.description && (
-                    <p className="text-sm text-slate-500 mt-2 italic">&quot;{user.advisorProfile.description}&quot;</p>
+                    <p className="text-sm text-[#4d4c5c] mt-2 italic">&quot;{user.advisorProfile.description}&quot;</p>
                   )}
                   <button
                     onClick={handleStopAdvisor}
@@ -299,13 +310,13 @@ export default function ProfilPage() {
                 </div>
               ) : (
                 <>
-                  <p className="text-slate-500 text-sm mb-5 leading-relaxed">
+                  <p className="text-[#4d4c5c] text-sm mb-5 leading-relaxed">
                     En tant qu&apos;etudiant, tu peux aider les bacheliers en devenant conseiller.
                     Tu pourras discuter avec eux et prendre des rendez-vous pour des appels Meet.
                   </p>
                   <button
                     onClick={() => setShowAdvisorForm(true)}
-                    className="btn-primary px-5 py-2.5 bg-gradient-to-r from-[#c41e3a] to-[#9e1830] text-white rounded-xl font-semibold hover:from-[#9e1830] hover:to-[#9e1830] transition-all shadow-sm shadow-red-200/50"
+                    className="btn-primary"
                   >
                     Devenir conseiller
                   </button>
@@ -314,13 +325,13 @@ export default function ProfilPage() {
             </div>
           )}
 
-          <div className="border-t border-slate-100 pt-6 mt-7">
+          <div className="border-t border-[#dcdce5] pt-6 mt-7">
             <button
               onClick={async () => {
                 await signOut({ redirect: false });
                 router.push("/");
               }}
-              className="text-slate-400 hover:text-red-500 text-sm font-medium transition-colors"
+              className="text-[#6a697c] hover:text-red-500 text-sm font-medium transition-colors"
             >
               Se deconnecter
             </button>
@@ -328,17 +339,17 @@ export default function ProfilPage() {
         </div>
 
         {/* Section CV */}
-        <div className="card bg-white rounded-2xl shadow-sm border border-slate-200/80 p-8 mb-8">
-          <div className="flex items-start justify-between gap-4">
+        <div className="card border border-[#dcdce5] p-8 mb-8">
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-8">
             <div>
-              <h3 className="text-lg font-bold text-slate-900">Mon CV</h3>
-              <p className="text-sm text-slate-500 mt-1">
+              <h3 className="text-lg font-bold text-[#121117]">Mon CV</h3>
+              <p className="text-sm text-[#4d4c5c] mt-1">
                 Renseigne tes infos, puis genere automatiquement ton CV.
               </p>
             </div>
             <Link
               href="/cv"
-              className="btn-primary px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#c41e3a] to-[#008751] text-white font-semibold hover:from-[#9e1830] hover:to-[#008751] transition-all shadow-sm shadow-red-200/50 whitespace-nowrap"
+              className="btn-primary"
             >
               Generer (OpenAI)
             </Link>
@@ -346,7 +357,7 @@ export default function ProfilPage() {
 
           <div className="grid sm:grid-cols-2 gap-5 mt-8">
             <div>
-              <label className="block text-sm font-medium text-slate-600 mb-1.5">
+              <label className="block text-sm font-medium text-[#4d4c5c] mb-1.5">
                 Telephone
               </label>
               <input
@@ -359,7 +370,7 @@ export default function ProfilPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-600 mb-1.5">
+              <label className="block text-sm font-medium text-[#4d4c5c] mb-1.5">
                 Localisation
               </label>
               <input
@@ -367,14 +378,14 @@ export default function ProfilPage() {
                 onChange={(e) =>
                   setCvForm((p) => ({ ...p, location: e.target.value }))
                 }
-                placeholder="Conakry, Guinee"
+                placeholder="Conakry"
                 className={inputClass}
               />
             </div>
           </div>
 
           <div className="mt-5">
-            <label className="block text-sm font-medium text-slate-600 mb-1.5">
+            <label className="block text-sm font-medium text-[#4d4c5c] mb-1.5">
               Titre (headline)
             </label>
             <input
@@ -388,7 +399,7 @@ export default function ProfilPage() {
           </div>
 
           <div className="mt-5">
-            <label className="block text-sm font-medium text-slate-600 mb-1.5">
+            <label className="block text-sm font-medium text-[#4d4c5c] mb-1.5">
               A propos
             </label>
             <textarea
@@ -402,7 +413,7 @@ export default function ProfilPage() {
 
           <div className="grid sm:grid-cols-2 gap-5 mt-5">
             <div>
-              <label className="block text-sm font-medium text-slate-600 mb-1.5">
+              <label className="block text-sm font-medium text-[#4d4c5c] mb-1.5">
                 Competences (separees par des virgules)
               </label>
               <input
@@ -413,7 +424,7 @@ export default function ProfilPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-600 mb-1.5">
+              <label className="block text-sm font-medium text-[#4d4c5c] mb-1.5">
                 Langues (separees par des virgules)
               </label>
               <input
@@ -429,7 +440,7 @@ export default function ProfilPage() {
             <button
               type="button"
               onClick={saveCv}
-              className="btn-primary px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#c41e3a] to-[#9e1830] text-white font-semibold hover:from-[#9e1830] hover:to-[#9e1830] transition-all shadow-sm shadow-red-200/50"
+              className="btn-primary"
             >
               Enregistrer mes infos CV
             </button>
@@ -438,19 +449,19 @@ export default function ProfilPage() {
                 Enregistre
               </span>
             )}
-            <span className="text-xs text-slate-400">
+            <span className="text-xs text-[#6a697c]">
               (Ajoute aussi formation, experiences et projets ci-dessous.)
             </span>
           </div>
 
           {/* Formation */}
-          <div className="mt-10 border-t border-slate-100 pt-8">
+          <div className="mt-10 border-t border-[#dcdce5] pt-8">
             <div className="flex items-center justify-between gap-3">
-              <h4 className="font-semibold text-slate-800 text-sm uppercase tracking-wide">Formation</h4>
+              <h4 className="font-semibold text-[#121117] text-sm uppercase tracking-wide">Formation</h4>
               <button
                 type="button"
                 onClick={addEducation}
-                className="px-4 py-2 rounded-xl border border-slate-200 text-sm font-medium text-[#c41e3a] hover:bg-red-50 hover:border-red-200 transition-all"
+                className="px-4 py-2 rounded-lg border border-[#dcdce5] text-sm font-medium text-[#121117] hover:bg-[#f4f4f8] hover:border-[#121117]/30 transition-all"
               >
                 + Ajouter
               </button>
@@ -460,12 +471,12 @@ export default function ProfilPage() {
               {cvForm.education.map((ed, idx) => (
                 <div
                   key={idx}
-                  className="rounded-2xl border border-slate-200/80 p-5 bg-slate-50/30 hover:border-slate-300 transition-colors"
+                  className="card p-5 bg-white hover:border-[#dcdce5] transition-colors"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="grid sm:grid-cols-2 gap-4 flex-1">
                       <div>
-                        <label className="block text-xs font-medium text-slate-500 mb-1.5">
+                        <label className="block text-xs font-medium text-[#4d4c5c] mb-1.5">
                           Diplome / Formation
                         </label>
                         <input
@@ -476,7 +487,7 @@ export default function ProfilPage() {
                         />
                       </div>
                       <div>
-                        <label className="block text-xs font-medium text-slate-500 mb-1.5">
+                        <label className="block text-xs font-medium text-[#4d4c5c] mb-1.5">
                           Etablissement
                         </label>
                         <input
@@ -487,7 +498,7 @@ export default function ProfilPage() {
                         />
                       </div>
                       <div>
-                        <label className="block text-xs font-medium text-slate-500 mb-1.5">
+                        <label className="block text-xs font-medium text-[#4d4c5c] mb-1.5">
                           Debut (annee)
                         </label>
                         <input
@@ -498,7 +509,7 @@ export default function ProfilPage() {
                         />
                       </div>
                       <div>
-                        <label className="block text-xs font-medium text-slate-500 mb-1.5">
+                        <label className="block text-xs font-medium text-[#4d4c5c] mb-1.5">
                           Fin (annee)
                         </label>
                         <input
@@ -512,13 +523,13 @@ export default function ProfilPage() {
                     <button
                       type="button"
                       onClick={() => removeEducation(idx)}
-                      className="text-xs text-slate-400 hover:text-red-500 font-medium transition-colors"
+                      className="text-xs text-[#6a697c] hover:text-red-500 font-medium transition-colors"
                     >
                       Supprimer
                     </button>
                   </div>
                   <div className="mt-4">
-                    <label className="block text-xs font-medium text-slate-500 mb-1.5">
+                    <label className="block text-xs font-medium text-[#4d4c5c] mb-1.5">
                       Details (optionnel)
                     </label>
                     <input
@@ -532,7 +543,7 @@ export default function ProfilPage() {
               ))}
 
               {cvForm.education.length === 0 && (
-                <p className="text-sm text-slate-400 py-2">
+                <p className="text-sm text-[#6a697c] py-2">
                   Ajoute ta formation (lycee, universite, certificats...).
                 </p>
               )}
@@ -540,13 +551,13 @@ export default function ProfilPage() {
           </div>
 
           {/* Experiences */}
-          <div className="mt-10 border-t border-slate-100 pt-8">
+          <div className="mt-10 border-t border-[#dcdce5] pt-8">
             <div className="flex items-center justify-between gap-3">
-              <h4 className="font-semibold text-slate-800 text-sm uppercase tracking-wide">Experiences</h4>
+              <h4 className="font-semibold text-[#121117] text-sm uppercase tracking-wide">Experiences</h4>
               <button
                 type="button"
                 onClick={addExperience}
-                className="px-4 py-2 rounded-xl border border-slate-200 text-sm font-medium text-[#c41e3a] hover:bg-red-50 hover:border-red-200 transition-all"
+                className="px-4 py-2 rounded-lg border border-[#dcdce5] text-sm font-medium text-[#121117] hover:bg-[#f4f4f8] hover:border-[#121117]/30 transition-all"
               >
                 + Ajouter
               </button>
@@ -556,12 +567,12 @@ export default function ProfilPage() {
               {cvForm.experiences.map((exp, idx) => (
                 <div
                   key={idx}
-                  className="rounded-2xl border border-slate-200/80 p-5 bg-slate-50/30 hover:border-slate-300 transition-colors"
+                  className="card p-5 bg-white hover:border-[#dcdce5] transition-colors"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="grid sm:grid-cols-2 gap-4 flex-1">
                       <div>
-                        <label className="block text-xs font-medium text-slate-500 mb-1.5">
+                        <label className="block text-xs font-medium text-[#4d4c5c] mb-1.5">
                           Poste / Role
                         </label>
                         <input
@@ -572,7 +583,7 @@ export default function ProfilPage() {
                         />
                       </div>
                       <div>
-                        <label className="block text-xs font-medium text-slate-500 mb-1.5">
+                        <label className="block text-xs font-medium text-[#4d4c5c] mb-1.5">
                           Organisation / Entreprise
                         </label>
                         <input
@@ -583,7 +594,7 @@ export default function ProfilPage() {
                         />
                       </div>
                       <div>
-                        <label className="block text-xs font-medium text-slate-500 mb-1.5">
+                        <label className="block text-xs font-medium text-[#4d4c5c] mb-1.5">
                           Debut (YYYY-MM)
                         </label>
                         <input
@@ -594,7 +605,7 @@ export default function ProfilPage() {
                         />
                       </div>
                       <div>
-                        <label className="block text-xs font-medium text-slate-500 mb-1.5">
+                        <label className="block text-xs font-medium text-[#4d4c5c] mb-1.5">
                           Fin (YYYY-MM ou Present)
                         </label>
                         <input
@@ -605,13 +616,13 @@ export default function ProfilPage() {
                         />
                       </div>
                       <div className="sm:col-span-2">
-                        <label className="block text-xs font-medium text-slate-500 mb-1.5">
+                        <label className="block text-xs font-medium text-[#4d4c5c] mb-1.5">
                           Lieu (optionnel)
                         </label>
                         <input
                           value={exp.location || ""}
                           onChange={(e) => updateExperience(idx, { location: e.target.value })}
-                          placeholder="Conakry, Guinee"
+                          placeholder="Conakry"
                           className={inputSmClass}
                         />
                       </div>
@@ -619,7 +630,7 @@ export default function ProfilPage() {
                     <button
                       type="button"
                       onClick={() => removeExperience(idx)}
-                      className="text-xs text-slate-400 hover:text-red-500 font-medium transition-colors"
+                      className="text-xs text-[#6a697c] hover:text-red-500 font-medium transition-colors"
                     >
                       Supprimer
                     </button>
@@ -627,13 +638,13 @@ export default function ProfilPage() {
 
                   <div className="mt-5">
                     <div className="flex items-center justify-between gap-3">
-                      <label className="block text-xs font-medium text-slate-500">
+                      <label className="block text-xs font-medium text-[#4d4c5c]">
                         Realisations (puces)
                       </label>
                       <button
                         type="button"
                         onClick={() => addExperienceBullet(idx)}
-                        className="text-xs font-semibold text-[#c41e3a] hover:text-[#c41e3a] transition-colors"
+                        className="text-xs font-semibold text-[#121117] hover:text-[#121117] transition-colors"
                       >
                         + Ajouter une puce
                       </button>
@@ -652,7 +663,7 @@ export default function ProfilPage() {
                           <button
                             type="button"
                             onClick={() => removeExperienceBullet(idx, bi)}
-                            className="text-xs text-slate-400 hover:text-red-500 font-medium transition-colors"
+                            className="text-xs text-[#6a697c] hover:text-red-500 font-medium transition-colors"
                           >
                             Retirer
                           </button>
@@ -664,7 +675,7 @@ export default function ProfilPage() {
               ))}
 
               {cvForm.experiences.length === 0 && (
-                <p className="text-sm text-slate-400 py-2">
+                <p className="text-sm text-[#6a697c] py-2">
                   Ajoute tes stages, benevolat, projets en equipe, jobs etudiants...
                 </p>
               )}
@@ -672,13 +683,13 @@ export default function ProfilPage() {
           </div>
 
           {/* Projets */}
-          <div className="mt-10 border-t border-slate-100 pt-8">
+          <div className="mt-10 border-t border-[#dcdce5] pt-8">
             <div className="flex items-center justify-between gap-3">
-              <h4 className="font-semibold text-slate-800 text-sm uppercase tracking-wide">Projets</h4>
+              <h4 className="font-semibold text-[#121117] text-sm uppercase tracking-wide">Projets</h4>
               <button
                 type="button"
                 onClick={addProject}
-                className="px-4 py-2 rounded-xl border border-slate-200 text-sm font-medium text-[#c41e3a] hover:bg-red-50 hover:border-red-200 transition-all"
+                className="px-4 py-2 rounded-lg border border-[#dcdce5] text-sm font-medium text-[#121117] hover:bg-[#f4f4f8] hover:border-[#121117]/30 transition-all"
               >
                 + Ajouter
               </button>
@@ -688,12 +699,12 @@ export default function ProfilPage() {
               {cvForm.projects.map((pr, idx) => (
                 <div
                   key={idx}
-                  className="rounded-2xl border border-slate-200/80 p-5 bg-slate-50/30 hover:border-slate-300 transition-colors"
+                  className="card p-5 bg-white hover:border-[#dcdce5] transition-colors"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="grid sm:grid-cols-2 gap-4 flex-1">
                       <div>
-                        <label className="block text-xs font-medium text-slate-500 mb-1.5">
+                        <label className="block text-xs font-medium text-[#4d4c5c] mb-1.5">
                           Nom du projet
                         </label>
                         <input
@@ -704,7 +715,7 @@ export default function ProfilPage() {
                         />
                       </div>
                       <div>
-                        <label className="block text-xs font-medium text-slate-500 mb-1.5">
+                        <label className="block text-xs font-medium text-[#4d4c5c] mb-1.5">
                           Lien (optionnel)
                         </label>
                         <input
@@ -715,7 +726,7 @@ export default function ProfilPage() {
                         />
                       </div>
                       <div className="sm:col-span-2">
-                        <label className="block text-xs font-medium text-slate-500 mb-1.5">
+                        <label className="block text-xs font-medium text-[#4d4c5c] mb-1.5">
                           Description (optionnel)
                         </label>
                         <input
@@ -731,7 +742,7 @@ export default function ProfilPage() {
                     <button
                       type="button"
                       onClick={() => removeProject(idx)}
-                      className="text-xs text-slate-400 hover:text-red-500 font-medium transition-colors"
+                      className="text-xs text-[#6a697c] hover:text-red-500 font-medium transition-colors"
                     >
                       Supprimer
                     </button>
@@ -739,13 +750,13 @@ export default function ProfilPage() {
 
                   <div className="mt-5">
                     <div className="flex items-center justify-between gap-3">
-                      <label className="block text-xs font-medium text-slate-500">
+                      <label className="block text-xs font-medium text-[#4d4c5c]">
                         Points cles (puces)
                       </label>
                       <button
                         type="button"
                         onClick={() => addProjectBullet(idx)}
-                        className="text-xs font-semibold text-[#c41e3a] hover:text-[#c41e3a] transition-colors"
+                        className="text-xs font-semibold text-[#121117] hover:text-[#121117] transition-colors"
                       >
                         + Ajouter une puce
                       </button>
@@ -762,7 +773,7 @@ export default function ProfilPage() {
                           <button
                             type="button"
                             onClick={() => removeProjectBullet(idx, bi)}
-                            className="text-xs text-slate-400 hover:text-red-500 font-medium transition-colors"
+                            className="text-xs text-[#6a697c] hover:text-red-500 font-medium transition-colors"
                           >
                             Retirer
                           </button>
@@ -774,7 +785,7 @@ export default function ProfilPage() {
               ))}
 
               {cvForm.projects.length === 0 && (
-                <p className="text-sm text-slate-400 py-2">
+                <p className="text-sm text-[#6a697c] py-2">
                   Ajoute tes projets (personnels, scolaires, associatifs...).
                 </p>
               )}
@@ -783,39 +794,42 @@ export default function ProfilPage() {
         </div>
 
         {/* Quick Links */}
-        <div className="flex gap-4">
+          <div className="flex flex-col sm:flex-row sm:flex-wrap gap-4">
           <Link
             href="/assistant"
-            className="flex-1 p-5 bg-white rounded-2xl border border-slate-200/80 hover:border-red-300 hover:shadow-md hover:shadow-red-100/50 transition-all text-center group"
+            className="flex-1 p-5 card hover:border-[#121117]/30 transition-all text-center group min-w-[140px]"
           >
             <span className="text-2xl block mb-2">IA</span>
-            <span className="font-semibold text-slate-700 group-hover:text-[#c41e3a] transition-colors">Assistant IA</span>
+            <span className="font-semibold text-[#4d4c5c] group-hover:text-[#121117] transition-colors">Assistant IA</span>
           </Link>
           <Link
             href="/conseil"
-            className="flex-1 p-5 bg-white rounded-2xl border border-slate-200/80 hover:border-red-300 hover:shadow-md hover:shadow-red-100/50 transition-all text-center group"
+            className="flex-1 p-5 card hover:border-[#121117]/30 transition-all text-center group min-w-[140px]"
           >
             <span className="text-2xl block mb-2">C</span>
-            <span className="font-semibold text-slate-700 group-hover:text-[#c41e3a] transition-colors">Conseillers</span>
+            <span className="font-semibold text-[#4d4c5c] group-hover:text-[#121117] transition-colors">Conseillers</span>
           </Link>
           <Link
             href="/forum"
-            className="flex-1 p-5 bg-white rounded-2xl border border-slate-200/80 hover:border-emerald-300 hover:shadow-md hover:shadow-emerald-100/50 transition-all text-center group"
+            className="flex-1 p-5 card hover:border-[#121117]/30 transition-all text-center group min-w-[140px]"
           >
             <span className="text-2xl block mb-2">F</span>
-            <span className="font-semibold text-slate-700 group-hover:text-emerald-600 transition-colors">Forum</span>
+            <span className="font-semibold text-[#4d4c5c] group-hover:text-emerald-600 transition-colors">Forum</span>
           </Link>
         </div>
-      </div>
+    </PageShell>
 
       {/* Modal Devenir conseiller */}
       {showAdvisorForm && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl shadow-2xl shadow-slate-900/10 max-w-lg w-full p-8 max-h-[90vh] overflow-y-auto">
-            <h3 className="text-xl font-bold text-slate-900 mb-6">Devenir conseiller</h3>
-            <form onSubmit={handleBecomeAdvisor} className="space-y-5">
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-end md:items-center justify-center p-0 md:p-4 z-50">
+          <div className="bg-white rounded-t-2xl md:rounded-lg shadow-2xl shadow-[#121117]/10 max-w-lg w-full max-h-[90vh] overflow-y-auto">
+            <div className="h-1 bg-[#121117] rounded-t-2xl md:rounded-t-lg" />
+            <div className="p-6 md:p-8 border-b border-[#dcdce5]">
+              <h3 className="text-xl font-bold text-[#121117]">Devenir conseiller</h3>
+            </div>
+            <form onSubmit={handleBecomeAdvisor} className="p-6 md:p-8 space-y-5">
               <div>
-                <label className="block text-sm font-medium text-slate-600 mb-1.5">Filiere</label>
+                <label className="block text-sm font-medium text-[#4d4c5c] mb-1.5">Filiere</label>
                 <input
                   type="text"
                   value={advisorForm.field}
@@ -826,7 +840,7 @@ export default function ProfilPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-600 mb-1.5">Universite</label>
+                <label className="block text-sm font-medium text-[#4d4c5c] mb-1.5">Universite</label>
                 <input
                   type="text"
                   value={advisorForm.university}
@@ -837,7 +851,7 @@ export default function ProfilPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-600 mb-1.5">Annee</label>
+                <label className="block text-sm font-medium text-[#4d4c5c] mb-1.5">Annee</label>
                 <input
                   type="text"
                   value={advisorForm.year}
@@ -848,7 +862,7 @@ export default function ProfilPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-600 mb-1.5">
+                <label className="block text-sm font-medium text-[#4d4c5c] mb-1.5">
                   Petite description de toi (visible par les bacheliers)
                 </label>
                 <textarea
@@ -860,7 +874,7 @@ export default function ProfilPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-600 mb-1.5">
+                <label className="block text-sm font-medium text-[#4d4c5c] mb-1.5">
                   Lien Meet pour les rendez-vous (optionnel)
                 </label>
                 <input
@@ -875,13 +889,13 @@ export default function ProfilPage() {
                 <button
                   type="button"
                   onClick={() => setShowAdvisorForm(false)}
-                  className="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 font-medium transition-colors"
+                  className="btn-secondary flex-1"
                 >
                   Annuler
                 </button>
                 <button
                   type="submit"
-                  className="btn-primary flex-1 px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#c41e3a] to-[#9e1830] text-white font-semibold hover:from-[#9e1830] hover:to-[#9e1830] transition-all shadow-sm shadow-red-200/50"
+                  className="btn-primary"
                 >
                   Devenir conseiller
                 </button>
@@ -890,6 +904,6 @@ export default function ProfilPage() {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }

@@ -5,6 +5,11 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import type { UserRole } from "@/types";
+import PageShell from "@/components/ui/PageShell";
+import PageHeader from "@/components/ui/PageHeader";
+
+const inputClass =
+  "w-full px-4 py-3 rounded-lg border border-[#dcdce5] bg-white focus:border-[#121117] focus:ring-2 focus:ring-[#121117]/20 outline-none transition-all placeholder:text-[#6a697c]";
 
 export default function InscriptionPage() {
   const router = useRouter();
@@ -79,36 +84,38 @@ export default function InscriptionPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-amber-50 to-white flex items-center justify-center py-12 px-4">
+    <PageShell narrow className="flex items-center justify-center">
       <div className="max-w-md w-full">
-        <div className="text-center mb-8">
-          <Link href="/" className="text-2xl font-bold bg-gradient-to-r from-[#c41e3a] via-[#f4c430] to-[#008751] bg-clip-text text-transparent">
+        <div className="text-center mb-6">
+          <Link href="/" className="text-2xl font-bold text-[#121117]">
             O&apos;Kampus
           </Link>
-          <h1 className="text-2xl font-bold text-gray-900 mt-4">
-            {mode === "register" ? "Créer un compte" : "Connexion"}
-          </h1>
-          <p className="text-gray-600 mt-1">
-            {mode === "register"
-              ? "Rejoins la communauté des étudiants guinéens"
-              : "Accède à ton espace personnel"}
-          </p>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-xl border border-amber-100 p-8">
+        <PageHeader
+          title={mode === "register" ? "Creer un compte" : "Connexion"}
+          description={
+            mode === "register"
+              ? "Rejoins la communaute O'Kampus"
+              : "Accede a ton espace personnel"
+          }
+          centered
+        />
+
+        <div className="card p-6 sm:p-8">
           {mode === "register" && (
             <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-[#4d4c5c] mb-2">
                 Je suis
               </label>
               <div className="grid grid-cols-2 gap-3">
                 <button
                   type="button"
                   onClick={() => setRole("bachelier")}
-                  className={`p-4 rounded-xl border-2 font-medium transition-all ${
+                  className={`p-4 rounded-lg border-2 font-medium transition-all ${
                     role === "bachelier"
-                      ? "border-[#c41e3a] bg-red-50 text-[#c41e3a]"
-                      : "border-amber-200 text-gray-600 hover:border-amber-300"
+                      ? "border-[#121117] bg-[#f4f4f8] text-[#121117]"
+                      : "border-[#dcdce5] text-[#4d4c5c] hover:border-[#121117]/30"
                   }`}
                 >
                   🎓 Nouveau bachelier
@@ -116,16 +123,16 @@ export default function InscriptionPage() {
                 <button
                   type="button"
                   onClick={() => setRole("etudiant")}
-                  className={`p-4 rounded-xl border-2 font-medium transition-all ${
+                  className={`p-4 rounded-lg border-2 font-medium transition-all ${
                     role === "etudiant"
-                      ? "border-[#008751] bg-emerald-50 text-[#008751]"
-                      : "border-amber-200 text-gray-600 hover:border-amber-300"
+                      ? "border-[#121117] bg-[#f4f4f8] text-[#121117]"
+                      : "border-[#dcdce5] text-[#4d4c5c] hover:border-[#121117]/30"
                   }`}
                 >
                   📚 Étudiant
                 </button>
               </div>
-              <p className="text-xs text-gray-500 mt-2">
+              <p className="text-xs text-[#6a697c] mt-2">
                 {role === "bachelier"
                   ? "Tu viens d'avoir ton bac et tu cherches ton orientation"
                   : "Tu es déjà à l'université et tu peux devenir conseiller"}
@@ -136,7 +143,7 @@ export default function InscriptionPage() {
           <form onSubmit={handleSubmit} className="space-y-4">
             {mode === "register" && (
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-[#4d4c5c] mb-1">
                   Nom complet
                 </label>
                 <input
@@ -144,12 +151,12 @@ export default function InscriptionPage() {
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   placeholder="Aissatou Diallo"
-                  className="w-full px-4 py-3 rounded-xl border border-amber-200 focus:border-[#c41e3a] focus:ring-2 focus:ring-[#c41e3a]/20 outline-none"
+                  className={inputClass}
                 />
               </div>
             )}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-[#4d4c5c] mb-1">
                 Email
               </label>
               <input
@@ -158,11 +165,11 @@ export default function InscriptionPage() {
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 placeholder="email@exemple.com"
                 required
-                className="w-full px-4 py-3 rounded-xl border border-amber-200 focus:border-[#c41e3a] focus:ring-2 focus:ring-[#c41e3a]/20 outline-none"
+                className={inputClass}
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-[#4d4c5c] mb-1">
                 Mot de passe
               </label>
               <input
@@ -171,7 +178,7 @@ export default function InscriptionPage() {
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                 placeholder="••••••••"
                 required
-                className="w-full px-4 py-3 rounded-xl border border-amber-200 focus:border-[#c41e3a] focus:ring-2 focus:ring-[#c41e3a]/20 outline-none"
+                className={inputClass}
               />
             </div>
 
@@ -180,7 +187,7 @@ export default function InscriptionPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 bg-gradient-to-r from-[#c41e3a] to-[#9e1830] text-white rounded-xl font-semibold hover:shadow-lg transition-all disabled:opacity-50"
+              className="btn-primary w-full"
             >
               {loading
                 ? "Chargement..."
@@ -190,13 +197,13 @@ export default function InscriptionPage() {
             </button>
           </form>
 
-          <p className="text-center text-sm text-gray-600 mt-4">
+          <p className="text-center text-sm text-[#4d4c5c] mt-4">
             {mode === "register" ? (
               <>
                 Déjà un compte ?{" "}
                 <button
                   onClick={() => setMode("login")}
-                  className="text-[#c41e3a] font-medium hover:underline"
+                  className="text-[#121117] font-medium hover:underline"
                 >
                   Se connecter
                 </button>
@@ -206,7 +213,7 @@ export default function InscriptionPage() {
                 Pas encore de compte ?{" "}
                 <button
                   onClick={() => setMode("register")}
-                  className="text-[#c41e3a] font-medium hover:underline"
+                  className="text-[#121117] font-medium hover:underline"
                 >
                   S&apos;inscrire
                 </button>
@@ -215,12 +222,12 @@ export default function InscriptionPage() {
           </p>
         </div>
 
-        <p className="text-center text-sm text-gray-500 mt-6">
-          <Link href="/" className="hover:text-[#c41e3a]">
+        <p className="text-center text-sm text-[#6a697c] mt-6">
+          <Link href="/" className="hover:text-[#121117]">
             ← Retour à l&apos;accueil
           </Link>
         </p>
       </div>
-    </div>
+    </PageShell>
   );
 }

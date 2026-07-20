@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import type { CvProfile } from "@/types";
-
+import PageShell from "@/components/ui/PageShell";
+import PageHeader from "@/components/ui/PageHeader";
 function defaultCv(): CvProfile {
   return {
     phone: "",
@@ -31,8 +32,8 @@ export default function CvPage() {
 
   if (!isLoaded) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <div className="animate-pulse text-slate-400 text-lg font-medium">Chargement...</div>
+      <div className="min-h-screen flex items-center justify-center bg-[#f4f4f8]">
+        <div className="animate-pulse text-[#6a697c] text-lg font-medium">Chargement...</div>
       </div>
     );
   }
@@ -79,57 +80,48 @@ export default function CvPage() {
 
   const renderList = (items: string[]) =>
     items.length ? (
-      <ul className="list-disc list-inside text-sm text-slate-700 space-y-0.5">
+      <ul className="list-disc list-inside text-sm text-[#4d4c5c] space-y-0.5">
         {items.map((i, idx) => (
           <li key={idx}>{i}</li>
         ))}
       </ul>
     ) : (
-      <p className="text-sm text-slate-400 italic">Non renseigne</p>
+      <p className="text-sm text-[#6a697c] italic">Non renseigne</p>
     );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-red-50/30">
-      <div className="max-w-5xl mx-auto px-4 py-14">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-10">
-          <div>
-            <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
-              Generateur de CV
-            </h1>
-            <p className="text-slate-500 mt-2 leading-relaxed">
-              Genere automatiquement ton CV a partir de ton profil, avec OpenAI.
-            </p>
-          </div>
-          <div className="flex gap-3">
-            <Link
-              href="/profil"
-              className="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-white hover:border-slate-300 font-medium transition-all text-sm"
-            >
+    <PageShell narrow>
+      <PageHeader
+        title="Generateur de CV"
+        description="Genere automatiquement ton CV a partir de ton profil, avec OpenAI."
+        action={
+          <div className="flex flex-wrap gap-3">
+            <Link href="/profil" className="btn-secondary text-sm">
               Retour profil
             </Link>
             <button
               onClick={() => window.print()}
-              className="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-white hover:border-slate-300 font-medium transition-all text-sm"
+              className="btn-secondary text-sm"
               type="button"
             >
               Imprimer / PDF
             </button>
           </div>
-        </div>
+        }
+      />
 
         {/* Main Card */}
-        <div className="card bg-white rounded-2xl shadow-sm border border-slate-200/80 p-8">
+        <div className="card border border-[#dcdce5] p-8">
           {/* Generate bar */}
-          <div className="flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between pb-8 border-b border-slate-100">
-            <div className="text-sm text-slate-500">
-              Modele OpenAI configure via <span className="font-mono text-[#c41e3a] bg-red-50 px-1.5 py-0.5 rounded-md text-xs">OPENAI_MODEL</span>{" "}
-              dans <span className="font-mono text-[#c41e3a] bg-red-50 px-1.5 py-0.5 rounded-md text-xs">.env.local</span>.
+          <div className="flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between pb-8 border-b border-[#dcdce5]">
+            <div className="text-sm text-[#4d4c5c]">
+              Modele OpenAI configure via <span className="font-mono text-[#121117] bg-[#f4f4f8] px-1.5 py-0.5 rounded-md text-xs">OPENAI_MODEL</span>{" "}
+              dans <span className="font-mono text-[#121117] bg-[#f4f4f8] px-1.5 py-0.5 rounded-md text-xs">.env.local</span>.
             </div>
             <button
               onClick={generate}
               disabled={isGenerating}
-              className="btn-primary px-6 py-3 rounded-xl bg-gradient-to-r from-[#c41e3a] to-[#008751] text-white font-semibold disabled:opacity-50 hover:from-[#9e1830] hover:to-[#008751] transition-all shadow-md shadow-red-200/50 whitespace-nowrap"
+              className="btn-primary"
               type="button"
             >
               {isGenerating ? (
@@ -144,39 +136,39 @@ export default function CvPage() {
           </div>
 
           {error && (
-            <div className="mt-6 px-4 py-3 rounded-xl bg-red-50 border border-red-100 text-sm text-red-600">
+            <div className="mt-6 px-4 py-3 rounded-lg bg-[#f4f4f8] border border-[#dcdce5] text-sm text-red-600">
               {error}
             </div>
           )}
 
           {/* Apercu style pour impression */}
           <div className="mt-8">
-            <h2 className="font-semibold text-slate-800 text-sm uppercase tracking-wide mb-4">
+            <h2 className="font-semibold text-[#121117] text-sm uppercase tracking-wide mb-4">
               Apercu style (impression)
             </h2>
-            <div className="rounded-2xl border border-slate-200 p-8 bg-white print:border-0 print:shadow-none print:p-0">
+            <div className="card p-8 bg-white print:border-0 print:shadow-none print:p-0">
               {/* CV Header */}
-              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6 pb-6 border-b border-slate-100">
+              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6 pb-6 border-b border-[#dcdce5]">
                 <div>
-                  <h3 className="text-2xl font-bold text-slate-900 tracking-tight">{user.name}</h3>
-                  <p className="text-sm text-[#c41e3a] font-medium mt-1">
+                  <h3 className="text-2xl font-bold text-[#121117] tracking-tight">{user.name}</h3>
+                  <p className="text-sm text-[#121117] font-medium mt-1">
                     {cvProfile.headline || "Titre / poste vise"}
                   </p>
                 </div>
-                <div className="text-sm text-slate-500 space-y-1.5">
+                <div className="text-sm text-[#4d4c5c] space-y-1.5">
                   <p className="flex items-center gap-2">
-                    <span className="w-1 h-1 rounded-full bg-slate-300" />
+                    <span className="w-1 h-1 rounded-full bg-[#dcdce5]" />
                     {user.email}
                   </p>
                   {cvProfile.phone && (
                     <p className="flex items-center gap-2">
-                      <span className="w-1 h-1 rounded-full bg-slate-300" />
+                      <span className="w-1 h-1 rounded-full bg-[#dcdce5]" />
                       {cvProfile.phone}
                     </p>
                   )}
                   {cvProfile.location && (
                     <p className="flex items-center gap-2">
-                      <span className="w-1 h-1 rounded-full bg-slate-300" />
+                      <span className="w-1 h-1 rounded-full bg-[#dcdce5]" />
                       {cvProfile.location}
                     </p>
                   )}
@@ -186,8 +178,8 @@ export default function CvPage() {
               {/* About */}
               {cvProfile.about && (
                 <div className="mb-6">
-                  <h4 className="font-semibold text-slate-800 text-xs uppercase tracking-wider mb-2">A propos</h4>
-                  <p className="text-sm text-slate-600 whitespace-pre-wrap leading-relaxed">
+                  <h4 className="font-semibold text-[#121117] text-xs uppercase tracking-wider mb-2">A propos</h4>
+                  <p className="text-sm text-[#4d4c5c] whitespace-pre-wrap leading-relaxed">
                     {cvProfile.about}
                   </p>
                 </div>
@@ -196,21 +188,21 @@ export default function CvPage() {
               {/* Skills & Languages */}
               <div className="grid sm:grid-cols-2 gap-6 mb-6">
                 <div>
-                  <h4 className="font-semibold text-slate-800 text-xs uppercase tracking-wider mb-2">Competences</h4>
+                  <h4 className="font-semibold text-[#121117] text-xs uppercase tracking-wider mb-2">Competences</h4>
                   {cvProfile.skills.length ? (
                     <div className="flex flex-wrap gap-1.5">
                       {cvProfile.skills.map((s, idx) => (
-                        <span key={idx} className="px-2.5 py-1 rounded-lg bg-red-50 text-[#9e1830] text-xs font-medium">
+                        <span key={idx} className="px-2.5 py-1 rounded-lg bg-[#f4f4f8] text-[#4d4c5c] text-xs font-medium">
                           {s}
                         </span>
                       ))}
                     </div>
                   ) : (
-                    <p className="text-sm text-slate-400 italic">Non renseigne</p>
+                    <p className="text-sm text-[#6a697c] italic">Non renseigne</p>
                   )}
                 </div>
                 <div>
-                  <h4 className="font-semibold text-slate-800 text-xs uppercase tracking-wider mb-2">Langues</h4>
+                  <h4 className="font-semibold text-[#121117] text-xs uppercase tracking-wider mb-2">Langues</h4>
                   {cvProfile.languages.length ? (
                     <div className="flex flex-wrap gap-1.5">
                       {cvProfile.languages.map((l, idx) => (
@@ -220,44 +212,44 @@ export default function CvPage() {
                       ))}
                     </div>
                   ) : (
-                    <p className="text-sm text-slate-400 italic">Non renseigne</p>
+                    <p className="text-sm text-[#6a697c] italic">Non renseigne</p>
                   )}
                 </div>
               </div>
 
               {/* Formation */}
               <div className="mb-6">
-                <h4 className="font-semibold text-slate-800 text-xs uppercase tracking-wider mb-3">Formation</h4>
+                <h4 className="font-semibold text-[#121117] text-xs uppercase tracking-wider mb-3">Formation</h4>
                 {cvProfile.education.length ? (
                   <div className="space-y-3">
                     {cvProfile.education.map((ed, idx) => (
-                      <div key={idx} className="text-sm pl-4 border-l-2 border-red-200">
-                        <p className="font-semibold text-slate-800">
+                      <div key={idx} className="text-sm pl-4 border-l-2 border-[#dcdce5]">
+                        <p className="font-semibold text-[#121117]">
                           {ed.degree || "Diplome"} — {ed.school || "Etablissement"}
                         </p>
-                        <p className="text-slate-400 text-xs mt-0.5">
+                        <p className="text-[#6a697c] text-xs mt-0.5">
                           {ed.startYear || "Debut"} - {ed.endYear || "Fin"}
                         </p>
-                        {ed.details && <p className="text-slate-600 mt-1">{ed.details}</p>}
+                        {ed.details && <p className="text-[#4d4c5c] mt-1">{ed.details}</p>}
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <p className="text-sm text-slate-400 italic">Non renseigne</p>
+                  <p className="text-sm text-[#6a697c] italic">Non renseigne</p>
                 )}
               </div>
 
               {/* Experiences */}
               <div className="mb-6">
-                <h4 className="font-semibold text-slate-800 text-xs uppercase tracking-wider mb-3">Experiences</h4>
+                <h4 className="font-semibold text-[#121117] text-xs uppercase tracking-wider mb-3">Experiences</h4>
                 {cvProfile.experiences.length ? (
                   <div className="space-y-4">
                     {cvProfile.experiences.map((exp, idx) => (
-                      <div key={idx} className="text-sm pl-4 border-l-2 border-red-200">
-                        <p className="font-semibold text-slate-800">
+                      <div key={idx} className="text-sm pl-4 border-l-2 border-[#dcdce5]">
+                        <p className="font-semibold text-[#121117]">
                           {exp.title || "Poste"} — {exp.company || "Organisation"}
                         </p>
-                        <p className="text-slate-400 text-xs mt-0.5">
+                        <p className="text-[#6a697c] text-xs mt-0.5">
                           {exp.start || "Debut"} - {exp.end || "Present"}
                           {exp.location ? ` • ${exp.location}` : ""}
                         </p>
@@ -268,25 +260,25 @@ export default function CvPage() {
                     ))}
                   </div>
                 ) : (
-                  <p className="text-sm text-slate-400 italic">Non renseigne</p>
+                  <p className="text-sm text-[#6a697c] italic">Non renseigne</p>
                 )}
               </div>
 
               {/* Projets */}
               <div>
-                <h4 className="font-semibold text-slate-800 text-xs uppercase tracking-wider mb-3">Projets</h4>
+                <h4 className="font-semibold text-[#121117] text-xs uppercase tracking-wider mb-3">Projets</h4>
                 {cvProfile.projects.length ? (
                   <div className="space-y-4">
                     {cvProfile.projects.map((pr, idx) => (
-                      <div key={idx} className="text-sm pl-4 border-l-2 border-emerald-200">
-                        <p className="font-semibold text-slate-800">
+                      <div key={idx} className="text-sm pl-4 border-l-2 border-[#dcdce5]">
+                        <p className="font-semibold text-[#121117]">
                           {pr.name || "Projet"}
                           {pr.link && (
-                            <span className="text-[#c41e3a] font-normal ml-2 text-xs">({pr.link})</span>
+                            <span className="text-[#121117] font-normal ml-2 text-xs">({pr.link})</span>
                           )}
                         </p>
                         {pr.description && (
-                          <p className="text-slate-600 mt-0.5">{pr.description}</p>
+                          <p className="text-[#4d4c5c] mt-0.5">{pr.description}</p>
                         )}
                         <div className="mt-1.5">
                           {renderList(pr.bullets.filter(Boolean))}
@@ -295,23 +287,23 @@ export default function CvPage() {
                     ))}
                   </div>
                 ) : (
-                  <p className="text-sm text-slate-400 italic">Non renseigne</p>
+                  <p className="text-sm text-[#6a697c] italic">Non renseigne</p>
                 )}
               </div>
             </div>
           </div>
 
           {/* Markdown output + Preview */}
-          <div className="grid lg:grid-cols-2 gap-8 mt-10 pt-8 border-t border-slate-100">
+          <div className="grid lg:grid-cols-2 gap-8 mt-10 pt-8 border-t border-[#dcdce5]">
             <div>
-              <h2 className="font-semibold text-slate-800 text-sm uppercase tracking-wide mb-4">
+              <h2 className="font-semibold text-[#121117] text-sm uppercase tracking-wide mb-4">
                 Sortie (Markdown)
               </h2>
               <textarea
                 value={generatedMarkdown}
                 onChange={(e) => setGeneratedMarkdown(e.target.value)}
                 placeholder="Le CV genere apparaitra ici..."
-                className="w-full min-h-[420px] p-5 rounded-2xl border border-slate-200 bg-slate-50/50 focus:border-[#c41e3a] focus:ring-2 focus:ring-red-100 outline-none font-mono text-sm transition-all"
+                className="w-full min-h-[420px] p-5 card bg-white focus:border-[#121117] focus:ring-2 focus:ring-[#121117]/20 outline-none font-mono text-sm transition-all"
               />
               <div className="flex gap-3 mt-4">
                 <button
@@ -320,46 +312,46 @@ export default function CvPage() {
                     await navigator.clipboard.writeText(generatedMarkdown);
                   }}
                   disabled={!generatedMarkdown}
-                  className="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-white hover:border-slate-300 disabled:opacity-40 font-medium text-sm transition-all"
+                  className="btn-secondary text-sm disabled:opacity-40"
                 >
                   Copier
                 </button>
                 <button
                   type="button"
                   onClick={saveMarkdownToProfile}
-                  className="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-white hover:border-slate-300 font-medium text-sm transition-all"
+                  className="btn-secondary text-sm"
                 >
                   Sauvegarder (profil)
                 </button>
               </div>
-              <p className="text-xs text-slate-400 mt-3">
+              <p className="text-xs text-[#6a697c] mt-3">
                 Pour une exportation propre, utilise &quot;Imprimer / PDF&quot;.
               </p>
             </div>
 
             <div>
-              <h2 className="font-semibold text-slate-800 text-sm uppercase tracking-wide mb-4">Apercu</h2>
-              <div className="min-h-[420px] p-6 rounded-2xl border border-slate-200 bg-slate-50/50">
+              <h2 className="font-semibold text-[#121117] text-sm uppercase tracking-wide mb-4">Apercu</h2>
+              <div className="min-h-[420px] p-6 card bg-white">
                 {generatedMarkdown ? (
-                  <pre className="whitespace-pre-wrap text-sm text-slate-800 leading-relaxed">
+                  <pre className="whitespace-pre-wrap text-sm text-[#121117] leading-relaxed">
                     {generatedMarkdown}
                   </pre>
                 ) : (
                   <div className="flex items-center justify-center h-full min-h-[380px]">
                     <div className="text-center">
-                      <div className="w-12 h-12 rounded-2xl bg-red-50 flex items-center justify-center mx-auto mb-3">
-                        <span className="text-[#c41e3a] text-xl">CV</span>
+                      <div className="w-12 h-12 rounded-lg bg-[#f4f4f8] flex items-center justify-center mx-auto mb-3">
+                        <span className="text-[#121117] text-xl">CV</span>
                       </div>
-                      <p className="text-sm text-slate-400">
+                      <p className="text-sm text-[#6a697c]">
                         Clique sur &quot;Generer mon CV&quot; pour voir l&apos;apercu.
                       </p>
                     </div>
                   </div>
                 )}
               </div>
-              <p className="text-xs text-slate-400 mt-3">
+              <p className="text-xs text-[#6a697c] mt-3">
                 Astuce : complete tes infos CV dans{" "}
-                <Link href="/profil" className="text-[#c41e3a] hover:text-[#c41e3a] underline transition-colors">
+                <Link href="/profil" className="text-[#121117] hover:text-[#121117] underline transition-colors">
                   ton profil
                 </Link>{" "}
                 pour une meilleure qualite.
@@ -367,7 +359,6 @@ export default function CvPage() {
             </div>
           </div>
         </div>
-      </div>
-    </div>
+    </PageShell>
   );
 }

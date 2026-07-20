@@ -63,19 +63,19 @@ export default function PWAInstallPrompt() {
 
   return (
     <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-[380px] z-50 animate-slideUp">
-      <div className="bg-white rounded-2xl shadow-2xl shadow-slate-300/50 border border-slate-200 p-5 overflow-hidden relative">
-        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#c41e3a] via-[#f4c430] to-[#008751]" />
+      <div className="card rounded-lg p-5 overflow-hidden relative border-[#dcdce5]">
+        <div className="absolute top-0 left-0 right-0 h-1 bg-[#14b887]" />
 
         <div className="flex items-start gap-4">
-          <div className="w-12 h-12 bg-gradient-to-br from-[#c41e3a] to-[#9e1830] rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg shadow-red-200">
+          <div className="w-12 h-12 bg-[#121117] rounded flex items-center justify-center flex-shrink-0">
             <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" />
             </svg>
           </div>
 
           <div className="flex-1 min-w-0">
-            <h3 className="font-bold text-slate-900 text-base mb-1">Installer O&apos;Kampus</h3>
-            <p className="text-sm text-slate-500 mb-4 leading-relaxed">
+            <h3 className="font-display font-bold text-[#121117] text-base mb-1">Installer O&apos;Kampus</h3>
+            <p className="text-sm text-[#4d4c5c] mb-4 leading-relaxed">
               Accede rapidement a la plateforme depuis ton ecran d&apos;accueil
             </p>
 
@@ -88,7 +88,7 @@ export default function PWAInstallPrompt() {
               </button>
               <button
                 onClick={handleDismiss}
-                className="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-medium hover:bg-slate-50 transition-all text-sm"
+                className="px-4 py-2.5 rounded border border-[#dcdce5] text-[#4d4c5c] font-medium hover:bg-[#f4f4f8] transition-all text-sm"
               >
                 Plus tard
               </button>
@@ -97,7 +97,7 @@ export default function PWAInstallPrompt() {
 
           <button
             onClick={handleDismiss}
-            className="text-slate-400 hover:text-slate-600 transition-colors p-1"
+            className="text-[#6a697c] hover:text-[#121117] transition-colors p-1"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

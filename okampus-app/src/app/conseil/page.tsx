@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import PageShell from "@/components/ui/PageShell";
+import PageHeader from "@/components/ui/PageHeader";
 
 interface Advisor {
   id: string;
@@ -163,34 +165,21 @@ export default function ConseilPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-red-50/30">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 md:py-14">
-        {/* Page Header */}
-        <div className="mb-8 md:mb-10">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#c41e3a] to-[#9e1830] flex items-center justify-center">
-              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z" />
-              </svg>
-            </div>
-            <div>
-              <h1 className="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">
-                Mentorat & Conseil
-              </h1>
-            </div>
-          </div>
-          <p className="text-slate-500 text-sm md:text-base ml-[52px]">
-            Discute avec un étudiant ou prends rendez-vous pour un appel vidéo
-          </p>
-        </div>
+    <>
+    <PageShell>
+      <PageHeader
+        eyebrow="Mentorat"
+        title="Mentorat & Conseil"
+        description="Discute avec un etudiant ou prends rendez-vous pour un appel video"
+      />
 
         <div className="flex flex-col lg:grid lg:grid-cols-12 gap-5 md:gap-7">
           {/* Liste des conseillers - Mobile: collapsible, Desktop: sidebar */}
           <div className="lg:col-span-4 xl:col-span-3">
-            <div className="card bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden">
-              <div className="p-4 md:p-5 border-b border-slate-100">
+            <div className="card border border-[#dcdce5] overflow-hidden">
+              <div className="p-4 md:p-5 border-b border-[#dcdce5]">
                 <div className="relative">
-                  <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#6a697c]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                   </svg>
                   <input
@@ -198,21 +187,21 @@ export default function ConseilPage() {
                     placeholder="Rechercher..."
                     value={searchField}
                     onChange={(e) => setSearchField(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2.5 text-sm rounded-xl border border-slate-200 bg-slate-50/50 focus:border-[#c41e3a] focus:ring-2 focus:ring-red-200 outline-none transition-all placeholder:text-slate-400"
+                    className="w-full pl-10 pr-4 py-2.5 text-sm rounded-lg border border-[#dcdce5] bg-white focus:border-[#121117] focus:ring-2 focus:ring-[#121117]/20 outline-none transition-all placeholder:text-[#6a697c]"
                   />
                 </div>
               </div>
-              <div className="divide-y divide-slate-100/80 max-h-[60vh] lg:max-h-[600px] overflow-y-auto">
+              <div className="divide-y divide-[#dcdce5]/80 max-h-[60vh] lg:max-h-[600px] overflow-y-auto">
                 {filteredAdvisors.map((advisor) => (
                   <button
                     key={advisor.id}
                     onClick={() => startChat(advisor)}
-                    className={`w-full p-3.5 md:p-4 flex items-center gap-3.5 hover:bg-red-50/40 transition-all duration-200 text-left ${
-                      selectedAdvisor?.id === advisor.id ? "bg-red-50 border-l-4 border-[#c41e3a]" : ""
+                    className={`w-full p-3.5 md:p-4 flex items-center gap-3.5 hover:bg-[#f4f4f8]/40 transition-all duration-200 text-left ${
+                      selectedAdvisor?.id === advisor.id ? "bg-[#f4f4f8] border-l-4 border-[#121117]" : ""
                     }`}
                   >
                     <div className="relative flex-shrink-0">
-                      <div className="w-11 h-11 md:w-12 md:h-12 rounded-full bg-gradient-to-br from-[#c41e3a] to-[#9e1830] flex items-center justify-center text-white font-semibold text-sm shadow-sm">
+                      <div className="w-11 h-11 md:w-12 md:h-12 rounded-full bg-[#121117] flex items-center justify-center text-white font-semibold text-sm">
                         {advisor.initials}
                       </div>
                       {advisor.online && (
@@ -220,13 +209,13 @@ export default function ConseilPage() {
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-semibold text-slate-800 text-sm md:text-base truncate">
+                      <p className="font-semibold text-[#121117] text-sm md:text-base truncate">
                         {advisor.name}
                       </p>
-                      <p className="text-xs md:text-sm text-[#c41e3a] font-medium truncate">
+                      <p className="text-xs md:text-sm text-[#121117] font-medium truncate">
                         {advisor.field}
                       </p>
-                      <p className="text-xs text-slate-400 truncate mt-0.5">
+                      <p className="text-xs text-[#6a697c] truncate mt-0.5">
                         {advisor.university} • {advisor.year}
                       </p>
                     </div>
@@ -238,14 +227,14 @@ export default function ConseilPage() {
 
           {/* Zone de chat */}
           <div className="lg:col-span-8 xl:col-span-9">
-            <div className="card bg-white rounded-2xl shadow-sm border border-slate-200/80 flex flex-col h-[calc(100vh-250px)] md:h-[600px]">
+            <div className="card border border-[#dcdce5] flex flex-col h-[calc(100vh-250px)] md:h-[600px]">
               {selectedAdvisor ? (
                 <>
-                  <div className="p-4 md:p-5 border-b border-slate-100">
-                    <div className="flex items-center justify-between gap-3">
+                  <div className="p-4 md:p-5 border-b border-[#dcdce5]">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                       <div className="flex items-center gap-3.5 min-w-0 flex-1">
                         <div className="relative flex-shrink-0">
-                          <div className="w-11 h-11 md:w-12 md:h-12 rounded-full bg-gradient-to-br from-[#c41e3a] to-[#9e1830] flex items-center justify-center text-white font-semibold text-sm shadow-sm">
+                          <div className="w-11 h-11 md:w-12 md:h-12 rounded-full bg-[#121117] flex items-center justify-center text-white font-semibold text-sm">
                             {selectedAdvisor.initials}
                           </div>
                           {selectedAdvisor.online && (
@@ -253,24 +242,24 @@ export default function ConseilPage() {
                           )}
                         </div>
                         <div className="min-w-0 flex-1">
-                          <h3 className="font-bold text-slate-800 text-sm md:text-base truncate">
+                          <h3 className="font-bold text-[#121117] text-sm md:text-base truncate">
                             {selectedAdvisor.name}
                           </h3>
-                          <p className="text-xs md:text-sm text-slate-500 truncate">
+                          <p className="text-xs md:text-sm text-[#4d4c5c] truncate">
                             {selectedAdvisor.field} • {selectedAdvisor.university}
                           </p>
                         </div>
                       </div>
                       <button
                         onClick={() => setShowBooking(true)}
-                        className="btn-primary px-4 md:px-5 py-2.5 bg-gradient-to-r from-emerald-600 to-emerald-500 text-white rounded-xl text-xs md:text-sm font-semibold hover:from-emerald-700 hover:to-emerald-600 transition-all shadow-sm hover:shadow-md flex-shrink-0"
+                        className="btn-primary w-full sm:w-auto shrink-0"
                       >
                         Rendez-vous
                       </button>
                     </div>
 
                     {selectedAdvisor.description && (
-                      <p className="text-xs md:text-sm text-slate-500 mt-3.5 italic leading-relaxed bg-slate-50/80 rounded-xl px-4 py-3">
+                      <p className="text-xs md:text-sm text-[#4d4c5c] mt-3.5 italic leading-relaxed bg-[#f4f4f8] rounded-lg px-4 py-3">
                         &quot;{selectedAdvisor.description}&quot;
                       </p>
                     )}
@@ -298,21 +287,21 @@ export default function ConseilPage() {
                     )}
                   </div>
 
-                  <div className="flex-1 p-4 md:p-5 overflow-y-auto space-y-3.5 bg-gradient-to-b from-slate-50/80 to-slate-50">
+                  <div className="flex-1 p-4 md:p-5 overflow-y-auto space-y-3.5 bg-gradient-to-b from-[#f4f4f8] to-[#f4f4f8]">
                     {messages.map((msg) => (
                       <div
                         key={msg.id}
                         className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
                       >
                         <div
-                          className={`max-w-[85%] md:max-w-[72%] rounded-2xl px-4 py-3 ${
+                          className={`max-w-[85%] md:max-w-[72%] rounded-lg px-4 py-3 ${
                             msg.sender === "user"
-                              ? "bg-[#c41e3a] text-white shadow-sm"
-                              : "bg-white border border-slate-200/80 text-slate-800 shadow-sm"
+                              ? "bg-[#121117] text-white"
+                              : "bg-white border border-[#dcdce5] text-[#121117] shadow-sm"
                           }`}
                         >
                           <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.text}</p>
-                          <p className={`text-xs mt-1.5 ${msg.sender === "user" ? "text-red-200" : "text-slate-400"}`}>
+                          <p className={`text-xs mt-1.5 ${msg.sender === "user" ? "text-white/70" : "text-[#6a697c]"}`}>
                             {msg.timestamp.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}
                           </p>
                         </div>
@@ -320,19 +309,19 @@ export default function ConseilPage() {
                     ))}
                   </div>
 
-                  <form onSubmit={handleSendMessage} className="p-3.5 md:p-4 border-t border-slate-100 bg-white/80 backdrop-blur-sm">
+                  <form onSubmit={handleSendMessage} className="p-3.5 md:p-4 border-t border-[#dcdce5] bg-white/80 backdrop-blur-sm">
                     <div className="flex gap-2.5">
                       <input
                         type="text"
                         value={inputMessage}
                         onChange={(e) => setInputMessage(e.target.value)}
                         placeholder="Ecris ton message..."
-                        className="flex-1 px-4 py-2.5 text-sm rounded-xl border border-slate-200 bg-slate-50/50 focus:border-[#c41e3a] focus:ring-2 focus:ring-red-200 outline-none transition-all placeholder:text-slate-400"
+                        className="flex-1 px-4 py-2.5 text-sm rounded-lg border border-[#dcdce5] bg-white focus:border-[#121117] focus:ring-2 focus:ring-[#121117]/20 outline-none transition-all placeholder:text-[#6a697c]"
                       />
                       <button
                         type="submit"
                         disabled={!inputMessage.trim()}
-                        className="btn-primary px-5 md:px-6 py-2.5 bg-gradient-to-r from-[#c41e3a] to-[#9e1830] text-white rounded-xl font-semibold text-sm hover:from-[#9e1830] hover:to-[#c41e3a] disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-sm hover:shadow-md"
+                        className="btn-primary"
                       >
                         Envoyer
                       </button>
@@ -341,15 +330,15 @@ export default function ConseilPage() {
                 </>
               ) : (
                 <div className="flex-1 flex flex-col items-center justify-center p-10 text-center">
-                  <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-red-100 to-red-100 flex items-center justify-center mb-5">
-                    <svg className="w-9 h-9 text-[#c41e3a]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="w-20 h-20 rounded-lg bg-[#f4f4f8] flex items-center justify-center mb-5">
+                    <svg className="w-9 h-9 text-[#121117]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                     </svg>
                   </div>
-                  <h3 className="text-lg font-bold text-slate-800 mb-2">
+                  <h3 className="text-lg font-bold text-[#121117] mb-2">
                     Choisis un conseiller
                   </h3>
-                  <p className="text-sm text-slate-500 max-w-sm leading-relaxed">
+                  <p className="text-sm text-[#4d4c5c] max-w-sm leading-relaxed">
                     Sélectionne un étudiant dans la liste pour commencer une conversation ou prendre rendez-vous.
                   </p>
                 </div>
@@ -357,27 +346,27 @@ export default function ConseilPage() {
             </div>
           </div>
         </div>
-      </div>
+    </PageShell>
 
       {/* Modal Rendez-vous */}
       {showBooking && selectedAdvisor && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-end md:items-center justify-center p-0 md:p-4 z-50">
           <div className="bg-white rounded-t-2xl md:rounded-2xl w-full md:max-w-md max-h-[85vh] overflow-y-auto shadow-2xl">
             {/* Accent bar at top */}
-            <div className="h-1 bg-gradient-to-r from-[#c41e3a] via-[#f4c430] to-[#008751] rounded-t-2xl" />
-            <div className="sticky top-0 bg-white border-b border-slate-100 p-5 md:p-6">
+            <div className="h-1 bg-[#121117] rounded-t-2xl" />
+            <div className="sticky top-0 bg-white border-b border-[#dcdce5] p-5 md:p-6">
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <h3 className="text-lg md:text-xl font-bold text-slate-800">
+                  <h3 className="text-lg md:text-xl font-bold text-[#121117]">
                     Prendre rendez-vous
                   </h3>
-                  <p className="text-sm text-slate-500 mt-1">
+                  <p className="text-sm text-[#4d4c5c] mt-1">
                     avec {selectedAdvisor.name}
                   </p>
                 </div>
                 <button
                   onClick={() => setShowBooking(false)}
-                  className="p-2 hover:bg-slate-100 rounded-xl transition-colors text-slate-400 hover:text-slate-600"
+                  className="p-2 hover:bg-[#f4f4f8] rounded-xl transition-colors text-[#6a697c] hover:text-[#4d4c5c]"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -387,7 +376,7 @@ export default function ConseilPage() {
             </div>
 
             <div className="p-5 md:p-6">
-              <p className="text-sm text-slate-500 mb-5">
+              <p className="text-sm text-[#4d4c5c] mb-5">
                 Choisis un créneau pour un appel vidéo. Le lien Meet te sera communiqué après confirmation.
               </p>
               <div className="space-y-2.5">
@@ -397,13 +386,13 @@ export default function ConseilPage() {
                     onClick={() => setSelectedSlot(slot)}
                     className={`w-full p-4 rounded-xl border-2 text-left text-sm font-medium transition-all duration-200 ${
                       selectedSlot === slot
-                        ? "border-[#c41e3a] bg-red-50 text-[#9e1830] shadow-sm"
-                        : "border-slate-200 text-slate-600 hover:border-red-200 hover:bg-red-50/30"
+                        ? "border-[#121117] bg-[#f4f4f8] text-[#4d4c5c] shadow-sm"
+                        : "border-[#dcdce5] text-[#4d4c5c] hover:border-[#121117]/30 hover:bg-[#f4f4f8]/30"
                     }`}
                   >
                     <div className="flex items-center gap-3">
                       <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all ${
-                        selectedSlot === slot ? "border-[#c41e3a] bg-[#c41e3a]" : "border-slate-300"
+                        selectedSlot === slot ? "border-[#121117] bg-[#121117]" : "border-[#dcdce5]"
                       }`}>
                         {selectedSlot === slot && (
                           <div className="w-1.5 h-1.5 rounded-full bg-white" />
@@ -414,17 +403,17 @@ export default function ConseilPage() {
                   </button>
                 ))}
               </div>
-              <div className="flex gap-3 mt-7 pt-6 border-t border-slate-100">
+              <div className="flex gap-3 mt-7 pt-6 border-t border-[#dcdce5]">
                 <button
                   onClick={() => setShowBooking(false)}
-                  className="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-medium hover:bg-slate-50 transition-all"
+                  className="flex-1 px-4 py-2.5 rounded-lg border border-[#dcdce5] text-[#4d4c5c] font-medium hover:bg-[#f4f4f8] transition-all"
                 >
                   Annuler
                 </button>
                 <button
                   onClick={confirmBooking}
                   disabled={!selectedSlot}
-                  className="btn-primary flex-1 px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 text-white font-semibold hover:from-emerald-700 hover:to-emerald-600 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-sm hover:shadow-md"
+                  className="btn-primary"
                 >
                   Confirmer
                 </button>
@@ -433,6 +422,6 @@ export default function ConseilPage() {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }
