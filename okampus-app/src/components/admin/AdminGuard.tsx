@@ -26,7 +26,7 @@ export default function AdminGuard({ children }: { children: React.ReactNode }) 
 
   if (status === "loading" || !isLoaded || !isAdmin) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#121117] text-[#dcdce5]">
+      <div className="admin-theme admin-loading">
         Verification des droits admin...
       </div>
     );

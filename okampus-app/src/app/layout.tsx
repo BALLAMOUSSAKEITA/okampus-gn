@@ -1,11 +1,17 @@
 import type { Metadata } from "next";
-import { Figtree, Manrope } from "next/font/google";
+import { Figtree, Inter, Manrope } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import MainWrapper from "@/components/MainWrapper";
 import PWAInstallPrompt from "@/components/PWAInstallPrompt";
 import { AuthProvider } from "@/context/AuthContext";
 import { SessionProvider } from "next-auth/react";
+
+const inter = Inter({
+  variable: "--font-inter",
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+});
 
 const manrope = Manrope({
   variable: "--font-manrope",
@@ -49,7 +55,7 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
       </head>
-      <body className={`${manrope.variable} ${figtree.variable} antialiased`}>
+      <body className={`${manrope.variable} ${figtree.variable} ${inter.variable} antialiased`}>
         <SessionProvider>
           <AuthProvider>
             <Navbar />

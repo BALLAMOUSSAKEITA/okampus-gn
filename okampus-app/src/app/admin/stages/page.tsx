@@ -9,6 +9,7 @@ export default function AdminStagesPage() {
       title="Stages & Jobs"
       description="Publier et gerer les offres de stage"
       endpoint="/stages"
+      pillVariant="orange"
       fields={[
         { key: "title", label: "Titre", required: true },
         { key: "company", label: "Entreprise", required: true },

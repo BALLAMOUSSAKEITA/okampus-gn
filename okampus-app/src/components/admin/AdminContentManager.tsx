@@ -2,7 +2,14 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { adminFetch, inputClass, type FieldConfig } from "@/lib/admin-api";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
+import {
+  adminFetch,
+  inputClass,
+  labelClass,
+  selectClass,
+  type FieldConfig,
+} from "@/lib/admin-api";
 
 type AdminContentManagerProps = {
   title: string;
@@ -12,6 +19,7 @@ type AdminContentManagerProps = {
   columns: { key: string; label: string; render?: (row: Record<string, unknown>) => string }[];
   idKey?: string;
   createDefaults?: Record<string, unknown>;
+  pillVariant?: "blue" | "green" | "orange" | "violet";
 };
 
 function emptyForm(fields: FieldConfig[], defaults?: Record<string, unknown>) {
@@ -32,6 +40,7 @@ export default function AdminContentManager({
   columns,
   idKey = "id",
   createDefaults,
+  pillVariant = "blue",
 }: AdminContentManagerProps) {
   const { data: session } = useSession();
   const token = session?.accessToken;
@@ -138,19 +147,19 @@ export default function AdminContentManager({
           onChange={(e) => onChange(e.target.value)}
           rows={field.rows ?? 3}
           placeholder={field.placeholder}
-          className={inputClass}
+          className="admin-textarea"
           required={field.required}
         />
       );
     }
     if (field.type === "checkbox") {
       return (
-        <label className="flex items-center gap-2 text-sm">
+        <label className="flex items-center gap-2 text-sm text-[#171717]">
           <input
             type="checkbox"
             checked={Boolean(value)}
             onChange={(e) => onChange(e.target.checked)}
-            className="rounded"
+            className="rounded border-[#e5e5e5]"
           />
           Oui
         </label>
@@ -161,7 +170,7 @@ export default function AdminContentManager({
         <select
           value={String(value ?? "")}
           onChange={(e) => onChange(e.target.value)}
-          className={inputClass}
+          className={selectClass}
           required={field.required}
         >
           <option value="">Selectionner</option>
@@ -189,39 +198,32 @@ export default function AdminContentManager({
 
   return (
     <div>
-      <div className="mb-8">
-        <h1 className="font-display text-2xl sm:text-3xl font-bold text-[#121117]">{title}</h1>
-        <p className="text-[#4d4c5c] mt-1">{description}</p>
-      </div>
+      <AdminPageHeader
+        pill={{ label: "Contenu", variant: pillVariant }}
+        title={title}
+        description={description}
+      />
 
-      {error && (
-        <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">
-          {error}
-        </div>
-      )}
+      {error && <div className="admin-alert-error">{error}</div>}
 
-      <div className="card p-5 mb-6 bg-white">
-        <h2 className="font-semibold text-[#121117] mb-4">
-          {editingId ? "Modifier" : "Ajouter"}
-        </h2>
-        <form onSubmit={handleSubmit} className="grid sm:grid-cols-2 gap-4">
+      <div className="admin-card mb-6">
+        <h2 className="admin-card-title">{editingId ? "Modifier" : "Ajouter"}</h2>
+        <form onSubmit={handleSubmit} className="admin-form-grid">
           {fields.map((field) => (
             <div
               key={field.key}
-              className={field.type === "textarea" ? "sm:col-span-2" : ""}
+              className={field.type === "textarea" ? "admin-form-span-2" : ""}
             >
-              <label className="block text-xs font-medium text-[#4d4c5c] mb-1">
-                {field.label}
-              </label>
+              <label className={labelClass}>{field.label}</label>
               {renderField(field)}
             </div>
           ))}
-          <div className="sm:col-span-2 flex gap-2 pt-2">
-            <button type="submit" disabled={saving} className="btn-primary !text-sm !py-2.5">
+          <div className="admin-form-span-2 flex gap-2 pt-2">
+            <button type="submit" disabled={saving} className="admin-btn-primary">
               {saving ? "Enregistrement..." : editingId ? "Mettre a jour" : "Creer"}
             </button>
             {editingId && (
-              <button type="button" onClick={resetForm} className="btn-secondary !text-sm !py-2.5">
+              <button type="button" onClick={resetForm} className="admin-btn-secondary">
                 Annuler
               </button>
             )}
@@ -229,49 +231,42 @@ export default function AdminContentManager({
         </form>
       </div>
 
-      <div className="card overflow-hidden bg-white">
+      <div className="admin-card !p-0 overflow-hidden">
         {loading ? (
-          <p className="p-6 text-[#6a697c] text-sm">Chargement...</p>
+          <p className="admin-empty">Chargement...</p>
         ) : items.length === 0 ? (
-          <p className="p-6 text-[#6a697c] text-sm">Aucun element pour le moment.</p>
+          <p className="admin-empty">Aucun element pour le moment.</p>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+          <div className="admin-table-wrap">
+            <table className="admin-table">
               <thead>
-                <tr className="border-b border-[#dcdce5] bg-[#f4f4f8]">
+                <tr>
                   {columns.map((col) => (
-                    <th
-                      key={col.key}
-                      className="text-left px-4 py-3 font-semibold text-[#4d4c5c] whitespace-nowrap"
-                    >
-                      {col.label}
-                    </th>
+                    <th key={col.key}>{col.label}</th>
                   ))}
-                  <th className="px-4 py-3 text-right font-semibold text-[#4d4c5c]">Actions</th>
+                  <th className="admin-table-actions">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {items.map((row) => (
-                  <tr key={String(row[idKey])} className="border-b border-[#dcdce5] last:border-0">
+                  <tr key={String(row[idKey])}>
                     {columns.map((col) => (
-                      <td key={col.key} className="px-4 py-3 text-[#121117] max-w-[200px] truncate">
-                        {col.render
-                          ? col.render(row)
-                          : String(row[col.key] ?? "—")}
+                      <td key={col.key} className="max-w-[200px] truncate">
+                        {col.render ? col.render(row) : String(row[col.key] ?? "—")}
                       </td>
                     ))}
-                    <td className="px-4 py-3 text-right whitespace-nowrap">
+                    <td className="admin-table-actions">
                       <button
                         type="button"
                         onClick={() => startEdit(row)}
-                        className="text-[#121117] font-medium hover:underline mr-3"
+                        className="admin-btn-link mr-3"
                       >
                         Editer
                       </button>
                       <button
                         type="button"
                         onClick={() => handleDelete(String(row[idKey]))}
-                        className="text-red-600 font-medium hover:underline"
+                        className="admin-btn-danger"
                       >
                         Suppr.
                       </button>

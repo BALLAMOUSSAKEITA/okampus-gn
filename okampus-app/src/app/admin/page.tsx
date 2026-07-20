@@ -3,18 +3,19 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import { adminFetch, type AdminStats } from "@/lib/admin-api";
 
 const statCards = [
-  { key: "users", label: "Utilisateurs", href: "/admin/users", color: "bg-[#99c5ff]" },
-  { key: "mentors", label: "Mentors", href: "/admin/mentors", color: "bg-[#ffdf3d]" },
-  { key: "stages", label: "Stages", href: "/admin/stages", color: "bg-[#14b887]" },
-  { key: "stories", label: "Success Stories", href: "/admin/stories", color: "bg-[#99c5ff]/60" },
-  { key: "scholarships", label: "Bourses", href: "/admin/bourses", color: "bg-[#ffdf3d]/80" },
-  { key: "resources", label: "Ressources", href: "/admin/ressources", color: "bg-white" },
-  { key: "calendar_events", label: "Evenements", href: "/admin/calendrier", color: "bg-white" },
-  { key: "entrepreneur_projects", label: "Projets", href: "/admin/entrepreneuriat", color: "bg-[#14b887]/30" },
-  { key: "forum_posts", label: "Posts forum", href: "/admin/forum", color: "bg-[#f4f4f8]" },
+  { key: "users", label: "Utilisateurs", href: "/admin/users", pill: "violet" as const },
+  { key: "mentors", label: "Mentors", href: "/admin/mentors", pill: "green" as const },
+  { key: "stages", label: "Stages", href: "/admin/stages", pill: "orange" as const },
+  { key: "stories", label: "Success Stories", href: "/admin/stories", pill: "blue" as const },
+  { key: "scholarships", label: "Bourses", href: "/admin/bourses", pill: "violet" as const },
+  { key: "resources", label: "Ressources", href: "/admin/ressources", pill: "green" as const },
+  { key: "calendar_events", label: "Evenements", href: "/admin/calendrier", pill: "orange" as const },
+  { key: "entrepreneur_projects", label: "Projets", href: "/admin/entrepreneuriat", pill: "blue" as const },
+  { key: "forum_posts", label: "Posts forum", href: "/admin/forum", pill: "violet" as const },
 ] as const;
 
 export default function AdminDashboardPage() {
@@ -31,49 +32,39 @@ export default function AdminDashboardPage() {
 
   return (
     <div>
-      <div className="mb-8">
-        <h1 className="font-display text-2xl sm:text-3xl font-bold text-[#121117]">
-          Tableau de bord
-        </h1>
-        <p className="text-[#4d4c5c] mt-1">
-          Bienvenue {session?.user?.name} — vue d&apos;ensemble de O&apos;Kampus
-        </p>
-      </div>
+      <AdminPageHeader
+        pill={{ label: "Vue d'ensemble", variant: "blue" }}
+        title="Tableau de bord"
+        description={`Bienvenue ${session?.user?.name ?? "Admin"} — suivi en temps reel de la plateforme.`}
+      />
 
-      {error && (
-        <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">
-          {error}
-        </div>
-      )}
+      {error && <div className="admin-alert-error">{error}</div>}
 
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="admin-stat-grid">
         {statCards.map((card) => (
-          <Link
-            key={card.key}
-            href={card.href}
-            className={`card p-5 ${card.color} border-[#dcdce5] hover:shadow-md transition-shadow`}
-          >
-            <p className="text-3xl font-display font-bold text-[#121117]">
+          <Link key={card.key} href={card.href} className="admin-stat-card">
+            <span className={`admin-pill admin-pill-${card.pill} mb-3`}>{card.label}</span>
+            <p className="admin-stat-value">
               {stats ? stats[card.key as keyof AdminStats] : "—"}
             </p>
-            <p className="text-sm font-medium text-[#4d4c5c] mt-1">{card.label}</p>
+            <p className="admin-stat-label">elements enregistres</p>
           </Link>
         ))}
       </div>
 
-      <div className="mt-8 card p-5 bg-white">
-        <h2 className="font-semibold text-[#121117] mb-2">Actions rapides</h2>
-        <div className="flex flex-wrap gap-2">
-          <Link href="/admin/stages" className="btn-primary !text-sm !py-2">
+      <div className="admin-card mt-8">
+        <h2 className="admin-card-title">Actions rapides</h2>
+        <div className="admin-quick-actions">
+          <Link href="/admin/stages" className="admin-btn-primary">
             + Stage
           </Link>
-          <Link href="/admin/stories" className="btn-secondary !text-sm !py-2 bg-white">
+          <Link href="/admin/stories" className="admin-btn-secondary">
             + Success Story
           </Link>
-          <Link href="/admin/bourses" className="btn-secondary !text-sm !py-2 bg-white">
+          <Link href="/admin/bourses" className="admin-btn-secondary">
             + Bourse
           </Link>
-          <Link href="/admin/users" className="btn-secondary !text-sm !py-2 bg-white">
+          <Link href="/admin/users" className="admin-btn-secondary">
             Gerer les utilisateurs
           </Link>
         </div>

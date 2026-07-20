@@ -8,6 +8,7 @@ export default function AdminCalendrierPage() {
       title="Calendrier"
       description="Dates universitaires et evenements importants"
       endpoint="/calendar"
+      pillVariant="orange"
       fields={[
         { key: "title", label: "Titre", required: true },
         { key: "type", label: "Type", required: true, options: ["Inscription", "Examen", "Vacances", "Evenement", "Autre"] },

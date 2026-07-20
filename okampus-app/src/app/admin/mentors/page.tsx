@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import { adminFetch, type AdminMentor } from "@/lib/admin-api";
 
 export default function AdminMentorsPage() {
@@ -39,46 +40,45 @@ export default function AdminMentorsPage() {
 
   return (
     <div>
-      <div className="mb-8">
-        <h1 className="font-display text-2xl sm:text-3xl font-bold text-[#121117]">Mentors</h1>
-        <p className="text-[#4d4c5c] mt-1">Etudiants conseillers inscrits sur la plateforme</p>
-      </div>
+      <AdminPageHeader
+        pill={{ label: "Mentorat", variant: "green" }}
+        title="Mentors"
+        description="Etudiants conseillers inscrits et actifs sur la plateforme."
+      />
 
-      {error && (
-        <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">{error}</div>
-      )}
+      {error && <div className="admin-alert-error">{error}</div>}
 
-      <div className="card overflow-hidden bg-white">
+      <div className="admin-card !p-0 overflow-hidden">
         {loading ? (
-          <p className="p-6 text-sm text-[#6a697c]">Chargement...</p>
+          <p className="admin-empty">Chargement...</p>
         ) : mentors.length === 0 ? (
-          <p className="p-6 text-sm text-[#6a697c]">Aucun mentor pour le moment.</p>
+          <p className="admin-empty">Aucun mentor pour le moment.</p>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+          <div className="admin-table-wrap">
+            <table className="admin-table">
               <thead>
-                <tr className="border-b border-[#dcdce5] bg-[#f4f4f8]">
+                <tr>
                   {["Nom", "Email", "Filiere", "Universite", "Annee", "Description", ""].map((h) => (
-                    <th key={h || "a"} className="text-left px-4 py-3 font-semibold text-[#4d4c5c]">
-                      {h}
-                    </th>
+                    <th key={h || "actions"}>{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
                 {mentors.map((m) => (
-                  <tr key={m.user_id} className="border-b border-[#dcdce5]">
-                    <td className="px-4 py-3 font-medium">{m.name}</td>
-                    <td className="px-4 py-3 text-[#4d4c5c]">{m.email}</td>
-                    <td className="px-4 py-3">{m.field}</td>
-                    <td className="px-4 py-3">{m.university}</td>
-                    <td className="px-4 py-3">{m.year}</td>
-                    <td className="px-4 py-3 max-w-[200px] truncate text-[#4d4c5c]">{m.description}</td>
-                    <td className="px-4 py-3">
+                  <tr key={m.user_id}>
+                    <td className="font-medium">{m.name}</td>
+                    <td className="text-[#737373]">{m.email}</td>
+                    <td>{m.field}</td>
+                    <td>{m.university}</td>
+                    <td>
+                      <span className="admin-badge-role">{m.year}</span>
+                    </td>
+                    <td className="max-w-[200px] truncate text-[#737373]">{m.description}</td>
+                    <td className="admin-table-actions">
                       <button
                         type="button"
                         onClick={() => remove(m.user_id, m.name)}
-                        className="text-red-600 text-xs font-medium hover:underline"
+                        className="admin-btn-danger"
                       >
                         Retirer
                       </button>

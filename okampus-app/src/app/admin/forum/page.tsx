@@ -8,6 +8,7 @@ export default function AdminForumPage() {
       title="Forum"
       description="Moderer et publier des sujets de discussion"
       endpoint="/forum"
+      pillVariant="violet"
       fields={[
         { key: "title", label: "Titre", required: true },
         { key: "author", label: "Auteur", required: true },

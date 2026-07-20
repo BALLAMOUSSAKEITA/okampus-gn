@@ -8,6 +8,7 @@ export default function AdminBoursesPage() {
       title="Bourses"
       description="Concours, aides et opportunites de financement"
       endpoint="/scholarships"
+      pillVariant="violet"
       fields={[
         { key: "title", label: "Titre", required: true },
         { key: "type", label: "Type", required: true, options: ["Bourse", "Concours", "Aide", "Subvention"] },

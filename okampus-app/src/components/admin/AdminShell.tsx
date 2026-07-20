@@ -2,13 +2,17 @@
 
 import AdminGuard from "@/components/admin/AdminGuard";
 import AdminSidebar from "@/components/admin/AdminSidebar";
+import AdminTopBar from "@/components/admin/AdminTopBar";
 
 export default function AdminShell({ children }: { children: React.ReactNode }) {
   return (
     <AdminGuard>
-      <div className="flex min-h-screen bg-[#f4f4f8]">
-        <AdminSidebar />
-        <div className="flex-1 min-w-0 p-6 sm:p-8 overflow-x-auto">{children}</div>
+      <div className="admin-theme min-h-screen">
+        <AdminTopBar />
+        <div className="admin-layout">
+          <AdminSidebar />
+          <main className="admin-main">{children}</main>
+        </div>
       </div>
     </AdminGuard>
   );

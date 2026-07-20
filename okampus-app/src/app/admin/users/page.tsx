@@ -2,7 +2,8 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { adminFetch, inputClass, type AdminUser } from "@/lib/admin-api";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
+import { adminFetch, selectClass, type AdminUser } from "@/lib/admin-api";
 
 export default function AdminUsersPage() {
   const { data: session } = useSession();
@@ -52,60 +53,59 @@ export default function AdminUsersPage() {
 
   return (
     <div>
-      <div className="mb-8">
-        <h1 className="font-display text-2xl sm:text-3xl font-bold text-[#121117]">Utilisateurs</h1>
-        <p className="text-[#4d4c5c] mt-1">Gerer les comptes et les roles</p>
-      </div>
+      <AdminPageHeader
+        pill={{ label: "Comptes", variant: "violet" }}
+        title="Utilisateurs"
+        description="Gerer les comptes, les roles et les profils inscrits."
+      />
 
-      {error && (
-        <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">{error}</div>
-      )}
+      {error && <div className="admin-alert-error">{error}</div>}
 
-      <div className="card overflow-hidden bg-white">
+      <div className="admin-card !p-0 overflow-hidden">
         {loading ? (
-          <p className="p-6 text-sm text-[#6a697c]">Chargement...</p>
+          <p className="admin-empty">Chargement...</p>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+          <div className="admin-table-wrap">
+            <table className="admin-table">
               <thead>
-                <tr className="border-b border-[#dcdce5] bg-[#f4f4f8]">
+                <tr>
                   {["Nom", "Email", "Role", "Profil", "Inscription", "Actions"].map((h) => (
-                    <th key={h} className="text-left px-4 py-3 font-semibold text-[#4d4c5c]">
-                      {h}
-                    </th>
+                    <th key={h}>{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
                 {users.map((u) => (
-                  <tr key={u.id} className="border-b border-[#dcdce5]">
-                    <td className="px-4 py-3 font-medium">{u.name}</td>
-                    <td className="px-4 py-3 text-[#4d4c5c]">{u.email}</td>
-                    <td className="px-4 py-3">
+                  <tr key={u.id}>
+                    <td className="font-medium">{u.name}</td>
+                    <td className="text-[#737373]">{u.email}</td>
+                    <td>
                       <select
                         value={u.role}
                         onChange={(e) => updateRole(u.id, e.target.value)}
-                        className={`${inputClass} !py-1.5 !w-auto`}
+                        className={`${selectClass} !w-auto !py-1.5`}
                       >
                         <option value="bachelier">Bachelier</option>
                         <option value="etudiant">Etudiant</option>
                         <option value="admin">Admin</option>
                       </select>
                     </td>
-                    <td className="px-4 py-3 text-xs text-[#4d4c5c]">
+                    <td className="text-xs text-[#737373] max-w-[180px]">
                       {u.role === "bachelier" && u.city && `${u.city} — ${u.bac_option ?? ""}`}
                       {u.role === "etudiant" && u.university && `${u.university} — ${u.field ?? ""}`}
-                      {u.is_advisor && " · Mentor"}
+                      {u.is_advisor && (
+                        <span className="admin-pill admin-pill-green ml-1">Mentor</span>
+                      )}
                     </td>
-                    <td className="px-4 py-3 text-[#6a697c] text-xs">
+                    <td className="text-xs text-[#737373]">
                       {u.created_at ? new Date(u.created_at).toLocaleDateString("fr-FR") : "—"}
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="admin-table-actions">
                       {u.role !== "admin" && (
                         <button
                           type="button"
                           onClick={() => deleteUser(u.id, u.name)}
-                          className="text-red-600 text-xs font-medium hover:underline"
+                          className="admin-btn-danger"
                         >
                           Supprimer
                         </button>

@@ -11,6 +11,7 @@ export default function AdminStoriesPage() {
       title="Success Stories"
       description="Temoignages et parcours inspirants"
       endpoint="/stories"
+      pillVariant="blue"
       fields={[
         { key: "title", label: "Titre", required: true },
         { key: "category", label: "Categorie", required: true, options: ["Orientation", "Etudes", "Carriere", "Entrepreneuriat"] },

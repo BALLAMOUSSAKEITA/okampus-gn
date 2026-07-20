@@ -11,6 +11,7 @@ export default function AdminRessourcesPage() {
       title="Ressources"
       description="Cours, TD et documents pedagogiques"
       endpoint="/resources"
+      pillVariant="green"
       fields={[
         { key: "title", label: "Titre", required: true },
         { key: "category", label: "Categorie", required: true },

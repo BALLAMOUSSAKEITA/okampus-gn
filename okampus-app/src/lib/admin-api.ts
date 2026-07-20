@@ -67,5 +67,7 @@ export type FieldConfig = {
   rows?: number;
 };
 
-export const inputClass =
-  "w-full px-3 py-2 rounded-lg border border-[#dcdce5] bg-white text-sm focus:border-[#121117] focus:ring-2 focus:ring-[#121117]/10 outline-none";
+export const inputClass = "admin-input";
+export const selectClass = "admin-select";
+export const textareaClass = "admin-textarea";
+export const labelClass = "admin-label";

@@ -11,6 +11,7 @@ export default function AdminEntrepreneuriatPage() {
       title="Entrepreneuriat"
       description="Projets et initiatives etudiantes"
       endpoint="/entrepreneur"
+      pillVariant="blue"
       fields={[
         { key: "title", label: "Titre", required: true },
         { key: "category", label: "Categorie", required: true },
