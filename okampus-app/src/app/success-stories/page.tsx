@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import PageShell from "@/components/ui/PageShell";
 import PageHeader from "@/components/ui/PageHeader";
+import UserAvatar from "@/components/UserAvatar";
 
 interface SuccessStory {
   id: string;
@@ -172,9 +173,7 @@ export default function SuccessStoriesPage() {
                   </div>
 
                   <div className="flex items-center gap-3 mb-4 mt-2">
-                    <div className="w-12 h-12 rounded-full bg-[#121117] flex items-center justify-center text-white font-bold text-lg ">
-                      {story.authorName.charAt(0)}
-                    </div>
+                    <UserAvatar name={story.authorName} size={48} />
                     <div className="flex-1 min-w-0">
                       <p className="font-bold text-[#121117] truncate">{story.authorName}</p>
                       <p className="text-xs text-[#6a697c] truncate">{story.authorRole}</p>
@@ -245,9 +244,7 @@ export default function SuccessStoriesPage() {
                   <div className="flex flex-col md:flex-row gap-5">
                     {/* Avatar */}
                     <div className="flex-shrink-0">
-                      <div className="w-16 h-16 rounded-full bg-[#121117] flex items-center justify-center text-white font-bold text-2xl ">
-                        {story.authorName.charAt(0)}
-                      </div>
+                      <UserAvatar name={story.authorName} size={64} />
                     </div>
 
                     {/* Contenu */}

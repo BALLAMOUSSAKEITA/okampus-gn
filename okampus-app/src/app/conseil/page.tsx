@@ -3,6 +3,8 @@
 import { useState } from "react";
 import PageShell from "@/components/ui/PageShell";
 import PageHeader from "@/components/ui/PageHeader";
+import UserAvatar from "@/components/UserAvatar";
+import type { AvatarGender } from "@/lib/avatars";
 
 interface Advisor {
   id: string;
@@ -10,7 +12,7 @@ interface Advisor {
   field: string;
   university: string;
   year: string;
-  initials: string;
+  gender: AvatarGender;
   online: boolean;
   description: string;
   meetLink: string;
@@ -31,7 +33,7 @@ const advisors: Advisor[] = [
     field: "Médecine",
     university: "UGANC",
     year: "4ème année",
-    initials: "AD",
+    gender: "female",
     online: true,
     description: "Passionnée par la médecine, j'aime partager mon expérience avec les futurs étudiants. La 1ère année est intense mais faisable !",
     meetLink: "https://meet.google.com/abc-defg-hij",
@@ -43,7 +45,7 @@ const advisors: Advisor[] = [
     field: "Droit",
     university: "UGANC",
     year: "3ème année",
-    initials: "MB",
+    gender: "male",
     online: true,
     description: "Étudiant en droit, je peux t'éclairer sur les débouchés et le quotidien de la fac. N'hésite pas !",
     meetLink: "https://meet.google.com/xyz-uvwx-rst",
@@ -55,7 +57,7 @@ const advisors: Advisor[] = [
     field: "Informatique",
     university: "UGANC",
     year: "5ème année",
-    initials: "FC",
+    gender: "female",
     online: true,
     description: "Développeuse en devenir. L'informatique en Guinée offre de belles opportunités. Viens me poser tes questions !",
     meetLink: "https://meet.google.com/dev-meet-123",
@@ -67,7 +69,7 @@ const advisors: Advisor[] = [
     field: "Génie Civil",
     university: "UGANC",
     year: "4ème année",
-    initials: "IS",
+    gender: "male",
     online: false,
     description: "Le génie civil est un secteur en plein essor en Guinée. Je peux te parler des stages et des projets concrets.",
     meetLink: "https://meet.google.com/genie-civil-45",
@@ -79,7 +81,7 @@ const advisors: Advisor[] = [
     field: "Commerce",
     university: "UGANC",
     year: "3ème année",
-    initials: "MB",
+    gender: "female",
     online: true,
     description: "Commerce et gestion : une filière polyvalente. Je partage mon parcours et les opportunités que j'ai découvertes.",
     meetLink: "https://meet.google.com/commerce-789",
@@ -91,7 +93,7 @@ const advisors: Advisor[] = [
     field: "Sciences Économiques",
     university: "UGANC",
     year: "2ème année",
-    initials: "OK",
+    gender: "male",
     online: true,
     description: "Économie et développement : des sujets passionnants. Je peux t'aider à y voir plus clair pour ton orientation.",
     meetLink: "https://meet.google.com/eco-meet-101",
@@ -201,9 +203,7 @@ export default function ConseilPage() {
                     }`}
                   >
                     <div className="relative flex-shrink-0">
-                      <div className="w-11 h-11 md:w-12 md:h-12 rounded-full bg-[#121117] flex items-center justify-center text-white font-semibold text-sm">
-                        {advisor.initials}
-                      </div>
+                      <UserAvatar name={advisor.name} gender={advisor.gender} size={48} />
                       {advisor.online && (
                         <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-500 border-2 border-white rounded-full shadow-sm" />
                       )}
@@ -234,9 +234,7 @@ export default function ConseilPage() {
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                       <div className="flex items-center gap-3.5 min-w-0 flex-1">
                         <div className="relative flex-shrink-0">
-                          <div className="w-11 h-11 md:w-12 md:h-12 rounded-full bg-[#121117] flex items-center justify-center text-white font-semibold text-sm">
-                            {selectedAdvisor.initials}
-                          </div>
+                          <UserAvatar name={selectedAdvisor.name} gender={selectedAdvisor.gender} size={48} />
                           {selectedAdvisor.online && (
                             <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-500 border-2 border-white rounded-full shadow-sm" />
                           )}

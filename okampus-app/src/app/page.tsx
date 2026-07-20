@@ -2,6 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import Logo from "@/components/Logo";
 import SubjectIcon from "@/components/SubjectIcon";
+import UserAvatar from "@/components/UserAvatar";
+import type { AvatarGender } from "@/lib/avatars";
 
 const stats = [
   { value: "1000+", label: "Etudiants accompagnes" },
@@ -23,11 +25,17 @@ const subjects = [
   { id: "calendrier", title: "Calendrier", count: "Dates universitaires", link: "/calendrier" },
 ];
 
-const featuredMentors = [
-  { name: "Aissatou B.", role: "Medecine — Gamal", rating: "4.9", initials: "AB", color: "bg-[#99c5ff]" },
-  { name: "Mamadou D.", role: "Informatique — UGB", rating: "4.8", initials: "MD", color: "bg-[#ffdf3d]" },
-  { name: "Fatoumata S.", role: "Droit — Kofi Annan", rating: "5.0", initials: "FS", color: "bg-[#f4f4f8]" },
-  { name: "Ibrahima C.", role: "Commerce — UGANC", rating: "4.7", initials: "IC", color: "bg-[#99c5ff]/60" },
+const featuredMentors: Array<{
+  name: string;
+  role: string;
+  rating: string;
+  gender: AvatarGender;
+  color: string;
+}> = [
+  { name: "Aissatou B.", role: "Medecine — Gamal", rating: "4.9", gender: "female", color: "bg-[#99c5ff]" },
+  { name: "Mamadou D.", role: "Informatique — UGB", rating: "4.8", gender: "male", color: "bg-[#ffdf3d]" },
+  { name: "Fatoumata S.", role: "Droit — Kofi Annan", rating: "5.0", gender: "female", color: "bg-[#f4f4f8]" },
+  { name: "Ibrahima C.", role: "Commerce — UGANC", rating: "4.7", gender: "male", color: "bg-[#99c5ff]/60" },
 ];
 
 const howItWorks = [
@@ -197,7 +205,7 @@ export default function Home() {
             {featuredMentors.map((m) => (
               <Link key={m.name} href="/conseil" className="card overflow-hidden group">
                 <div className={`h-32 ${m.color} flex items-center justify-center`}>
-                  <span className="text-4xl font-bold text-[#121117]/15">{m.initials}</span>
+                  <UserAvatar name={m.name} gender={m.gender} size={96} />
                 </div>
                 <div className="p-4">
                   <p className="font-semibold text-[#121117]">{m.name}</p>
@@ -228,9 +236,7 @@ export default function Home() {
                   <div className="mt-6 space-y-2">
                     {item.mentors.map((m) => (
                       <div key={m.name} className="catalog-card !py-3">
-                        <div className="w-9 h-9 rounded bg-[#14b887] text-white flex items-center justify-center text-xs font-bold shrink-0">
-                          {m.initials.charAt(0)}
-                        </div>
+                        <UserAvatar name={m.name} gender={m.gender} size={36} />
                         <div className="flex-1 min-w-0">
                           <p className="font-semibold text-sm text-[#121117] truncate">{m.name}</p>
                           <p className="text-xs text-[#4d4c5c] truncate">{m.role}</p>

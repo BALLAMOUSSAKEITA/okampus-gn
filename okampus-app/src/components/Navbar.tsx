@@ -6,6 +6,7 @@ import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/context/AuthContext";
 import AnnouncementBar from "./AnnouncementBar";
 import Logo from "./Logo";
+import UserAvatar from "./UserAvatar";
 
 const mainNavLinks = [
   { href: "/assistant", label: "Assistant IA" },
@@ -111,9 +112,7 @@ export default function Navbar() {
                   href="/profil"
                   className="flex items-center gap-2 text-sm font-semibold text-[#121117]"
                 >
-                  <span className="w-8 h-8 rounded bg-[#121117] text-white flex items-center justify-center text-xs font-bold">
-                    {user.name.charAt(0).toUpperCase()}
-                  </span>
+                  <UserAvatar name={user.name} size={32} />
                   <span className="hidden xl:inline">{user.name.split(" ")[0]}</span>
                 </Link>
               ) : (

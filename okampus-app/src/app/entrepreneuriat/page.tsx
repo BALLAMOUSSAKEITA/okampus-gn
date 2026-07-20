@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import PageShell from "@/components/ui/PageShell";
 import PageHeader from "@/components/ui/PageHeader";
+import UserAvatar from "@/components/UserAvatar";
 
 interface EntrepreneurProject {
   id: string;
@@ -244,9 +245,7 @@ export default function EntrepreneuriatPage() {
               {/* Author */}
               <div className="pt-5 border-t border-[#dcdce5] flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-full bg-[#121117] flex items-center justify-center text-white text-xs font-bold">
-                    {project.author.split(" ").map(n => n[0]).join("")}
-                  </div>
+                  <UserAvatar name={project.author} size={36} />
                   <div>
                     <p className="font-semibold text-[#121117] text-sm">{project.author}</p>
                     {project.authorRole && (

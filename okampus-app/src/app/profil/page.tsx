@@ -8,6 +8,7 @@ import { useAuth } from "@/context/AuthContext";
 import type { CvProfile } from "@/types";
 import PageShell from "@/components/ui/PageShell";
 import PageHeader from "@/components/ui/PageHeader";
+import UserAvatar from "@/components/UserAvatar";
 
 function emptyCvProfile(): CvProfile {
   return {
@@ -271,9 +272,7 @@ export default function ProfilPage() {
         {/* Profile Card */}
         <div className="card border border-[#dcdce5] p-8 mb-8">
           <div className="flex items-center gap-5 mb-8">
-            <div className="w-18 h-18 min-w-[4.5rem] min-h-[4.5rem] rounded-lg bg-[#121117] flex items-center justify-center text-2xl text-white font-bold">
-              {user.name.charAt(0)}
-            </div>
+            <UserAvatar name={user.name} size={72} rounded="lg" />
             <div>
               <h2 className="text-xl font-bold text-[#121117]">{user.name}</h2>
               <p className="text-[#4d4c5c] mt-0.5">{user.email}</p>
