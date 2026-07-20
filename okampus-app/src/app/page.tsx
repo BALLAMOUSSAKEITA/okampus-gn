@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import Logo from "@/components/Logo";
 import SubjectIcon from "@/components/SubjectIcon";
@@ -48,10 +49,20 @@ const howItWorks = [
   },
 ];
 
-const heroPhotos = [
-  { name: "Aissatou B.", role: "Mentor", initials: "AB", rotate: "-rotate-3", color: "bg-[#99c5ff]", pos: "top-8 right-12 sm:right-16" },
-  { name: "Mamadou D.", role: "Etudiant", initials: "MD", rotate: "rotate-2", color: "bg-[#ffdf3d]", pos: "bottom-4 right-0" },
-];
+const heroStudentPhoto = {
+  src: "/images/jeune-fille.png",
+  alt: "Jeune etudiante en bibliotheque",
+  name: "Fatoumata S.",
+  role: "Etudiante",
+};
+
+const heroMentorPhoto = {
+  src: "/images/jeune-homme.png",
+  alt: "Jeune etudiant en bibliotheque",
+  name: "Mamadou D.",
+  role: "Mentor",
+  rotate: "rotate-[4deg]",
+};
 
 export default function Home() {
   return (
@@ -79,19 +90,47 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="relative h-[320px] sm:h-[400px] lg:h-[480px]">
-            {heroPhotos.map((photo) => (
-              <div
-                key={photo.name}
-                className={`absolute w-40 sm:w-52 h-52 sm:h-64 landing-photo shadow-[0_8px_24px_rgba(18,17,23,0.12)] ${photo.rotate} ${photo.color} ${photo.pos} flex items-center justify-center`}
-              >
-                <span className="text-5xl sm:text-6xl font-bold text-[#121117]/15 select-none">{photo.initials}</span>
-                <span className="sticker-label absolute bottom-3 left-3 rotate-[-3deg] text-xs sm:text-sm">
-                  {photo.name}
+          <div className="relative h-[340px] sm:h-[420px] lg:h-[500px]">
+            {/* Photo mentor — visible devant, en bas a gauche */}
+            <div className={`absolute bottom-2 left-0 sm:left-6 lg:left-10 w-36 sm:w-44 lg:w-48 h-44 sm:h-52 lg:h-56 ${heroMentorPhoto.rotate} z-30`}>
+              <div className="relative w-full h-full landing-photo shadow-[0_10px_28px_rgba(18,17,23,0.18)] ring-2 ring-[#ffdf3d]">
+                <Image
+                  src={heroMentorPhoto.src}
+                  alt={heroMentorPhoto.alt}
+                  fill
+                  sizes="(max-width: 640px) 144px, (max-width: 1024px) 176px, 192px"
+                  className="object-cover object-center"
+                />
+                <span className="sticker-label absolute bottom-3 left-3 rotate-[-3deg] text-xs z-10">
+                  {heroMentorPhoto.name}
+                </span>
+                <span className="absolute top-3 right-3 rotate-[2deg] z-10 rounded px-2 py-1 text-[10px] font-semibold bg-[#ffdf3d] text-[#121117]">
+                  {heroMentorPhoto.role}
                 </span>
               </div>
-            ))}
-            <div className="absolute top-1/2 left-0 sm:left-4 -translate-y-1/2 sticker-label rotate-[-5deg] text-sm sm:text-base px-3 sm:px-4 py-2 max-w-[140px] sm:max-w-none">
+            </div>
+
+            {/* Photo principale — etudiante */}
+            <div className="absolute top-0 right-0 sm:right-2 lg:right-6 w-44 sm:w-56 lg:w-64 h-56 sm:h-72 lg:h-80 -rotate-3 z-20">
+              <div className="relative w-full h-full landing-photo shadow-[0_8px_24px_rgba(18,17,23,0.15)]">
+                <Image
+                  src={heroStudentPhoto.src}
+                  alt={heroStudentPhoto.alt}
+                  fill
+                  priority
+                  sizes="(max-width: 640px) 176px, (max-width: 1024px) 224px, 256px"
+                  className="object-cover object-center"
+                />
+                <span className="sticker-label absolute bottom-3 left-3 rotate-[-3deg] text-xs sm:text-sm z-10">
+                  {heroStudentPhoto.name}
+                </span>
+                <span className="absolute top-3 right-3 rotate-[2deg] z-10 rounded px-2.5 py-1 text-xs font-semibold bg-[#14b887] text-[#121117]">
+                  {heroStudentPhoto.role}
+                </span>
+              </div>
+            </div>
+
+            <div className="absolute top-[38%] left-[38%] sm:left-[42%] -translate-x-1/2 -translate-y-1/2 sticker-label rotate-[-5deg] text-sm sm:text-base px-3 sm:px-4 py-2 max-w-[140px] sm:max-w-none z-40 pointer-events-none">
               La reussite, a deux
             </div>
           </div>
