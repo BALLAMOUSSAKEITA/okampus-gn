@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
@@ -30,17 +30,18 @@ export default function CvPage() {
 
   const cvProfile = useMemo(() => user?.cvProfile ?? defaultCv(), [user]);
 
-  if (!isLoaded) {
+  useEffect(() => {
+    if (isLoaded && !user) {
+      router.replace("/inscription?callbackUrl=/cv");
+    }
+  }, [isLoaded, user, router]);
+
+  if (!isLoaded || !user) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#f4f4f8]">
         <div className="animate-pulse text-[#6a697c] text-lg font-medium">Chargement...</div>
       </div>
     );
-  }
-
-  if (!user) {
-    router.push("/inscription");
-    return null;
   }
 
   const generate = async () => {

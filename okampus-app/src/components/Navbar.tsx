@@ -47,6 +47,9 @@ export default function Navbar() {
 
   const isMoreLinkActive = moreLinks.some((link) => pathname === link.href);
   const isHome = pathname === "/";
+  const isAdmin = pathname.startsWith("/admin");
+
+  if (isAdmin) return null;
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50">
@@ -108,13 +111,20 @@ export default function Navbar() {
           <div className="hidden lg:flex items-center gap-3">
             {mounted &&
               (user ? (
-                <Link
-                  href="/profil"
-                  className="flex items-center gap-2 text-sm font-semibold text-[#121117]"
-                >
-                  <UserAvatar name={user.name} size={32} />
-                  <span className="hidden xl:inline">{user.name.split(" ")[0]}</span>
-                </Link>
+                <>
+                  {user.role === "admin" && (
+                    <Link href="/admin" className="btn-secondary text-sm !py-2 !px-3">
+                      Admin
+                    </Link>
+                  )}
+                  <Link
+                    href="/profil"
+                    className="flex items-center gap-2 text-sm font-semibold text-[#121117]"
+                  >
+                    <UserAvatar name={user.name} size={32} />
+                    <span className="hidden xl:inline">{user.name.split(" ")[0]}</span>
+                  </Link>
+                </>
               ) : (
                 <>
                   <Link href="/inscription" className="btn-secondary text-sm">

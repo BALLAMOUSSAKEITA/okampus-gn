@@ -46,17 +46,18 @@ export default function ProfilPage() {
     }
   }, [user]);
 
-  if (!isLoaded) {
+  useEffect(() => {
+    if (isLoaded && !user) {
+      router.replace("/inscription?callbackUrl=/profil");
+    }
+  }, [isLoaded, user, router]);
+
+  if (!isLoaded || !user) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#f4f4f8]">
         <div className="animate-pulse text-[#6a697c] text-lg font-medium">Chargement...</div>
       </div>
     );
-  }
-
-  if (!user) {
-    router.push("/inscription");
-    return null;
   }
 
   const handleBecomeAdvisor = (e: React.FormEvent) => {

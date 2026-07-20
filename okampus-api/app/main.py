@@ -1,10 +1,11 @@
 from contextlib import asynccontextmanager
+import os
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.database import engine, Base
-from app.routers import auth, calendar, cv, entrepreneur, parcours, resources, scholarships, stages, success_stories, users
+from app.routers import admin, auth, calendar, cv, entrepreneur, parcours, resources, scholarships, stages, success_stories, users
 
 # Importer tous les modèles pour que Base.metadata les connaisse
 import app.models  # noqa: F401
@@ -20,18 +21,26 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="O'Kampus API", version="1.0.0", lifespan=lifespan)
 
-# CORS — autorise le frontend Next.js
+# CORS — autorise le frontend Next.js (tous ports localhost en dev)
+_cors_origins = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "https://okampus-gn-production.up.railway.app",
+]
+_extra_origins = os.getenv("CORS_ORIGINS", "")
+if _extra_origins:
+    _cors_origins.extend(origin.strip() for origin in _extra_origins.split(",") if origin.strip())
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",
-        "https://okampus-gn-production.up.railway.app",
-    ],
+    allow_origins=_cors_origins,
+    allow_origin_regex=r"https?://(localhost|127\.0\.0\.1)(:\d+)?",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+app.include_router(admin.router)
 app.include_router(auth.router)
 app.include_router(users.router)
 app.include_router(calendar.router)

@@ -5,7 +5,7 @@ import { useSession } from "next-auth/react";
 import { apiFetch } from "@/lib/api";
 
 // Types locaux (frontend)
-export type UserRole = "bachelier" | "etudiant";
+export type UserRole = "bachelier" | "etudiant" | "admin";
 
 export interface User {
   id: string;
@@ -112,7 +112,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setUser(null);
         }
       } catch (error) {
-        console.error("Failed to fetch user", error);
+        if (process.env.NODE_ENV === "development") {
+          console.warn(
+            "Impossible de charger le profil utilisateur. Verifie que l'API FastAPI est demarree (port 8000).",
+            error
+          );
+        }
         setUser(null);
       } finally {
         setIsLoaded(true);

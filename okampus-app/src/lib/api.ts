@@ -23,5 +23,15 @@ export async function apiFetch(
     headers.set("Authorization", `Bearer ${token}`);
   }
 
-  return fetch(`${API_URL}${path}`, { ...rest, headers });
+  const url = `${API_URL}${path}`;
+
+  try {
+    return await fetch(url, { ...rest, headers });
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Erreur reseau";
+    throw new Error(
+      `Impossible de joindre l'API (${url}). Verifie que le serveur FastAPI tourne sur le port 8000. ${message}`
+    );
+  }
 }

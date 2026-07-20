@@ -50,6 +50,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (pathname.startsWith("/api/")) return true
       if (PUBLIC_PATHS.includes(pathname)) return true
 
+      if (pathname.startsWith("/admin")) {
+        return !!auth?.user
+      }
+
       return !!auth?.user
     },
     async jwt({ token, user }) {

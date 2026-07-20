@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import PageShell from "@/components/ui/PageShell";
 import PageHeader from "@/components/ui/PageHeader";
@@ -52,17 +52,18 @@ export default function ParcoursPage() {
   const objectifsEnCours = objectifs.filter((o) => o.statut === "en_cours").length;
   const objectifsTermines = objectifs.filter((o) => o.statut === "termine").length;
 
-  if (!isLoaded) {
+  useEffect(() => {
+    if (isLoaded && !user) {
+      router.replace("/inscription?callbackUrl=/parcours");
+    }
+  }, [isLoaded, user, router]);
+
+  if (!isLoaded || !user) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#f4f4f8]">
         <div className="animate-pulse text-[#6a697c] text-sm font-medium">Chargement...</div>
       </div>
     );
-  }
-
-  if (!user) {
-    router.push("/inscription");
-    return null;
   }
 
   return (

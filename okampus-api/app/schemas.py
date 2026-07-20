@@ -379,6 +379,166 @@ class SuccessStoryOut(BaseModel):
     likes: int
     views: int
     is_featured: bool
+    is_active: bool = True
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+# ── Admin ─────────────────────────────────────────────────────────────────────
+
+class AdminStatsOut(BaseModel):
+    users: int
+    mentors: int
+    stages: int
+    stories: int
+    scholarships: int
+    resources: int
+    calendar_events: int
+    entrepreneur_projects: int
+    forum_posts: int
+
+
+class AdminUserOut(BaseModel):
+    id: str
+    email: str
+    name: str
+    role: str
+    city: Optional[str] = None
+    bac_option: Optional[str] = None
+    university: Optional[str] = None
+    field: Optional[str] = None
+    is_advisor: bool = False
+    created_at: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True
+
+
+class AdminUserUpdate(BaseModel):
+    role: Optional[str] = None
+    name: Optional[str] = None
+
+
+class AdminMentorOut(BaseModel):
+    user_id: str
+    name: str
+    email: str
+    field: str
+    university: str
+    year: str
+    description: str
+    meet_link: Optional[str] = None
+
+
+class StageOfferUpdate(BaseModel):
+    title: Optional[str] = None
+    company: Optional[str] = None
+    location: Optional[str] = None
+    type: Optional[str] = None
+    domain: Optional[str] = None
+    description: Optional[str] = None
+    requirements: Optional[str] = None
+    duration: Optional[str] = None
+    remuneration: Optional[str] = None
+    contact_email: Optional[str] = None
+    contact_phone: Optional[str] = None
+    external_link: Optional[str] = None
+    is_active: Optional[bool] = None
+
+
+class SuccessStoryUpdate(BaseModel):
+    title: Optional[str] = None
+    content: Optional[str] = None
+    category: Optional[str] = None
+    author_name: Optional[str] = None
+    author_role: Optional[str] = None
+    university: Optional[str] = None
+    graduation_year: Optional[str] = None
+    image_url: Optional[str] = None
+    is_featured: Optional[bool] = None
+    is_active: Optional[bool] = None
+
+
+class ScholarshipUpdate(BaseModel):
+    title: Optional[str] = None
+    type: Optional[str] = None
+    organization: Optional[str] = None
+    description: Optional[str] = None
+    eligibility: Optional[str] = None
+    amount: Optional[str] = None
+    deadline: Optional[datetime] = None
+    apply_link: Optional[str] = None
+    contact_info: Optional[str] = None
+    domain: Optional[str] = None
+    location: Optional[str] = None
+    is_active: Optional[bool] = None
+
+
+class ResourceUpdate(BaseModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+    category: Optional[str] = None
+    subject: Optional[str] = None
+    filiere: Optional[str] = None
+    university: Optional[str] = None
+    year: Optional[str] = None
+    file_url: Optional[str] = None
+    file_type: Optional[str] = None
+    file_size: Optional[int] = None
+    price: Optional[float] = None
+    is_premium: Optional[bool] = None
+    is_active: Optional[bool] = None
+
+
+class CalendarEventUpdate(BaseModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+    type: Optional[str] = None
+    start_date: Optional[datetime] = None
+    end_date: Optional[datetime] = None
+    location: Optional[str] = None
+    university: Optional[str] = None
+    is_recurrent: Optional[bool] = None
+    color: Optional[str] = None
+    is_active: Optional[bool] = None
+
+
+class EntrepreneurProjectUpdate(BaseModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+    category: Optional[str] = None
+    status: Optional[str] = None
+    team_size: Optional[int] = None
+    seeking: Optional[str] = None
+    website: Optional[str] = None
+    contact_info: Optional[str] = None
+    is_active: Optional[bool] = None
+
+
+class ForumPostCreate(BaseModel):
+    title: str
+    content: str
+    author: str
+    category: str
+
+
+class ForumPostUpdate(BaseModel):
+    title: Optional[str] = None
+    content: Optional[str] = None
+    author: Optional[str] = None
+    category: Optional[str] = None
+
+
+class ForumPostOut(BaseModel):
+    id: str
+    title: str
+    content: str
+    author: str
+    category: str
+    replies: int
+    views: int
     created_at: datetime
 
     class Config:
