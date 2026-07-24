@@ -6,6 +6,7 @@ import {
   generateOrientationAdvice,
   type OrientationProfile,
 } from "@/lib/orientation-fallback";
+import { buildProfileContext, SYSTEM_PROMPT } from "@/lib/assistant-prompt";
 import { formatAssistantReply } from "@/lib/assistant-format";
 
 const profileSchema = z.object({
@@ -33,47 +34,6 @@ const requestSchema = z.discriminatedUnion("mode", [
     messages: z.array(messageSchema).min(1),
   }),
 ]);
-
-const SYSTEM_PROMPT = `Tu es Kampus, l'assistant IA d'orientation d'O'Kampus (Guinee).
-
-Comportement :
-- Conversation naturelle en francais, ton bienveillant et concret.
-- Ne repete pas de salutation : l'etudiant a deja recu un message d'accueil.
-- Pose UNE seule question a la fois pour comprendre : projet d'etudes, serie au bac, notes, centres d'interet.
-- Reponses courtes : 2 a 4 phrases tant que tu collectes des informations.
-- Quand tu as assez d'elements pour recommander, utilise ce format (100 mots max) :
-
-## Filières
-- (2 filieres max)
-
-## Conseils
-- (2 conseils max)
-
-## Suite
-1. (1 action : lien mentor, forum, ou question de suivi)
-
-Liens (OBLIGATOIRE quand tu parles de mentorat ou forum) :
-- Mentor : [Clique ici pour contacter un mentor](/conseil)
-- Forum : [Poser ma question sur le forum](/forum)
-- N'ecris jamais "/conseil" ou "/forum" en texte brut : utilise toujours le format markdown [texte](url).
-
-- N'invente pas de notes ou de faits non mentionnes dans la conversation.
-- Mentionne UGANC, IPG, Gamal ou Kofi Annan seulement si pertinent.
-- Si l'etudiant accepte d'etre mis en relation avec un mentor, reponds en 2-3 phrases max avec le lien mentor ci-dessus.`;
-
-function buildProfileContext(profile: OrientationProfile): string {
-  const hasData = Object.values(profile).some((v) => v.trim());
-  if (!hasData) {
-    return "Profil etudiant : a construire au fil de la conversation (pas de formulaire).";
-  }
-  return `Profil etudiant (partiel) :
-- Projet d'etudes : ${profile.projectEtudes || "Non precise"}
-- Serie au bac : ${profile.serieBac || "Non precise"}
-- Notes : ${profile.notes || "Non precisees"}
-- Forces : ${profile.forces || "Non precisees"}
-- Points a ameliorer : ${profile.faiblesses || "Non precises"}
-- Centres d'interet : ${profile.passions || "Non precises"}`;
-}
 
 export async function POST(request: Request) {
   try {
@@ -114,7 +74,7 @@ export async function POST(request: Request) {
         const completion = await client.chat.completions.create({
           model: getDeepSeekModel(),
           temperature: 0.4,
-          max_tokens: 280,
+          max_tokens: 320,
           messages: [
             { role: "system", content: SYSTEM_PROMPT },
             {
@@ -140,7 +100,7 @@ Analyse ce profil. Respecte le format et la limite de 100 mots.`,
       const completion = await client.chat.completions.create({
         model: getDeepSeekModel(),
         temperature: 0.5,
-        max_tokens: 220,
+        max_tokens: 300,
         messages: [
           { role: "system", content: `${SYSTEM_PROMPT}\n\n${buildProfileContext(profile)}` },
           ...parsed.data.messages.map((m) => ({

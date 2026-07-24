@@ -7,15 +7,10 @@ import { signIn } from "next-auth/react";
 import type { UserRole } from "@/types";
 import PageShell from "@/components/ui/PageShell";
 import PageHeader from "@/components/ui/PageHeader";
+import { BAC_OPTIONS } from "@/lib/bac-options";
 
 const inputClass =
   "w-full px-4 py-3 rounded-lg border border-[#dcdce5] bg-white focus:border-[#121117] focus:ring-2 focus:ring-[#121117]/20 outline-none transition-all placeholder:text-[#6a697c]";
-
-const BAC_OPTIONS = [
-  "Sciences Mathématiques",
-  "Sciences Expérimentales",
-  "Sciences Sociales",
-] as const;
 
 function InscriptionForm() {
   const router = useRouter();

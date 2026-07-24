@@ -169,20 +169,6 @@ export default function OrientationDemo() {
                   <DemoBubble key={message.id} message={message} />
                 ))}
               </div>
-
-              <div className="mt-5 pt-4 border-t border-[#dcdce5] flex items-start gap-3 rounded-lg bg-[#14b887]/10 px-3.5 py-3">
-                <span className="text-lg leading-none mt-0.5" aria-hidden="true">
-                  ✓
-                </span>
-                <div>
-                  <p className="text-sm font-semibold text-[#121117]">
-                    2 semaines plus tard — Fatoumata s&apos;est inscrite en medecine a Gamal
-                  </p>
-                  <p className="text-xs text-[#4d4c5c] mt-1">
-                    De l&apos;incertitude a une filiere choisie, avec un plan clair.
-                  </p>
-                </div>
-              </div>
             </div>
           </div>
 
@@ -224,10 +210,6 @@ export default function OrientationDemo() {
                 </Link>
               </div>
             </div>
-
-            <p className="text-center text-xs text-[#6a697c] px-2">
-              Scenario fictif inspire de parcours reels d&apos;etudiants guineens.
-            </p>
           </aside>
         </div>
       </div>

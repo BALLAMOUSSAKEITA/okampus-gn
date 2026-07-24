@@ -26,14 +26,14 @@ const emptyProfile: OrientationProfile = {
 
 const WELCOME_MESSAGE = `Bonjour ! Je suis **Kampus**, l'assistant IA d'O'Kampus.
 
-Je t'accompagne pour choisir ta filiere, clarifier ton projet d'etudes et trouver les bonnes pistes (universites, mentors, stages).
+Je t'accompagne pour choisir ta filiere en Guinee (Sciences Mathematiques, Experimentales ou Sociales), clarifier ton projet d'etudes et trouver les bonnes pistes (universites, mentors, stages).
 
 **Comment puis-je t'aider dans ton orientation ?**`;
 
 const SUGGESTIONS = [
-  "Je viens d'avoir le bac, je ne sais pas quoi choisir",
-  "Je veux faire medecine, c'est realiste ?",
-  "Quelle filiere pour l'informatique ?",
+  "Je viens d'avoir le bac en Sciences Experimentales, je ne sais pas quoi choisir",
+  "Je suis en Sciences Mathematiques et je veux faire medecine, c'est realiste ?",
+  "Quelle filiere pour l'informatique apres Sciences Sociales ?",
 ];
 
 const initialMessages: ChatMessage[] = [

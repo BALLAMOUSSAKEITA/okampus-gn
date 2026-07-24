@@ -6,14 +6,6 @@ import { API_URL } from "@/lib/api";
 import UserAvatar from "@/components/UserAvatar";
 import { inferGenderFromName } from "@/lib/avatars";
 
-type PublicStats = {
-  students: number;
-  mentors: number;
-  stage_offers: number;
-  success_stories: number;
-  forum_posts: number;
-};
-
 type Mentor = {
   id: string;
   name: string;
@@ -22,46 +14,6 @@ type Mentor = {
   year: string;
   description: string;
 };
-
-export function LandingStats() {
-  const [stats, setStats] = useState<PublicStats | null>(null);
-
-  useEffect(() => {
-    fetch(`${API_URL}/stats/public`)
-      .then((r) => (r.ok ? r.json() : null))
-      .then((data) => setStats(data))
-      .catch(() => setStats(null));
-  }, []);
-
-  const items = stats
-    ? [
-        { value: String(stats.students), label: "Etudiants inscrits" },
-        { value: String(stats.mentors), label: "Mentors actifs" },
-        { value: String(stats.stage_offers), label: "Offres de stage" },
-        { value: String(stats.success_stories), label: "Success stories" },
-        { value: String(stats.forum_posts), label: "Discussions forum" },
-      ]
-    : [
-        { value: "—", label: "Etudiants inscrits" },
-        { value: "—", label: "Mentors actifs" },
-        { value: "—", label: "Offres de stage" },
-        { value: "—", label: "Success stories" },
-        { value: "—", label: "Discussions forum" },
-      ];
-
-  return (
-    <section className="landing-stat-strip py-10 sm:py-12 px-4 sm:px-6">
-      <div className="max-w-[1200px] mx-auto grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-8 lg:gap-6">
-        {items.map((stat) => (
-          <div key={stat.label} className="text-center lg:text-left">
-            <div className="font-display text-[28px] sm:text-[32px] font-bold text-[#121117] leading-none">{stat.value}</div>
-            <div className="mt-2 text-[13px] text-[#4d4c5c] leading-snug">{stat.label}</div>
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
 
 const MENTOR_COLORS = ["bg-[#99c5ff]", "bg-[#ffdf3d]", "bg-[#f4f4f8]", "bg-[#99c5ff]/60"];
 

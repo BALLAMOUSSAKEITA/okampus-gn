@@ -3,7 +3,7 @@ import Link from "next/link";
 import Logo from "@/components/Logo";
 import SubjectIcon from "@/components/SubjectIcon";
 import OrientationDemo from "@/components/OrientationDemo";
-import { LandingFeaturedMentors, LandingStats } from "@/components/landing/LandingDynamicSections";
+import { LandingFeaturedMentors } from "@/components/landing/LandingDynamicSections";
 
 const subjects = [
   { id: "assistant", title: "Assistant IA", count: "Orientation personnalisee", link: "/assistant" },
@@ -122,9 +122,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      {/* Stats */}
-      <LandingStats />
 
       <OrientationDemo />
 

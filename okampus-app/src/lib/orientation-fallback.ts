@@ -1,3 +1,5 @@
+import { normalizeBacSerie } from "@/lib/bac-options";
+
 export interface OrientationProfile {
   projectEtudes: string;
   forces: string;
@@ -24,37 +26,46 @@ export function generateOrientationAdvice(data: OrientationProfile): string {
   const bonEnScience =
     (notesMap["Physique"] || 0) >= 12 || (notesMap["SVT"] || notesMap["Sciences"] || 0) >= 12;
 
-  if (
-    data.serieBac?.toLowerCase().includes("scientifique") ||
-    data.serieBac?.toLowerCase().includes("mathématiques")
-  ) {
+  const serie = normalizeBacSerie(data.serieBac);
+
+  if (serie === "sm") {
     if (bonEnMath && bonEnScience) {
-      recommandations.push("Médecine", "Pharmacie", "Sciences", "Génie Civil", "Informatique");
+      recommandations.push("Informatique", "Génie Civil", "Sciences Économiques");
     } else if (bonEnMath) {
-      recommandations.push("Informatique", "Sciences Économiques", "Génie");
-    } else if (bonEnScience) {
-      recommandations.push("Sciences de la Vie", "Agronomie");
+      recommandations.push("Informatique", "Statistiques", "Sciences Économiques");
+    } else {
+      recommandations.push("Génie Civil", "Architecture", "Commerce");
     }
-  } else if (
-    data.serieBac?.toLowerCase().includes("sociale") ||
-    data.serieBac?.toLowerCase().includes("lettre")
-  ) {
-    recommandations.push("Droit", "Lettres", "Sciences Politiques", "Commerce", "Journalisme");
-  } else if (data.serieBac?.toLowerCase().includes("technique")) {
-    recommandations.push("Génie Civil", "Électrotechnique", "Mécanique", "Informatique");
+  } else if (serie === "se") {
+    if (bonEnScience) {
+      recommandations.push("Médecine", "Pharmacie", "Sciences Infirmières");
+    } else if (bonEnMath) {
+      recommandations.push("Agronomie", "Sciences de la Vie", "Chimie");
+    } else {
+      recommandations.push("Agronomie", "Sciences de la Vie", "Sciences Infirmières");
+    }
+  } else if (serie === "ss") {
+    recommandations.push("Droit", "Gestion", "Journalisme", "Sciences Politiques");
   } else {
-    recommandations = ["Médecine", "Droit", "Informatique", "Commerce", "Génie Civil"];
+    recommandations = ["Informatique", "Droit", "Gestion", "Médecine", "Génie Civil"];
   }
 
   if (data.projectEtudes) {
     const projet = data.projectEtudes.toLowerCase();
-    if (projet.includes("médecin") || projet.includes("sante") || projet.includes("santé")) {
-      recommandations = [
-        "Médecine",
-        "Pharmacie",
-        "Sciences Infirmières",
-        ...recommandations.filter((f) => !f.includes("Médecine")),
-      ];
+    if (projet.includes("médecin") || projet.includes("medecin") || projet.includes("sante") || projet.includes("santé")) {
+      if (serie === "se" || serie === "sm") {
+        recommandations = [
+          "Médecine",
+          "Pharmacie",
+          "Sciences Infirmières",
+          ...recommandations.filter((f) => !f.includes("Médecine")),
+        ];
+      } else {
+        conseils.push(
+          "La médecine est surtout accessible depuis Sciences Expérimentales ou Mathématiques — vérifie les conditions d'accès."
+        );
+        recommandations = ["Sciences Infirmières", "Santé publique", ...recommandations];
+      }
     } else if (projet.includes("droit") || projet.includes("avocat")) {
       recommandations = ["Droit", "Sciences Politiques", ...recommandations.filter((f) => f !== "Droit")];
     } else if (projet.includes("informatique") || projet.includes("tech")) {
