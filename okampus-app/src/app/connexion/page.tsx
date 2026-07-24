@@ -1,26 +1,32 @@
 "use client";
 
-import { Suspense, startTransition, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
-import { signIn } from "next-auth/react";
+import { useSearchParams } from "next/navigation";
 import AuthShell from "@/components/auth/AuthShell";
 import PasswordField, { inputClass } from "@/components/auth/PasswordField";
+import { signInWithRedirect } from "@/lib/auth-client";
 import { resolveCallbackUrl } from "@/lib/auth-redirect";
 import { parseContactIdentifier } from "@/lib/contact";
 
 function ConnexionForm() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = resolveCallbackUrl(searchParams.get("callbackUrl"));
-  const authError = searchParams.get("error");
 
   const [contact, setContact] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(
-    authError ? "Session expiree ou connexion refusee. Reessaie." : ""
-  );
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const authError = searchParams.get("error");
+    if (!authError) return;
+    setError(
+      authError === "CredentialsSignin"
+        ? "Identifiant ou mot de passe incorrect"
+        : "Session expiree ou connexion refusee. Reessaie."
+    );
+  }, [searchParams]);
 
   const registerHref =
     callbackUrl !== "/assistant"
@@ -37,26 +43,23 @@ function ConnexionForm() {
       return;
     }
 
+    if (!password) {
+      setError("Mot de passe requis");
+      return;
+    }
+
     setLoading(true);
 
     try {
       const identifier = parsed.email || parsed.phone || contact.trim();
-      const res = await signIn("credentials", {
-        identifier,
-        password,
-        redirect: false,
-      });
-
-      if (res?.ok) {
-        startTransition(() => {
-          router.push(callbackUrl);
-        });
-      } else {
-        setError("Identifiant ou mot de passe incorrect");
+      const result = await signInWithRedirect(identifier, password, callbackUrl);
+      if (!result.ok) {
+        setError(result.error || "Identifiant ou mot de passe incorrect");
+        setLoading(false);
       }
+      // Si ok: redirection pleine page en cours, on laisse le loading
     } catch {
       setError("Une erreur est survenue. Verifie ta connexion et reessaie.");
-    } finally {
       setLoading(false);
     }
   };
@@ -67,7 +70,16 @@ function ConnexionForm() {
       title="Connexion"
       description="Connecte-toi avec ton email ou ton telephone."
     >
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+        {error && (
+          <div
+            role="alert"
+            className="rounded border border-red-300 bg-red-50 px-3 py-2.5 text-sm font-medium text-red-700"
+          >
+            {error}
+          </div>
+        )}
+
         <div>
           <label htmlFor="contact" className="block text-sm font-medium text-[#4d4c5c] mb-1.5">
             Email ou telephone
@@ -93,15 +105,6 @@ function ConnexionForm() {
           autoComplete="current-password"
           required
         />
-
-        {error && (
-          <div
-            role="alert"
-            className="rounded border border-red-200 bg-red-50 px-3 py-2.5 text-sm text-red-700 animate-slideDown"
-          >
-            {error}
-          </div>
-        )}
 
         <button
           type="submit"

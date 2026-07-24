@@ -1,18 +1,17 @@
 "use client";
 
-import { Suspense, startTransition, useState } from "react";
+import { Suspense, useState } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
-import { signIn } from "next-auth/react";
+import { useSearchParams } from "next/navigation";
 import type { UserRole } from "@/types";
 import AuthShell from "@/components/auth/AuthShell";
 import PasswordField, { inputClass } from "@/components/auth/PasswordField";
 import { BAC_OPTIONS } from "@/lib/bac-options";
+import { signInWithRedirect } from "@/lib/auth-client";
 import { resolveCallbackUrl } from "@/lib/auth-redirect";
 import { parseContactIdentifier } from "@/lib/contact";
 
 function InscriptionForm() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = resolveCallbackUrl(searchParams.get("callbackUrl"));
 
@@ -147,22 +146,14 @@ function InscriptionForm() {
       }
 
       const identifier = contact.email || contact.phone || formData.contact.trim();
-      const signInRes = await signIn("credentials", {
-        identifier,
-        password: formData.password,
-        redirect: false,
-      });
-
-      if (signInRes?.ok) {
-        startTransition(() => {
-          router.push(callbackUrl);
-        });
-      } else {
+      const signInRes = await signInWithRedirect(identifier, formData.password, callbackUrl);
+      if (!signInRes.ok) {
         setError("Inscription reussie mais connexion echouee. Essaie de te connecter.");
+        setLoading(false);
       }
+      // Si ok: redirection pleine page en cours
     } catch {
       setError("Une erreur est survenue. Verifie ta connexion et reessaie.");
-    } finally {
       setLoading(false);
     }
   };
@@ -359,7 +350,7 @@ function InscriptionForm() {
         {error && (
           <div
             role="alert"
-            className="rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700 animate-slideDown"
+            className="rounded border border-red-300 bg-red-50 px-3 py-2 text-sm font-medium text-red-700"
           >
             {error}
           </div>

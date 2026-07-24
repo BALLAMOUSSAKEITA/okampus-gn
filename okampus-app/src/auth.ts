@@ -6,6 +6,7 @@ const API_URL = process.env.API_URL ?? "http://localhost:8000"
 const PUBLIC_PATHS = ["/", "/inscription", "/connexion", "/confidentialite", "/offline"]
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  trustHost: true,
   providers: [
     Credentials({
       credentials: {
@@ -15,10 +16,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
       async authorize(credentials) {
         const identifier =
-          (typeof credentials?.identifier === "string" && credentials.identifier) ||
-          (typeof credentials?.email === "string" && credentials.email) ||
+          (typeof credentials?.identifier === "string" && credentials.identifier.trim()) ||
+          (typeof credentials?.email === "string" && credentials.email.trim()) ||
           ""
-        if (!identifier || !credentials?.password) return null
+        const password =
+          typeof credentials?.password === "string" ? credentials.password : ""
+        if (!identifier || !password) return null
 
         try {
           const res = await fetch(`${API_URL}/auth/login`, {
@@ -26,7 +29,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               identifier,
-              password: credentials.password,
+              password,
             }),
           })
 
