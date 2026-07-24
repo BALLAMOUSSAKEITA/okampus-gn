@@ -125,7 +125,7 @@ export default function ResourcesPage() {
 
   const openUploadModal = () => {
     if (!session?.user?.id) {
-      router.push("/inscription?callbackUrl=/ressources");
+      router.push("/connexion?callbackUrl=/ressources");
       return;
     }
     setUploadError("");

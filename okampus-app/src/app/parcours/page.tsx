@@ -39,7 +39,7 @@ export default function ParcoursPage() {
 
   useEffect(() => {
     if (isLoaded && !user) {
-      router.replace("/inscription?callbackUrl=/parcours");
+      router.replace("/connexion?callbackUrl=/parcours");
     }
   }, [isLoaded, user, router]);
 

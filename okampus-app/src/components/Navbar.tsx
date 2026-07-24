@@ -127,7 +127,7 @@ export default function Navbar() {
                 </>
               ) : (
                 <>
-                  <Link href="/inscription" className="btn-secondary text-sm">
+                  <Link href="/connexion" className="btn-secondary text-sm">
                     Se connecter
                   </Link>
                   <Link href="/inscription" className="btn-primary text-sm !py-2 !px-5">
@@ -172,7 +172,7 @@ export default function Navbar() {
               ))}
               {mounted && !user && (
                 <div className="pt-3 px-2 flex flex-col gap-2">
-                  <Link href="/inscription" onClick={() => setIsOpen(false)} className="btn-secondary text-center text-sm">
+                  <Link href="/connexion" onClick={() => setIsOpen(false)} className="btn-secondary text-center text-sm">
                     Se connecter
                   </Link>
                   <Link href="/inscription" onClick={() => setIsOpen(false)} className="btn-primary text-center text-sm">

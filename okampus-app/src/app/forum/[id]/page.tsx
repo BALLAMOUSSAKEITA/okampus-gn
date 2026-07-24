@@ -119,7 +119,7 @@ export default function ForumPostPage() {
 
   const toggleLike = async () => {
     if (!session?.accessToken) {
-      router.push(`/inscription?callbackUrl=/forum/${postId}`);
+      router.push(`/connexion?callbackUrl=/forum/${postId}`);
       return;
     }
     try {
@@ -138,7 +138,7 @@ export default function ForumPostPage() {
   const submitComment = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!session?.accessToken) {
-      router.push(`/inscription?callbackUrl=/forum/${postId}`);
+      router.push(`/connexion?callbackUrl=/forum/${postId}`);
       return;
     }
     const text = commentText.trim();
@@ -250,7 +250,7 @@ export default function ForumPostPage() {
           </form>
         ) : (
           <p className="mb-8 text-sm text-[#4d4c5c]">
-            <Link href={`/inscription?callbackUrl=/forum/${postId}`} className="text-[#121117] font-semibold underline">
+            <Link href={`/connexion?callbackUrl=/forum/${postId}`} className="text-[#121117] font-semibold underline">
               Connecte-toi
             </Link>{" "}
             pour commenter cette discussion.

@@ -121,7 +121,7 @@ export default function ForumPage() {
 
   const openNewPost = () => {
     if (!session?.user?.id) {
-      router.push("/inscription?callbackUrl=/forum");
+      router.push("/connexion?callbackUrl=/forum");
       return;
     }
     setCreateError("");
@@ -163,7 +163,7 @@ export default function ForumPage() {
     e.preventDefault();
     e.stopPropagation();
     if (!session?.accessToken) {
-      router.push("/inscription?callbackUrl=/forum");
+      router.push("/connexion?callbackUrl=/forum");
       return;
     }
     try {

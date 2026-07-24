@@ -3,7 +3,7 @@ import Credentials from "next-auth/providers/credentials"
 
 const API_URL = process.env.API_URL ?? "http://localhost:8000"
 
-const PUBLIC_PATHS = ["/", "/inscription", "/offline"]
+const PUBLIC_PATHS = ["/", "/inscription", "/connexion", "/offline"]
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
@@ -74,7 +74,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
   },
   pages: {
-    signIn: "/inscription",
+    signIn: "/connexion",
   },
   session: {
     strategy: "jwt",

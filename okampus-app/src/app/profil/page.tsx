@@ -49,7 +49,7 @@ export default function ProfilPage() {
 
   useEffect(() => {
     if (isLoaded && !user) {
-      router.replace("/inscription?callbackUrl=/profil");
+      router.replace("/connexion?callbackUrl=/profil");
     }
   }, [isLoaded, user, router]);
 

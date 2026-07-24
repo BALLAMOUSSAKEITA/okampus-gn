@@ -16,7 +16,7 @@ export default function AdminGuard({ children }: { children: React.ReactNode }) 
   useEffect(() => {
     if (status === "loading" || !isLoaded) return;
     if (!session?.user && !user) {
-      router.replace("/inscription?callbackUrl=/admin");
+      router.replace("/connexion?callbackUrl=/admin");
       return;
     }
     if (!isAdmin) {
