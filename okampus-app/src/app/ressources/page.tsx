@@ -1,11 +1,16 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { API_URL } from "@/lib/api";
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
+import { API_URL, apiFetch } from "@/lib/api";
 import EmptyState from "@/components/ui/EmptyState";
 import PageShell from "@/components/ui/PageShell";
 import PageHeader from "@/components/ui/PageHeader";
+
+const inputClass =
+  "w-full px-4 py-3 rounded-lg border border-[#dcdce5] bg-white focus:outline-none focus:ring-2 focus:ring-[#121117]/20 focus:border-[#121117] text-sm transition-all";
 
 interface Resource {
   id: string;
@@ -18,71 +23,86 @@ interface Resource {
   year?: string;
   fileType: string;
   fileSize: number;
-  price: number;
-  isPremium: boolean;
+  fileUrl: string;
   downloads: number;
   rating: number;
-  author?: string;
 }
 
+const defaultUploadForm = {
+  title: "",
+  description: "",
+  category: "TD",
+  subject: "",
+  filiere: "",
+  university: "",
+  year: "",
+  fileUrl: "",
+  fileType: "pdf",
+};
+
 export default function ResourcesPage() {
+  const router = useRouter();
+  const { data: session } = useSession();
   const [resources, setResources] = useState<Resource[]>([]);
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [selectedSubject, setSelectedSubject] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [uploadForm, setUploadForm] = useState(defaultUploadForm);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState("");
+
+  const loadResources = useCallback(async () => {
+    setLoading(true);
+    setFetchError("");
+    try {
+      const res = await fetch(`${API_URL}/resources`);
+      if (!res.ok) throw new Error("Impossible de charger les ressources");
+      const data = (await res.json()) as Array<{
+        id: string;
+        title: string;
+        description: string;
+        category: string;
+        subject: string;
+        filiere?: string | null;
+        university?: string | null;
+        year?: string | null;
+        file_type: string;
+        file_size: number;
+        file_url: string;
+        downloads: number;
+        rating: number;
+      }>;
+      setResources(
+        data.map((r) => ({
+          id: r.id,
+          title: r.title,
+          description: r.description,
+          category: r.category,
+          subject: r.subject,
+          filiere: r.filiere ?? undefined,
+          university: r.university ?? undefined,
+          year: r.year ?? undefined,
+          fileType: r.file_type,
+          fileSize: r.file_size,
+          fileUrl: r.file_url,
+          downloads: r.downloads,
+          rating: r.rating,
+        }))
+      );
+    } catch (e) {
+      setFetchError(e instanceof Error ? e.message : "Erreur de chargement");
+      setResources([]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    const load = async () => {
-      setLoading(true);
-      setFetchError("");
-      try {
-        const res = await fetch(`${API_URL}/resources`);
-        if (!res.ok) throw new Error("Impossible de charger les ressources");
-        const data = (await res.json()) as Array<{
-          id: string;
-          title: string;
-          description: string;
-          category: string;
-          subject: string;
-          filiere?: string | null;
-          university?: string | null;
-          year?: string | null;
-          file_type: string;
-          file_size: number;
-          price: number;
-          is_premium: boolean;
-          downloads: number;
-          rating: number;
-        }>;
-        setResources(
-          data.map((r) => ({
-            id: r.id,
-            title: r.title,
-            description: r.description,
-            category: r.category,
-            subject: r.subject,
-            filiere: r.filiere ?? undefined,
-            university: r.university ?? undefined,
-            year: r.year ?? undefined,
-            fileType: r.file_type,
-            fileSize: r.file_size,
-            price: r.price,
-            isPremium: r.is_premium,
-            downloads: r.downloads,
-            rating: r.rating,
-          }))
-        );
-      } catch (e) {
-        setFetchError(e instanceof Error ? e.message : "Erreur de chargement");
-        setResources([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-    load();
-  }, []);
+    loadResources();
+  }, [loadResources]);
 
   const filteredResources = resources.filter((res) => {
     const matchCategory = selectedCategory === "all" || res.category === selectedCategory;
@@ -98,29 +118,85 @@ export default function ResourcesPage() {
   const categories = useMemo(() => Array.from(new Set(resources.map((r) => r.category))).sort(), [resources]);
 
   const formatFileSize = (bytes: number) => {
+    if (bytes <= 0) return "—";
     if (bytes < 1024) return bytes + " B";
     if (bytes < 1048576) return (bytes / 1024).toFixed(1) + " KB";
     return (bytes / 1048576).toFixed(1) + " MB";
   };
 
-  return (
-    <PageShell>
-      <PageHeader
-        eyebrow="Bibliotheque"
-        title="Bibliotheque de ressources"
-        description="Partage et accede a des TD, cours, sujets d'examens et corrections"
-      />
+  const openUploadModal = () => {
+    if (!session?.user?.id) {
+      router.push("/inscription?callbackUrl=/ressources");
+      return;
+    }
+    setUploadError("");
+    setShowUploadModal(true);
+  };
 
-          <div className="inline-flex items-center gap-3 px-5 py-3 bg-[#ffdf3d]/30 border border-[#dcdce5] rounded-lg mb-8">
-            <div className="w-8 h-8 rounded-lg bg-[#ffdf3d] flex items-center justify-center">
-              <svg className="w-4.5 h-4.5 text-[#121117]" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-              </svg>
-            </div>
-            <span className="text-sm font-medium text-[#4d4c5c]">
-              Gagne de l&apos;argent en partageant tes ressources de qualite
-            </span>
+  const handleUpload = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!session?.user?.id) return;
+
+    setUploading(true);
+    setUploadError("");
+    try {
+      const res = await apiFetch("/resources", {
+        method: "POST",
+        token: session.accessToken,
+        body: JSON.stringify({
+          title: uploadForm.title.trim(),
+          description: uploadForm.description.trim(),
+          category: uploadForm.category,
+          subject: uploadForm.subject.trim(),
+          filiere: uploadForm.filiere.trim() || null,
+          university: uploadForm.university.trim() || null,
+          year: uploadForm.year.trim() || null,
+          file_url: uploadForm.fileUrl.trim(),
+          file_type: uploadForm.fileType.trim() || "pdf",
+          file_size: 0,
+          price: 0,
+          is_premium: false,
+          author_id: session.user.id,
+        }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error((err as { detail?: string }).detail ?? "Impossible de publier la ressource");
+      }
+      setShowUploadModal(false);
+      setUploadForm(defaultUploadForm);
+      await loadResources();
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : "Erreur lors de la publication");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  return (
+    <>
+      <PageShell>
+        <PageHeader
+          eyebrow="Bibliotheque"
+          title="Bibliotheque de ressources"
+          description="Partage et accede gratuitement a des TD, cours et sujets d'examens"
+          action={
+            <button onClick={openUploadModal} className="btn-primary">
+              + Partager une ressource
+            </button>
+          }
+        />
+
+        <div className="inline-flex items-center gap-3 px-5 py-3 bg-emerald-50 border border-emerald-100 rounded-lg mb-8">
+          <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center">
+            <svg className="w-4.5 h-4.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+            </svg>
           </div>
+          <span className="text-sm font-medium text-[#4d4c5c]">
+            Toutes les ressources sont gratuites — partage tes notes, TD et cours avec la communaute etudiante.
+          </span>
+        </div>
 
         {/* Filtres */}
         <div className="card p-5 md:p-7 mb-8">
@@ -144,7 +220,7 @@ export default function ResourcesPage() {
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="w-full px-4 py-3 rounded-lg border border-[#dcdce5] bg-white focus:outline-none focus:ring-2 focus:ring-[#121117]/20 focus:border-[#121117] text-sm"
+                className={inputClass}
               >
                 <option value="all">Tous</option>
                 {categories.map((cat) => (
@@ -155,11 +231,11 @@ export default function ResourcesPage() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-semibold text-[#4d4c5c] mb-2">Matière</label>
+              <label className="block text-sm font-semibold text-[#4d4c5c] mb-2">Matiere</label>
               <select
                 value={selectedSubject}
                 onChange={(e) => setSelectedSubject(e.target.value)}
-                className="w-full px-4 py-3 rounded-lg border border-[#dcdce5] bg-white focus:outline-none focus:ring-2 focus:ring-[#121117]/20 focus:border-[#121117] text-sm"
+                className={inputClass}
               >
                 <option value="all">Toutes</option>
                 {subjects.map((sub) => (
@@ -177,7 +253,6 @@ export default function ResourcesPage() {
           </div>
         </div>
 
-        {/* Liste des ressources */}
         {loading ? (
           <div className="card p-10 text-center text-[#6a697c]">Chargement...</div>
         ) : fetchError ? (
@@ -185,97 +260,235 @@ export default function ResourcesPage() {
         ) : resources.length === 0 ? (
           <EmptyState
             title="Aucune ressource pour le moment"
-            description="Les TD, cours et sujets seront publies ici des qu'ils seront disponibles."
+            description="Sois le premier a partager un TD, un cours ou un sujet d'examen."
+            action={
+              <button onClick={openUploadModal} className="btn-primary">
+                Partager une ressource
+              </button>
+            }
           />
         ) : (
-        <>
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {filteredResources.map((resource) => (
-            <div
-              key={resource.id}
-              className="card p-6 hover:border-[#121117]/30 transition-all group"
-            >
-              {/* Header */}
-              <div className="flex items-start justify-between mb-4">
-                <span className="px-3 py-1 bg-[#f4f4f8] text-[#121117] rounded-full text-xs font-semibold">
-                  {resource.category}
-                </span>
-                {resource.isPremium && (
-                  <span className="px-3 py-1 bg-[#ffdf3d] text-[#121117] rounded-full text-xs font-bold flex items-center gap-1">
-                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
-                    Premium
-                  </span>
-                )}
-              </div>
-
-              {/* Titre */}
-              <h3 className="font-bold text-[#121117] mb-2 line-clamp-2 group-hover:text-[#121117] transition-colors">{resource.title}</h3>
-              <p className="text-sm text-[#4d4c5c] mb-4 line-clamp-2">{resource.description}</p>
-
-              {/* Infos */}
-              <div className="space-y-2 mb-5 text-xs text-[#4d4c5c]">
-                <div className="flex items-center gap-2">
-                  <span className="px-2 py-0.5 bg-emerald-50 text-emerald-600 rounded-full font-medium">{resource.subject}</span>
-                  {resource.year && <span className="px-2 py-0.5 bg-[#f4f4f8] text-[#4d4c5c] rounded-full">{resource.year}</span>}
-                </div>
-                {resource.university && (
-                  <div className="flex items-center gap-1.5">
-                    <svg className="w-3.5 h-3.5 text-[#6a697c]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                    </svg>
-                    {resource.university}
-                  </div>
-                )}
-                <div className="flex items-center gap-2">
-                  <span>{formatFileSize(resource.fileSize)}</span>
-                  <span className="w-1 h-1 rounded-full bg-[#dcdce5]" />
-                  <span>{resource.fileType.toUpperCase()}</span>
-                </div>
-              </div>
-
-              {/* Footer */}
-              <div className="pt-4 border-t border-[#dcdce5] flex items-center justify-between">
-                <div className="flex items-center gap-3 text-xs text-[#4d4c5c]">
-                  <div className="flex items-center gap-1">
-                    <svg className="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
-                    <span className="font-semibold text-[#4d4c5c]">{resource.rating}</span>
-                  </div>
-                  <span className="text-[#6a697c]">{resource.downloads} telechargements</span>
-                </div>
-                <div className="text-right">
-                  {resource.price === 0 ? (
-                    <button className="btn-secondary px-4 py-1.5 bg-emerald-50 text-emerald-600 rounded-full text-xs font-bold hover:bg-emerald-100 transition-colors">
+          <>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+              {filteredResources.map((resource) => (
+                <div key={resource.id} className="card p-6 hover:border-[#121117]/30 transition-all group">
+                  <div className="flex items-start justify-between mb-4">
+                    <span className="px-3 py-1 bg-[#f4f4f8] text-[#121117] rounded-full text-xs font-semibold">
+                      {resource.category}
+                    </span>
+                    <span className="px-3 py-1 bg-emerald-50 text-emerald-600 rounded-full text-xs font-bold">
                       Gratuit
-                    </button>
-                  ) : (
-                    <button className="btn-primary">
-                      {(resource.price / 1000).toFixed(0)}k GNF
-                    </button>
-                  )}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+                    </span>
+                  </div>
 
-        {filteredResources.length === 0 && resources.length > 0 && (
-          <EmptyState
-            title="Aucune ressource avec ces criteres"
-            description="Essaie de modifier tes filtres ou ta recherche."
-          />
-        )}
-        </>
+                  <h3 className="font-bold text-[#121117] mb-2 line-clamp-2">{resource.title}</h3>
+                  <p className="text-sm text-[#4d4c5c] mb-4 line-clamp-2">{resource.description}</p>
+
+                  <div className="space-y-2 mb-5 text-xs text-[#4d4c5c]">
+                    <div className="flex items-center gap-2">
+                      <span className="px-2 py-0.5 bg-emerald-50 text-emerald-600 rounded-full font-medium">{resource.subject}</span>
+                      {resource.year && <span className="px-2 py-0.5 bg-[#f4f4f8] text-[#4d4c5c] rounded-full">{resource.year}</span>}
+                    </div>
+                    {resource.university && (
+                      <div className="flex items-center gap-1.5">
+                        <svg className="w-3.5 h-3.5 text-[#6a697c]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                        </svg>
+                        {resource.university}
+                      </div>
+                    )}
+                    <div className="flex items-center gap-2">
+                      <span>{formatFileSize(resource.fileSize)}</span>
+                      <span className="w-1 h-1 rounded-full bg-[#dcdce5]" />
+                      <span>{resource.fileType.toUpperCase()}</span>
+                    </div>
+                  </div>
+
+                  <div className="pt-4 border-t border-[#dcdce5] flex items-center justify-between">
+                    <span className="text-xs text-[#6a697c]">{resource.downloads} telechargement{resource.downloads > 1 ? "s" : ""}</span>
+                    {resource.fileUrl ? (
+                      <a
+                        href={resource.fileUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn-secondary px-4 py-1.5 text-xs font-bold"
+                      >
+                        Telecharger
+                      </a>
+                    ) : (
+                      <span className="text-xs text-[#6a697c]">Lien indisponible</span>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {filteredResources.length === 0 && (
+              <EmptyState
+                title="Aucune ressource avec ces criteres"
+                description="Essaie de modifier tes filtres ou ta recherche."
+              />
+            )}
+          </>
         )}
 
         <div className="mt-10 text-sm">
           <Link href="/" className="text-[#6a697c] hover:text-[#121117] font-medium transition-colors">
-            ← Retour à l'accueil
+            ← Retour a l&apos;accueil
           </Link>
         </div>
-    </PageShell>
+      </PageShell>
+
+      {showUploadModal && (
+        <div
+          className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-end md:items-center justify-center z-50 p-0 md:p-4"
+          onClick={() => !uploading && setShowUploadModal(false)}
+        >
+          <div
+            className="bg-white w-full md:max-w-2xl md:rounded-2xl rounded-t-2xl max-h-[90vh] overflow-y-auto shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="h-1 bg-[#121117] md:rounded-t-2xl" />
+            <div className="p-6 md:p-8 border-b border-[#dcdce5] flex items-center justify-between">
+              <div>
+                <h3 className="text-xl font-bold text-[#121117]">Partager une ressource</h3>
+                <p className="text-sm text-[#4d4c5c] mt-1">Publication gratuite pour toute la communaute</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowUploadModal(false)}
+                disabled={uploading}
+                className="w-8 h-8 rounded-full bg-[#f4f4f8] flex items-center justify-center text-[#6a697c] hover:bg-[#dcdce5] transition-all"
+              >
+                ×
+              </button>
+            </div>
+
+            <form onSubmit={handleUpload} className="p-6 md:p-8 space-y-5">
+              {uploadError && (
+                <div className="p-3 rounded-lg bg-red-50 text-red-700 text-sm border border-red-100">{uploadError}</div>
+              )}
+
+              <div>
+                <label className="block text-sm font-semibold text-[#4d4c5c] mb-2">Titre *</label>
+                <input
+                  type="text"
+                  required
+                  value={uploadForm.title}
+                  onChange={(e) => setUploadForm({ ...uploadForm, title: e.target.value })}
+                  placeholder="Ex: TD Analyse 1 - Limites et continuite"
+                  className={inputClass}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-[#4d4c5c] mb-2">Description *</label>
+                <textarea
+                  rows={3}
+                  required
+                  value={uploadForm.description}
+                  onChange={(e) => setUploadForm({ ...uploadForm, description: e.target.value })}
+                  placeholder="Decris brievement le contenu de la ressource"
+                  className={`${inputClass} resize-none`}
+                />
+              </div>
+
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-[#4d4c5c] mb-2">Type *</label>
+                  <select
+                    value={uploadForm.category}
+                    onChange={(e) => setUploadForm({ ...uploadForm, category: e.target.value })}
+                    className={inputClass}
+                  >
+                    <option>TD</option>
+                    <option>Cours</option>
+                    <option>Sujet</option>
+                    <option>Correction</option>
+                    <option>Autre</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-[#4d4c5c] mb-2">Matiere *</label>
+                  <input
+                    type="text"
+                    required
+                    value={uploadForm.subject}
+                    onChange={(e) => setUploadForm({ ...uploadForm, subject: e.target.value })}
+                    placeholder="Ex: Mathematiques"
+                    className={inputClass}
+                  />
+                </div>
+              </div>
+
+              <div className="grid sm:grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-[#4d4c5c] mb-2">Filiere</label>
+                  <input
+                    type="text"
+                    value={uploadForm.filiere}
+                    onChange={(e) => setUploadForm({ ...uploadForm, filiere: e.target.value })}
+                    placeholder="Ex: Sciences"
+                    className={inputClass}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-[#4d4c5c] mb-2">Universite</label>
+                  <input
+                    type="text"
+                    value={uploadForm.university}
+                    onChange={(e) => setUploadForm({ ...uploadForm, university: e.target.value })}
+                    placeholder="Ex: UGANC"
+                    className={inputClass}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-[#4d4c5c] mb-2">Annee</label>
+                  <input
+                    type="text"
+                    value={uploadForm.year}
+                    onChange={(e) => setUploadForm({ ...uploadForm, year: e.target.value })}
+                    placeholder="Ex: L1"
+                    className={inputClass}
+                  />
+                </div>
+              </div>
+
+              <div className="grid sm:grid-cols-3 gap-4">
+                <div className="sm:col-span-2">
+                  <label className="block text-sm font-semibold text-[#4d4c5c] mb-2">Lien du fichier *</label>
+                  <input
+                    type="url"
+                    required
+                    value={uploadForm.fileUrl}
+                    onChange={(e) => setUploadForm({ ...uploadForm, fileUrl: e.target.value })}
+                    placeholder="https://drive.google.com/..."
+                    className={inputClass}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-[#4d4c5c] mb-2">Format</label>
+                  <input
+                    type="text"
+                    value={uploadForm.fileType}
+                    onChange={(e) => setUploadForm({ ...uploadForm, fileType: e.target.value })}
+                    placeholder="pdf"
+                    className={inputClass}
+                  />
+                </div>
+              </div>
+
+              <p className="text-xs text-[#6a697c]">
+                Colle un lien public (Google Drive, Dropbox, etc.). La ressource sera accessible gratuitement par tous.
+              </p>
+
+              <button type="submit" disabled={uploading} className="btn-primary w-full">
+                {uploading ? "Publication..." : "Partager la ressource"}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
