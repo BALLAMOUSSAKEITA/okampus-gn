@@ -15,7 +15,7 @@ const inputClass =
 function InscriptionForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") || "/profil";
+  const callbackUrl = searchParams.get("callbackUrl") || "/assistant";
 
   const [mode, setMode] = useState<"login" | "register">("register");
   const [role, setRole] = useState<UserRole>("bachelier");
@@ -33,7 +33,7 @@ function InscriptionForm() {
   const [loading, setLoading] = useState(false);
 
   const redirectAfterAuth = () => {
-    router.push(callbackUrl.startsWith("/") ? callbackUrl : "/profil");
+    router.push(callbackUrl.startsWith("/") ? callbackUrl : "/assistant");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
