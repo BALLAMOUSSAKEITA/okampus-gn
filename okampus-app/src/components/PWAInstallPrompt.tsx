@@ -7,15 +7,40 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 }
 
+function isIos(): boolean {
+  if (typeof window === "undefined") return false;
+  return /iphone|ipad|ipod/i.test(window.navigator.userAgent);
+}
+
+function isStandalone(): boolean {
+  if (typeof window === "undefined") return false;
+  return (
+    window.matchMedia("(display-mode: standalone)").matches ||
+    ("standalone" in window.navigator &&
+      Boolean((window.navigator as Navigator & { standalone?: boolean }).standalone))
+  );
+}
+
 export default function PWAInstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [showPrompt, setShowPrompt] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
+  const [iosHint, setIosHint] = useState(false);
 
   useEffect(() => {
-    if (window.matchMedia("(display-mode: standalone)").matches) {
+    if (isStandalone()) {
       setIsInstalled(true);
       return;
+    }
+
+    const hasSeenPrompt = localStorage.getItem("pwa-install-dismissed");
+
+    if (isIos() && !hasSeenPrompt) {
+      const timer = setTimeout(() => {
+        setIosHint(true);
+        setShowPrompt(true);
+      }, 3000);
+      return () => clearTimeout(timer);
     }
 
     const handler = (e: Event) => {
@@ -24,8 +49,8 @@ export default function PWAInstallPrompt() {
       setDeferredPrompt(promptEvent);
 
       setTimeout(() => {
-        const hasSeenPrompt = localStorage.getItem("pwa-install-dismissed");
-        if (!hasSeenPrompt) {
+        const dismissed = localStorage.getItem("pwa-install-dismissed");
+        if (!dismissed) {
           setShowPrompt(true);
         }
       }, 3000);
@@ -67,30 +92,35 @@ export default function PWAInstallPrompt() {
         <div className="absolute top-0 left-0 right-0 h-1 bg-[#14b887]" />
 
         <div className="flex items-start gap-4">
-          <div className="w-12 h-12 bg-[#121117] rounded flex items-center justify-center flex-shrink-0">
-            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" />
-            </svg>
+          <div className="w-12 h-12 bg-[#121117] rounded flex items-center justify-center flex-shrink-0 overflow-hidden">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/icon-192x192.png" alt="" className="w-full h-full object-cover" />
           </div>
 
           <div className="flex-1 min-w-0">
-            <h3 className="font-display font-bold text-[#121117] text-base mb-1">Installer BacheliO</h3>
+            <h3 className="font-display font-bold text-[#121117] text-base mb-1">
+              Installer BacheliO
+            </h3>
             <p className="text-sm text-[#4d4c5c] mb-4 leading-relaxed">
-              Accede rapidement a la plateforme depuis ton ecran d&apos;accueil
+              {iosHint
+                ? "Sur iPhone : appuie sur Partager, puis « Sur l'écran d'accueil »."
+                : "Accède rapidement à la plateforme depuis ton écran d'accueil."}
             </p>
 
             <div className="flex gap-2">
-              <button
-                onClick={handleInstall}
-                className="flex-1 px-4 py-2.5 btn-primary text-sm"
-              >
-                Installer
-              </button>
+              {!iosHint && (
+                <button
+                  onClick={handleInstall}
+                  className="flex-1 px-4 py-2.5 btn-primary text-sm"
+                >
+                  Installer
+                </button>
+              )}
               <button
                 onClick={handleDismiss}
-                className="px-4 py-2.5 rounded border border-[#dcdce5] text-[#4d4c5c] font-medium hover:bg-[#f4f4f8] transition-all text-sm"
+                className={`px-4 py-2.5 rounded border border-[#dcdce5] text-[#4d4c5c] font-medium hover:bg-[#f4f4f8] transition-all text-sm ${iosHint ? "flex-1" : ""}`}
               >
-                Plus tard
+                {iosHint ? "Compris" : "Plus tard"}
               </button>
             </div>
           </div>
@@ -98,6 +128,7 @@ export default function PWAInstallPrompt() {
           <button
             onClick={handleDismiss}
             className="text-[#6a697c] hover:text-[#121117] transition-colors p-1"
+            aria-label="Fermer"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

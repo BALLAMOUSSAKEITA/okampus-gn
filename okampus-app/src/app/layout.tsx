@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Figtree, Inter, Manrope } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
@@ -29,18 +29,27 @@ export const metadata: Metadata = {
   title: "BacheliO - La plateforme etudiante",
   description:
     "BacheliO t'accompagne : orientation IA, mentorat, forum, CV, stages, bourses et insertion professionnelle.",
+  applicationName: "BacheliO",
   manifest: "/manifest.json",
-  themeColor: "#14b887",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
     title: "BacheliO",
   },
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 1,
+  icons: {
+    icon: [
+      { url: "/icon-192x192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icon-512x512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
   },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  themeColor: "#14b887",
 };
 
 export default function RootLayout({
@@ -51,7 +60,7 @@ export default function RootLayout({
   return (
     <html lang="fr">
       <head>
-        <link rel="apple-touch-icon" href="/icon-192x192.png" />
+        <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
       </head>
