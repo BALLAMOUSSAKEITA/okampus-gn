@@ -432,6 +432,25 @@ class AdminMentorOut(BaseModel):
     meet_link: Optional[str] = None
 
 
+class MentorOut(BaseModel):
+    id: str
+    name: str
+    field: str
+    university: str
+    year: str
+    description: str
+    meet_link: Optional[str] = None
+    available_slots: list[str] = []
+
+
+class PublicStatsOut(BaseModel):
+    students: int
+    mentors: int
+    stage_offers: int
+    success_stories: int
+    forum_posts: int
+
+
 class StageOfferUpdate(BaseModel):
     title: Optional[str] = None
     company: Optional[str] = None

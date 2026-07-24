@@ -2,21 +2,12 @@ import Image from "next/image";
 import Link from "next/link";
 import Logo from "@/components/Logo";
 import SubjectIcon from "@/components/SubjectIcon";
-import UserAvatar from "@/components/UserAvatar";
 import OrientationDemo from "@/components/OrientationDemo";
-import type { AvatarGender } from "@/lib/avatars";
-
-const stats = [
-  { value: "1000+", label: "Etudiants accompagnes" },
-  { value: "50+", label: "Mentors actifs" },
-  { value: "30+", label: "Filieres conseillees" },
-  { value: "10+", label: "Universites" },
-  { value: "4.8", label: "Note moyenne" },
-];
+import { LandingFeaturedMentors, LandingStats } from "@/components/landing/LandingDynamicSections";
 
 const subjects = [
   { id: "assistant", title: "Assistant IA", count: "Orientation personnalisee", link: "/assistant" },
-  { id: "conseil", title: "Mentorat", count: "50+ conseillers", link: "/conseil" },
+  { id: "conseil", title: "Mentorat", count: "Conseillers etudiants", link: "/conseil" },
   { id: "forum", title: "Forum", count: "Communaute active", link: "/forum" },
   { id: "stages", title: "Stages & Jobs", count: "Opportunites locales", link: "/stages" },
   { id: "bourses", title: "Bourses", count: "Concours et aides", link: "/bourses" },
@@ -26,25 +17,11 @@ const subjects = [
   { id: "calendrier", title: "Calendrier", count: "Dates universitaires", link: "/calendrier" },
 ];
 
-const featuredMentors: Array<{
-  name: string;
-  role: string;
-  rating: string;
-  gender: AvatarGender;
-  color: string;
-}> = [
-  { name: "Aissatou B.", role: "Medecine — Gamal", rating: "4.9", gender: "female", color: "bg-[#99c5ff]" },
-  { name: "Mamadou D.", role: "Informatique — UGB", rating: "4.8", gender: "male", color: "bg-[#ffdf3d]" },
-  { name: "Fatoumata S.", role: "Droit — Kofi Annan", rating: "5.0", gender: "female", color: "bg-[#f4f4f8]" },
-  { name: "Ibrahima C.", role: "Commerce — UGANC", rating: "4.7", gender: "male", color: "bg-[#99c5ff]/60" },
-];
-
 const howItWorks = [
   {
     step: "1",
     title: "Trouve ton mentor",
     desc: "Des etudiants deja en filiere te guident, t'encouragent et repondent a tes questions.",
-    mentors: featuredMentors.slice(0, 3),
   },
   {
     step: "2",
@@ -147,16 +124,7 @@ export default function Home() {
       </section>
 
       {/* Stats */}
-      <section className="landing-stat-strip py-10 sm:py-12 px-4 sm:px-6">
-        <div className="max-w-[1200px] mx-auto grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-8 lg:gap-6">
-          {stats.map((stat) => (
-            <div key={stat.label} className="text-center lg:text-left">
-              <div className="font-display text-[28px] sm:text-[32px] font-bold text-[#121117] leading-none">{stat.value}</div>
-              <div className="mt-2 text-[13px] text-[#4d4c5c] leading-snug">{stat.label}</div>
-            </div>
-          ))}
-        </div>
-      </section>
+      <LandingStats />
 
       <OrientationDemo />
 
@@ -189,37 +157,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Mentors featured */}
-      <section className="bg-[#f4f4f8] py-16 px-4 sm:px-6 border-y border-[#dcdce5]">
-        <div className="max-w-[1200px] mx-auto">
-          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-8">
-            <div>
-              <h2 className="font-display text-[28px] sm:text-[36px] font-bold text-[#121117] leading-tight">
-                Mentors populaires
-              </h2>
-              <p className="mt-2 text-[#4d4c5c]">Des etudiants qui connaissent deja le terrain</p>
-            </div>
-            <Link href="/conseil" className="btn-secondary shrink-0">
-              Voir tous les mentors
-            </Link>
-          </div>
-
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {featuredMentors.map((m) => (
-              <Link key={m.name} href="/conseil" className="card overflow-hidden group">
-                <div className={`h-32 ${m.color} flex items-center justify-center`}>
-                  <UserAvatar name={m.name} gender={m.gender} size={96} />
-                </div>
-                <div className="p-4">
-                  <p className="font-semibold text-[#121117]">{m.name}</p>
-                  <p className="text-xs text-[#4d4c5c] mt-1">{m.role}</p>
-                  <p className="text-xs font-semibold text-[#121117] mt-2">{m.rating} ★</p>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
+      <LandingFeaturedMentors />
 
       {/* How it works */}
       <section className="bg-white py-16 md:py-20 px-4 sm:px-6">
@@ -234,21 +172,6 @@ export default function Home() {
                 <span className="font-display text-[56px] font-bold text-[#121117]/10 leading-none select-none">{item.step}</span>
                 <h3 className="font-display text-xl sm:text-2xl font-bold text-[#121117] mt-1 mb-3">{item.title}</h3>
                 <p className="text-[#4d4c5c] leading-relaxed">{item.desc}</p>
-
-                {item.mentors && (
-                  <div className="mt-6 space-y-2">
-                    {item.mentors.map((m) => (
-                      <div key={m.name} className="catalog-card !py-3">
-                        <UserAvatar name={m.name} gender={m.gender} size={36} />
-                        <div className="flex-1 min-w-0">
-                          <p className="font-semibold text-sm text-[#121117] truncate">{m.name}</p>
-                          <p className="text-xs text-[#4d4c5c] truncate">{m.role}</p>
-                        </div>
-                        <span className="text-xs font-semibold text-[#121117] shrink-0">{m.rating} ★</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
               </div>
             ))}
           </div>

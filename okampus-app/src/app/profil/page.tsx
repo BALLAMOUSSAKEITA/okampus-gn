@@ -34,6 +34,7 @@ export default function ProfilPage() {
     year: "",
     description: "",
     meetLink: "",
+    availableSlotsText: "",
   });
   const [cvForm, setCvForm] = useState<CvProfile>(emptyCvProfile);
   const [cvSaved, setCvSaved] = useState(false);
@@ -62,15 +63,23 @@ export default function ProfilPage() {
 
   const handleBecomeAdvisor = (e: React.FormEvent) => {
     e.preventDefault();
+    const availableSlots = advisorForm.availableSlotsText
+      .split("\n")
+      .map((s) => s.trim())
+      .filter(Boolean);
     updateUser({
       isAdvisor: true,
       advisorProfile: {
-        ...advisorForm,
-        availableSlots: ["Lundi 14h-16h", "Mercredi 10h-12h", "Vendredi 15h-17h"],
+        field: advisorForm.field,
+        university: advisorForm.university,
+        year: advisorForm.year,
+        description: advisorForm.description,
+        meetLink: advisorForm.meetLink,
+        availableSlots,
       },
     });
     setShowAdvisorForm(false);
-    setAdvisorForm({ field: "", university: "", year: "", description: "", meetLink: "" });
+    setAdvisorForm({ field: "", university: "", year: "", description: "", meetLink: "", availableSlotsText: "" });
   };
 
   const handleStopAdvisor = () => {
@@ -869,6 +878,18 @@ export default function ProfilPage() {
                   value={advisorForm.description}
                   onChange={(e) => setAdvisorForm({ ...advisorForm, description: e.target.value })}
                   placeholder="Ex: Passionne par la medecine, j'aime partager mon experience avec les futurs etudiants..."
+                  rows={3}
+                  className={`${inputClass} resize-none`}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-[#4d4c5c] mb-1.5">
+                  Creneaux disponibles (un par ligne)
+                </label>
+                <textarea
+                  value={advisorForm.availableSlotsText}
+                  onChange={(e) => setAdvisorForm({ ...advisorForm, availableSlotsText: e.target.value })}
+                  placeholder={"Lundi 14h-16h\nMercredi 10h-12h"}
                   rows={3}
                   className={`${inputClass} resize-none`}
                 />

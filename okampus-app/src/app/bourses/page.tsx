@@ -1,7 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { API_URL } from "@/lib/api";
+import EmptyState from "@/components/ui/EmptyState";
 import PageShell from "@/components/ui/PageShell";
 import PageHeader from "@/components/ui/PageHeader";
 
@@ -24,89 +26,64 @@ interface Scholarship {
 }
 
 export default function BoursesPage() {
+  const [scholarships, setScholarships] = useState<Scholarship[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState("");
   const [selectedType, setSelectedType] = useState<string>("all");
   const [selectedLocation, setSelectedLocation] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Données simulées
-  const scholarships: Scholarship[] = [
-    {
-      id: "1",
-      title: "Bourse d'Excellence du Gouvernement Guinéen",
-      type: "bourse",
-      organization: "Ministère de l'Enseignement Supérieur",
-      description: "Bourse complète pour les meilleurs bacheliers guinéens : frais de scolarité, allocation mensuelle, hébergement.",
-      eligibility: "Moyenne générale >= 14 au bac, nationalité guinéenne",
-      amount: "Frais de scolarité + 1 500 000 GNF/an",
-      deadline: "2024-10-15",
-      contactInfo: "bourses@mesrs.gov.gn",
-      domain: "Tous",
-      location: "Guinée",
-    },
-    {
-      id: "2",
-      title: "Bourse Mastercard Foundation",
-      type: "bourse",
-      organization: "Mastercard Foundation",
-      description: "Programme de bourses pour étudiants africains talentueux issus de milieux défavorisés. Couvre études, logement, voyage.",
-      eligibility: "Excellence académique, leadership, situation financière difficile",
-      amount: "Bourse complète",
-      deadline: "2024-12-01",
-      applyLink: "https://mastercardfdn.org/scholarships",
-      domain: "Tous",
-      location: "International",
-    },
-    {
-      id: "3",
-      title: "Concours d'entrée à l'École Nationale d'Administration",
-      type: "concours",
-      organization: "ENA Guinée",
-      description: "Concours national pour intégrer l'ENA. Formation gratuite pour devenir administrateur civil.",
-      eligibility: "Bac+3 minimum, âge <= 30 ans",
-      deadline: "2024-09-30",
-      contactInfo: "+224 621 00 00 00",
-      domain: "Administration",
-      location: "Guinée",
-    },
-    {
-      id: "4",
-      title: "Bourse Campus France",
-      type: "bourse",
-      organization: "Ambassade de France",
-      description: "Bourses pour études en France (Master, Doctorat) dans toutes les disciplines.",
-      eligibility: "Dossier académique solide, projet d'études clair",
-      amount: "Variable selon niveau",
-      deadline: "2025-01-31",
-      applyLink: "https://campusfrance.org",
-      domain: "Tous",
-      location: "France",
-    },
-    {
-      id: "5",
-      title: "Concours Grandes Écoles d'Ingénieurs",
-      type: "concours",
-      organization: "Réseau écoles d'ingénieurs",
-      description: "Concours commun pour plusieurs écoles d'ingénieurs guinéennes et africaines.",
-      eligibility: "Bac S, C ou D",
-      deadline: "2024-11-15",
-      contactInfo: "concours@ecoles-gn.org",
-      domain: "Sciences & Technologies",
-      location: "Guinée",
-    },
-    {
-      id: "6",
-      title: "Bourse African Union Scholarship",
-      type: "bourse",
-      organization: "Union Africaine",
-      description: "Bourse pour Master ou Doctorat dans une université africaine partenaire.",
-      eligibility: "Citoyen africain, excellence académique",
-      amount: "Frais de scolarité + allocation",
-      deadline: "2024-10-30",
-      applyLink: "https://au.int/scholarships",
-      domain: "Tous",
-      location: "Afrique",
-    },
-  ];
+  useEffect(() => {
+    const load = async () => {
+      setLoading(true);
+      setFetchError("");
+      try {
+        const res = await fetch(`${API_URL}/scholarships`);
+        if (!res.ok) throw new Error("Impossible de charger les bourses");
+        const data = (await res.json()) as Array<{
+          id: string;
+          title: string;
+          type: string;
+          organization: string;
+          description: string;
+          eligibility?: string | null;
+          amount?: string | null;
+          deadline?: string | null;
+          apply_link?: string | null;
+          contact_info?: string | null;
+          domain?: string | null;
+          location?: string | null;
+        }>;
+        setScholarships(
+          data.map((s) => ({
+            id: s.id,
+            title: s.title,
+            type: s.type.toLowerCase().includes("concours") ? "concours" : "bourse",
+            organization: s.organization,
+            description: s.description,
+            eligibility: s.eligibility ?? undefined,
+            amount: s.amount ?? undefined,
+            deadline: s.deadline ?? undefined,
+            applyLink: s.apply_link ?? undefined,
+            contactInfo: s.contact_info ?? undefined,
+            domain: s.domain ?? undefined,
+            location: s.location ?? "Non specifiee",
+          }))
+        );
+      } catch (e) {
+        setFetchError(e instanceof Error ? e.message : "Erreur de chargement");
+        setScholarships([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
+  }, []);
+
+  const locations = useMemo(
+    () => Array.from(new Set(scholarships.map((s) => s.location))).sort(),
+    [scholarships]
+  );
 
   const filteredScholarships = scholarships.filter((sch) => {
     const matchType = selectedType === "all" || sch.type === selectedType;
@@ -117,8 +94,6 @@ export default function BoursesPage() {
       sch.organization.toLowerCase().includes(searchQuery.toLowerCase());
     return matchType && matchLocation && matchSearch;
   });
-
-  const locations = Array.from(new Set(scholarships.map((s) => s.location)));
 
   const formatDeadline = (dateStr?: string) => {
     if (!dateStr) return "Non spécifiée";
@@ -195,6 +170,17 @@ export default function BoursesPage() {
         </div>
 
         {/* Liste */}
+        {loading ? (
+          <div className="card p-10 text-center text-[#6a697c]">Chargement...</div>
+        ) : fetchError ? (
+          <EmptyState title="Erreur de chargement" description={fetchError} />
+        ) : scholarships.length === 0 ? (
+          <EmptyState
+            title="Aucune bourse pour le moment"
+            description="Les opportunites seront publiees ici des qu'elles seront disponibles."
+          />
+        ) : (
+        <>
         <div className="space-y-5">
           {filteredScholarships.map((scholarship) => (
             <div
@@ -312,13 +298,13 @@ export default function BoursesPage() {
           ))}
         </div>
 
-        {filteredScholarships.length === 0 && (
-          <div className="card p-16 text-center">
-            <div className="w-16 h-16 rounded-lg bg-[#f4f4f8] flex items-center justify-center mx-auto mb-4">
-              <svg className="w-8 h-8 text-[#6a697c]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-            </div>
-            <p className="text-[#4d4c5c] font-medium">Aucune opportunité trouvée</p>
-          </div>
+        {filteredScholarships.length === 0 && scholarships.length > 0 && (
+          <EmptyState
+            title="Aucune opportunite avec ces criteres"
+            description="Essaie de modifier tes filtres ou ta recherche."
+          />
+        )}
+        </>
         )}
 
         <div className="mt-10 text-sm">

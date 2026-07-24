@@ -1,7 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { API_URL } from "@/lib/api";
+import EmptyState from "@/components/ui/EmptyState";
 import PageShell from "@/components/ui/PageShell";
 import PageHeader from "@/components/ui/PageHeader";
 import UserAvatar from "@/components/UserAvatar";
@@ -22,76 +24,70 @@ interface SuccessStory {
 }
 
 export default function SuccessStoriesPage() {
+  const [stories, setStories] = useState<SuccessStory[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
 
-  // Données simulées
-  const stories: SuccessStory[] = [
-    {
-      id: "1",
-      title: "De l'UGANC à Google : mon parcours d'ingénieur logiciel",
-      content: "Après mon bac en 2015, j'ai intégré l'UGANC en informatique. Grâce à l'accompagnement de mes professeurs et à ma passion pour le code, j'ai décroché un stage chez une startup en Afrique du Sud. Aujourd'hui, je travaille comme Software Engineer chez Google à Zurich. Mon conseil : travaillez dur, saisissez chaque opportunité et n'ayez pas peur de rêver grand. La Guinée regorge de talents !",
-      category: "Career",
-      authorName: "Mamadou Diallo",
-      authorRole: "Software Engineer chez Google",
-      university: "UGANC",
-      graduationYear: "2019",
-      likes: 234,
-      views: 1567,
-      isFeatured: true,
-    },
-    {
-      id: "2",
-      title: "Comment j'ai créé la première startup EdTech guinéenne",
-      content: "En 3ème année à l'IPG, j'ai remarqué que beaucoup d'étudiants peinaient à accéder à des ressources pédagogiques de qualité. J'ai alors créé GuinéaLearn avec 3 amis. Aujourd'hui, notre plateforme compte plus de 10 000 utilisateurs et nous avons levé 50 000 $ en seed. Entrepreneuriat étudiant, c'est possible en Guinée !",
-      category: "Entrepreneur",
-      authorName: "Fatoumata Camara",
-      authorRole: "CEO de GuinéaLearn",
-      university: "IPG",
-      graduationYear: "2022",
-      likes: 189,
-      views: 892,
-      isFeatured: true,
-    },
-    {
-      id: "3",
-      title: "De la médecine rurale à l'OMS : mon engagement pour la santé",
-      content: "Après mes études à la FMPOS, j'ai travaillé 2 ans dans un hôpital rural en Guinée forestière. Cette expérience m'a ouvert les yeux sur les défis sanitaires du pays. J'ai ensuite obtenu un Master en Santé Publique en France, puis rejoint l'OMS à Genève où je coordonne des programmes de vaccination en Afrique. Mon rêve : améliorer la santé de millions d'Africains.",
-      category: "Academic",
-      authorName: "Dr Ibrahim Sylla",
-      authorRole: "Coordinateur de programmes à l'OMS",
-      university: "FMPOS",
-      graduationYear: "2018",
-      likes: 312,
-      views: 1234,
-      isFeatured: true,
-    },
-    {
-      id: "4",
-      title: "Première Guinéenne ingénieure chez Total Energies",
-      content: "Mon parcours n'a pas été facile en tant que femme dans l'ingénierie pétrolière. Mais j'ai persévéré. Diplômée de Polytechnique Conakry, j'ai continué en Master en France puis rejoint Total Energies. Aujourd'hui je manage une équipe de 20 ingénieurs sur des projets offshore. Aux jeunes filles : vous pouvez tout accomplir !",
-      category: "Career",
-      authorName: "Aissatou Barry",
-      authorRole: "Ingénieure Senior chez Total Energies",
-      university: "Polytechnique Conakry",
-      graduationYear: "2017",
-      likes: 267,
-      views: 1045,
-      isFeatured: false,
-    },
-    {
-      id: "5",
-      title: "Comment j'ai gagné le Concours d'Éloquence Africain",
-      content: "Étudiant en droit à l'Université Gamal Abdel Nasser, j'ai toujours aimé débattre. En 2023, j'ai participé au Concours d'Éloquence Panafricain et remporté le premier prix face à 300 candidats de 20 pays. Cette victoire m'a ouvert les portes d'un stage à l'Union Africaine. Travaillez votre expression orale, c'est une compétence clé !",
-      category: "Academic",
-      authorName: "Ousmane Bah",
-      authorRole: "Juriste stagiaire à l'Union Africaine",
-      university: "UGANC",
-      graduationYear: "2024",
-      likes: 145,
-      views: 678,
-      isFeatured: false,
-    },
-  ];
+  useEffect(() => {
+    const load = async () => {
+      setLoading(true);
+      setFetchError("");
+      try {
+        const res = await fetch(`${API_URL}/success-stories`);
+        if (!res.ok) throw new Error("Impossible de charger les stories");
+        const data = (await res.json()) as Array<{
+          id: string;
+          title: string;
+          content: string;
+          category: string;
+          author_name: string;
+          author_role?: string | null;
+          university?: string | null;
+          graduation_year?: string | null;
+          image_url?: string | null;
+          likes: number;
+          views: number;
+          is_featured: boolean;
+        }>;
+        setStories(
+          data.map((s) => ({
+            id: s.id,
+            title: s.title,
+            content: s.content,
+            category: s.category,
+            authorName: s.author_name,
+            authorRole: s.author_role ?? "",
+            university: s.university ?? undefined,
+            graduationYear: s.graduation_year ?? undefined,
+            imageUrl: s.image_url ?? undefined,
+            likes: s.likes,
+            views: s.views,
+            isFeatured: s.is_featured,
+          }))
+        );
+      } catch (e) {
+        setFetchError(e instanceof Error ? e.message : "Erreur de chargement");
+        setStories([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
+  }, []);
+
+  const categoryLabels: Record<string, string> = {
+    Orientation: "Orientation",
+    Etudes: "Etudes",
+    Carriere: "Carriere",
+    Entrepreneuriat: "Entrepreneuriat",
+    Autre: "Autre",
+  };
+
+  const categories = useMemo(
+    () => Array.from(new Set(stories.map((s) => s.category))).sort(),
+    [stories]
+  );
 
   const filteredStories = stories.filter((story) => {
     if (selectedCategory === "all") return true;
@@ -101,12 +97,35 @@ export default function SuccessStoriesPage() {
   const featuredStories = filteredStories.filter((s) => s.isFeatured);
   const regularStories = filteredStories.filter((s) => !s.isFeatured);
 
-  const categoryLabels: Record<string, string> = {
-    Academic: "Académique",
-    Career: "Carrière",
-    Entrepreneur: "Entrepreneuriat",
-    Other: "Autre",
-  };
+  if (loading) {
+    return (
+      <PageShell>
+        <PageHeader eyebrow="Success Stories" title="Parcours inspirants" description="Inspire-toi des parcours exceptionnels d'anciens etudiants" centered />
+        <div className="card p-10 text-center text-[#6a697c]">Chargement...</div>
+      </PageShell>
+    );
+  }
+
+  if (fetchError) {
+    return (
+      <PageShell>
+        <PageHeader eyebrow="Success Stories" title="Parcours inspirants" centered />
+        <EmptyState title="Erreur de chargement" description={fetchError} />
+      </PageShell>
+    );
+  }
+
+  if (stories.length === 0) {
+    return (
+      <PageShell>
+        <PageHeader eyebrow="Success Stories" title="Parcours inspirants" description="Inspire-toi des parcours exceptionnels d'anciens etudiants" centered />
+        <EmptyState
+          title="Aucune success story pour le moment"
+          description="Les temoignages seront publies ici des qu'ils seront disponibles."
+        />
+      </PageShell>
+    );
+  }
 
   return (
     <PageShell>
@@ -129,7 +148,9 @@ export default function SuccessStoriesPage() {
           >
             Toutes
           </button>
-          {Object.entries(categoryLabels).map(([key, label]) => (
+          {Object.entries(categoryLabels)
+            .filter(([key]) => categories.includes(key))
+            .map(([key, label]) => (
             <button
               key={key}
               onClick={() => setSelectedCategory(key)}
@@ -181,7 +202,7 @@ export default function SuccessStoriesPage() {
                   </div>
 
                   <span className="inline-block px-2.5 py-1 bg-[#f4f4f8] text-[#121117] rounded-full text-xs font-semibold mb-3">
-                    {categoryLabels[story.category]}
+                    {categoryLabels[story.category] ?? story.category}
                   </span>
 
                   <h3 className="text-lg font-bold text-[#121117] mb-3 line-clamp-2">
@@ -251,7 +272,7 @@ export default function SuccessStoriesPage() {
                     <div className="flex-1">
                       <div className="flex flex-wrap items-center gap-2 mb-2">
                         <span className="px-2.5 py-1 bg-[#f4f4f8] text-[#121117] rounded-full text-xs font-semibold">
-                          {categoryLabels[story.category]}
+                          {categoryLabels[story.category] ?? story.category}
                         </span>
                         {story.university && story.graduationYear && (
                           <span className="flex items-center gap-1 text-xs text-[#6a697c]">
@@ -309,14 +330,10 @@ export default function SuccessStoriesPage() {
         )}
 
         {filteredStories.length === 0 && (
-          <div className="card p-12 text-center">
-            <div className="w-16 h-16 rounded-full bg-[#f4f4f8] flex items-center justify-center mx-auto mb-4">
-              <svg className="w-8 h-8 text-[#121117]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <p className="text-[#4d4c5c]">Aucune story trouvée</p>
-          </div>
+          <EmptyState
+            title="Aucune story avec cette categorie"
+            description="Essaie une autre categorie."
+          />
         )}
 
         {/* CTA */}

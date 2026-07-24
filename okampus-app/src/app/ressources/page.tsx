@@ -1,7 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { API_URL } from "@/lib/api";
+import EmptyState from "@/components/ui/EmptyState";
 import PageShell from "@/components/ui/PageShell";
 import PageHeader from "@/components/ui/PageHeader";
 
@@ -20,86 +22,67 @@ interface Resource {
   isPremium: boolean;
   downloads: number;
   rating: number;
-  author: string;
+  author?: string;
 }
 
 export default function ResourcesPage() {
+  const [resources, setResources] = useState<Resource[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [selectedSubject, setSelectedSubject] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
-  const [showUploadModal, setShowUploadModal] = useState(false);
 
-  // Données simulées
-  const resources: Resource[] = [
-    {
-      id: "1",
-      title: "TD Analyse 1 - Limites et Continuité",
-      description: "Série de 15 exercices corrigés sur les limites, continuité et dérivées",
-      category: "TD",
-      subject: "Mathématiques",
-      filiere: "Sciences",
-      university: "UGANC",
-      year: "L1",
-      fileType: "pdf",
-      fileSize: 2500000,
-      price: 5000,
-      isPremium: false,
-      downloads: 234,
-      rating: 4.5,
-      author: "Mamadou Diallo",
-    },
-    {
-      id: "2",
-      title: "Cours Complet Algorithmique",
-      description: "Cours détaillé avec exemples en Python et C",
-      category: "Cours",
-      subject: "Informatique",
-      filiere: "Informatique",
-      university: "UGANC",
-      year: "L1",
-      fileType: "pdf",
-      fileSize: 8500000,
-      price: 10000,
-      isPremium: true,
-      downloads: 456,
-      rating: 4.8,
-      author: "Fatoumata Camara",
-    },
-    {
-      id: "3",
-      title: "Sujet Examen Physique 2023",
-      description: "Sujet d'examen session normale avec corrigé détaillé",
-      category: "Sujet",
-      subject: "Physique",
-      filiere: "Sciences",
-      university: "IPG",
-      year: "L2",
-      fileType: "pdf",
-      fileSize: 1200000,
-      price: 3000,
-      isPremium: false,
-      downloads: 189,
-      rating: 4.2,
-      author: "Ibrahim Sylla",
-    },
-    {
-      id: "4",
-      title: "Résumé Biochimie Métabolisme",
-      description: "Fiche de révision complète sur le métabolisme",
-      category: "Cours",
-      subject: "Biochimie",
-      filiere: "Médecine",
-      university: "FMPOS",
-      year: "L2",
-      fileType: "pdf",
-      fileSize: 3500000,
-      price: 7000,
-      isPremium: true,
-      downloads: 312,
-      rating: 4.7,
-      author: "Aissatou Barry",
-    },
-  ];
+  useEffect(() => {
+    const load = async () => {
+      setLoading(true);
+      setFetchError("");
+      try {
+        const res = await fetch(`${API_URL}/resources`);
+        if (!res.ok) throw new Error("Impossible de charger les ressources");
+        const data = (await res.json()) as Array<{
+          id: string;
+          title: string;
+          description: string;
+          category: string;
+          subject: string;
+          filiere?: string | null;
+          university?: string | null;
+          year?: string | null;
+          file_type: string;
+          file_size: number;
+          price: number;
+          is_premium: boolean;
+          downloads: number;
+          rating: number;
+        }>;
+        setResources(
+          data.map((r) => ({
+            id: r.id,
+            title: r.title,
+            description: r.description,
+            category: r.category,
+            subject: r.subject,
+            filiere: r.filiere ?? undefined,
+            university: r.university ?? undefined,
+            year: r.year ?? undefined,
+            fileType: r.file_type,
+            fileSize: r.file_size,
+            price: r.price,
+            isPremium: r.is_premium,
+            downloads: r.downloads,
+            rating: r.rating,
+          }))
+        );
+      } catch (e) {
+        setFetchError(e instanceof Error ? e.message : "Erreur de chargement");
+        setResources([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
+  }, []);
 
   const filteredResources = resources.filter((res) => {
     const matchCategory = selectedCategory === "all" || res.category === selectedCategory;
@@ -111,8 +94,8 @@ export default function ResourcesPage() {
     return matchCategory && matchSubject && matchSearch;
   });
 
-  const subjects = Array.from(new Set(resources.map((r) => r.subject)));
-  const categories = Array.from(new Set(resources.map((r) => r.category)));
+  const subjects = useMemo(() => Array.from(new Set(resources.map((r) => r.subject))).sort(), [resources]);
+  const categories = useMemo(() => Array.from(new Set(resources.map((r) => r.category))).sort(), [resources]);
 
   const formatFileSize = (bytes: number) => {
     if (bytes < 1024) return bytes + " B";
@@ -121,17 +104,11 @@ export default function ResourcesPage() {
   };
 
   return (
-    <>
     <PageShell>
       <PageHeader
         eyebrow="Bibliotheque"
         title="Bibliotheque de ressources"
         description="Partage et accede a des TD, cours, sujets d'examens et corrections"
-        action={
-          <button onClick={() => setShowUploadModal(true)} className="btn-primary">
-            + Partager une ressource
-          </button>
-        }
       />
 
           <div className="inline-flex items-center gap-3 px-5 py-3 bg-[#ffdf3d]/30 border border-[#dcdce5] rounded-lg mb-8">
@@ -201,6 +178,17 @@ export default function ResourcesPage() {
         </div>
 
         {/* Liste des ressources */}
+        {loading ? (
+          <div className="card p-10 text-center text-[#6a697c]">Chargement...</div>
+        ) : fetchError ? (
+          <EmptyState title="Erreur de chargement" description={fetchError} />
+        ) : resources.length === 0 ? (
+          <EmptyState
+            title="Aucune ressource pour le moment"
+            description="Les TD, cours et sujets seront publies ici des qu'ils seront disponibles."
+          />
+        ) : (
+        <>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
           {filteredResources.map((resource) => (
             <div
@@ -274,13 +262,13 @@ export default function ResourcesPage() {
           ))}
         </div>
 
-        {filteredResources.length === 0 && (
-          <div className="card p-16 text-center">
-            <div className="w-16 h-16 rounded-lg bg-[#f4f4f8] flex items-center justify-center mx-auto mb-4">
-              <svg className="w-8 h-8 text-[#6a697c]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-            </div>
-            <p className="text-[#4d4c5c] font-medium">Aucune ressource trouvée</p>
-          </div>
+        {filteredResources.length === 0 && resources.length > 0 && (
+          <EmptyState
+            title="Aucune ressource avec ces criteres"
+            description="Essaie de modifier tes filtres ou ta recherche."
+          />
+        )}
+        </>
         )}
 
         <div className="mt-10 text-sm">
@@ -289,119 +277,5 @@ export default function ResourcesPage() {
           </Link>
         </div>
     </PageShell>
-
-      {/* Modal upload */}
-      {showUploadModal && (
-        <div
-          className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-end md:items-center justify-center z-50 p-0 md:p-4"
-          onClick={() => setShowUploadModal(false)}
-        >
-          <div
-            className="bg-white w-full md:max-w-2xl md:rounded-2xl rounded-t-2xl max-h-[90vh] overflow-y-auto shadow-2xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Accent bar */}
-            <div className="h-1 bg-[#121117] md:rounded-t-2xl" />
-
-            <div className="p-6 md:p-8 border-b border-[#dcdce5] flex items-center justify-between">
-              <h3 className="text-xl font-bold text-[#121117]">Partager une ressource</h3>
-              <button
-                onClick={() => setShowUploadModal(false)}
-                className="w-8 h-8 rounded-full bg-[#f4f4f8] flex items-center justify-center text-[#6a697c] hover:text-[#4d4c5c] hover:bg-[#dcdce5] transition-all"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-
-            <div className="p-6 md:p-8 space-y-5">
-              <div>
-                <label className="block text-sm font-semibold text-[#4d4c5c] mb-2">Titre *</label>
-                <input
-                  type="text"
-                  className="w-full px-4 py-3 rounded-lg border border-[#dcdce5] bg-white focus:outline-none focus:ring-2 focus:ring-[#121117]/20 focus:border-[#121117] text-sm"
-                  placeholder="Ex: TD Analyse 1 - Limites et Continuité"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-[#4d4c5c] mb-2">Description *</label>
-                <textarea
-                  rows={3}
-                  className="w-full px-4 py-3 rounded-lg border border-[#dcdce5] bg-white focus:outline-none focus:ring-2 focus:ring-[#121117]/20 focus:border-[#121117] text-sm"
-                  placeholder="Décris brièvement le contenu de la ressource"
-                />
-              </div>
-
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-semibold text-[#4d4c5c] mb-2">Type *</label>
-                  <select className="w-full px-4 py-3 rounded-lg border border-[#dcdce5] bg-white focus:outline-none focus:ring-2 focus:ring-[#121117]/20 focus:border-[#121117] text-sm">
-                    <option>TD</option>
-                    <option>Cours</option>
-                    <option>Sujet</option>
-                    <option>Correction</option>
-                    <option>Autre</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-[#4d4c5c] mb-2">Matière *</label>
-                  <input
-                    type="text"
-                    className="w-full px-4 py-3 rounded-lg border border-[#dcdce5] bg-white focus:outline-none focus:ring-2 focus:ring-[#121117]/20 focus:border-[#121117] text-sm"
-                    placeholder="Ex: Mathématiques"
-                  />
-                </div>
-              </div>
-
-              <div className="grid sm:grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-sm font-semibold text-[#4d4c5c] mb-2">Filière</label>
-                  <input
-                    type="text"
-                    className="w-full px-4 py-3 rounded-lg border border-[#dcdce5] bg-white focus:outline-none focus:ring-2 focus:ring-[#121117]/20 focus:border-[#121117] text-sm"
-                    placeholder="Ex: Sciences"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-[#4d4c5c] mb-2">Année</label>
-                  <input
-                    type="text"
-                    className="w-full px-4 py-3 rounded-lg border border-[#dcdce5] bg-white focus:outline-none focus:ring-2 focus:ring-[#121117]/20 focus:border-[#121117] text-sm"
-                    placeholder="Ex: L1"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-[#4d4c5c] mb-2">Prix (GNF)</label>
-                  <input
-                    type="number"
-                    className="w-full px-4 py-3 rounded-lg border border-[#dcdce5] bg-white focus:outline-none focus:ring-2 focus:ring-[#121117]/20 focus:border-[#121117] text-sm"
-                    placeholder="0 = gratuit"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-[#4d4c5c] mb-2">Fichier *</label>
-                <div className="border-2 border-dashed border-[#dcdce5] rounded-lg p-10 text-center hover:border-[#121117] hover:bg-[#f4f4f8]/30 transition-all cursor-pointer group">
-                  <div className="w-14 h-14 rounded-lg bg-[#f4f4f8] flex items-center justify-center mx-auto mb-4 group-hover:bg-[#f4f4f8] transition-colors">
-                    <svg className="w-7 h-7 text-[#121117] group-hover:text-[#121117] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                    </svg>
-                  </div>
-                  <p className="text-sm text-[#4d4c5c] font-medium">Cliquez pour sélectionner ou glissez le fichier</p>
-                  <p className="text-xs text-[#6a697c] mt-1.5">PDF, DOCX, PPTX (max 20 MB)</p>
-                </div>
-              </div>
-
-              <button className="btn-primary">
-                Partager la ressource
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </>
   );
 }

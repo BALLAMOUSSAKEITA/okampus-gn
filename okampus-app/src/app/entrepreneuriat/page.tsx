@@ -1,101 +1,81 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { API_URL } from "@/lib/api";
+import EmptyState from "@/components/ui/EmptyState";
 import PageShell from "@/components/ui/PageShell";
 import PageHeader from "@/components/ui/PageHeader";
-import UserAvatar from "@/components/UserAvatar";
 
 interface EntrepreneurProject {
   id: string;
   title: string;
   description: string;
   category: string;
-  status: "idea" | "in_progress" | "launched";
+  status: string;
   teamSize: number;
   seeking?: string;
   website?: string;
-  author: string;
-  authorRole?: string;
   likes: number;
   views: number;
 }
 
+function normalizeStatus(status: string): string {
+  const s = status.toLowerCase();
+  if (s.includes("lanc")) return "launched";
+  if (s.includes("cours") || s.includes("progress")) return "in_progress";
+  return "idea";
+}
+
 export default function EntrepreneuriatPage() {
+  const [projects, setProjects] = useState<EntrepreneurProject[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
-  const [showCreateModal, setShowCreateModal] = useState(false);
 
-  // Données simulées
-  const projects: EntrepreneurProject[] = [
-    {
-      id: "1",
-      title: "GuinéaLearn",
-      description: "Plateforme e-learning adaptée au contexte guinéen avec des cours en ligne, quiz interactifs et certificats. Objectif : démocratiser l'accès à l'éducation de qualité.",
-      category: "EdTech",
-      status: "in_progress",
-      teamSize: 4,
-      seeking: "Développeur frontend",
-      website: "guinealearn.com",
-      author: "Mamadou Diallo",
-      authorRole: "Étudiant L3 Informatique",
-      likes: 45,
-      views: 234,
-    },
-    {
-      id: "2",
-      title: "AgroConnect",
-      description: "Marketplace connectant directement les agriculteurs aux consommateurs. Réduction des intermédiaires, prix justes, livraison rapide. Focus sur produits locaux et bio.",
-      category: "AgriTech",
-      status: "launched",
-      teamSize: 3,
-      seeking: "Partenaires logistiques",
-      author: "Fatoumata Camara",
-      authorRole: "Entrepreneure",
-      likes: 78,
-      views: 456,
-    },
-    {
-      id: "3",
-      title: "HealthTrack GN",
-      description: "Application mobile pour le suivi de santé : rappels médicaments, rendez-vous, carnets de vaccination. Collaboration avec hôpitaux guinéens.",
-      category: "HealthTech",
-      status: "idea",
-      teamSize: 2,
-      seeking: "Co-fondateur technique, financement seed",
-      author: "Ibrahim Sylla",
-      authorRole: "Étudiant Médecine",
-      likes: 32,
-      views: 189,
-    },
-    {
-      id: "4",
-      title: "KulturHub",
-      description: "Plateforme de promotion de la culture guinéenne : artistes, événements, vente d'œuvres d'art, streaming concerts. Monétisation pour les créateurs locaux.",
-      category: "Culture & Arts",
-      status: "in_progress",
-      teamSize: 5,
-      seeking: "Partenaires culturels",
-      website: "kulturhub.gn",
-      author: "Aissatou Barry",
-      authorRole: "Entrepreneure",
-      likes: 56,
-      views: 312,
-    },
-    {
-      id: "5",
-      title: "EcoRecycle GN",
-      description: "Service de collecte et recyclage des déchets à Conakry. Application pour planifier les collectes, sensibilisation environnementale, partenariats avec entreprises.",
-      category: "GreenTech",
-      status: "launched",
-      teamSize: 6,
-      website: "ecorecycle.gn",
-      author: "Ousmane Bah",
-      authorRole: "Entrepreneur",
-      likes: 91,
-      views: 523,
-    },
-  ];
+  useEffect(() => {
+    const load = async () => {
+      setLoading(true);
+      setFetchError("");
+      try {
+        const res = await fetch(`${API_URL}/entrepreneur`);
+        if (!res.ok) throw new Error("Impossible de charger les projets");
+        const data = (await res.json()) as Array<{
+          id: string;
+          title: string;
+          description: string;
+          category: string;
+          status: string;
+          team_size: number;
+          seeking?: string | null;
+          website?: string | null;
+          likes: number;
+          views: number;
+        }>;
+        setProjects(
+          data.map((p) => ({
+            id: p.id,
+            title: p.title,
+            description: p.description,
+            category: p.category,
+            status: normalizeStatus(p.status),
+            teamSize: p.team_size,
+            seeking: p.seeking ?? undefined,
+            website: p.website ?? undefined,
+            likes: p.likes,
+            views: p.views,
+          }))
+        );
+      } catch (e) {
+        setFetchError(e instanceof Error ? e.message : "Erreur de chargement");
+        setProjects([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
+  }, []);
 
   const filteredProjects = projects.filter((proj) => {
     const matchCategory = selectedCategory === "all" || proj.category === selectedCategory;
@@ -103,12 +83,12 @@ export default function EntrepreneuriatPage() {
     return matchCategory && matchStatus;
   });
 
-  const categories = Array.from(new Set(projects.map((p) => p.category)));
+  const categories = useMemo(() => Array.from(new Set(projects.map((p) => p.category))).sort(), [projects]);
 
   const statusLabels: Record<string, string> = {
-    idea: "Idée",
+    idea: "Idee",
     in_progress: "En cours",
-    launched: "Lancé",
+    launched: "Lance",
   };
 
   const statusColors: Record<string, string> = {
@@ -118,17 +98,11 @@ export default function EntrepreneuriatPage() {
   };
 
   return (
-    <>
     <PageShell>
       <PageHeader
         eyebrow="Innovation"
         title="Entrepreneuriat etudiant"
         description="Decouvre les projets innovants portes par des etudiants"
-        action={
-          <button onClick={() => setShowCreateModal(true)} className="btn-primary">
-            + Soumettre mon projet
-          </button>
-        }
       />
 
           <div className="card p-5 mb-8">
@@ -189,6 +163,17 @@ export default function EntrepreneuriatPage() {
         </div>
 
         {/* Liste des projets */}
+        {loading ? (
+          <div className="card p-10 text-center text-[#6a697c]">Chargement...</div>
+        ) : fetchError ? (
+          <EmptyState title="Erreur de chargement" description={fetchError} />
+        ) : projects.length === 0 ? (
+          <EmptyState
+            title="Aucun projet pour le moment"
+            description="Les projets etudiants seront publies ici des qu'ils seront disponibles."
+          />
+        ) : (
+        <>
         <div className="grid md:grid-cols-2 gap-6">
           {filteredProjects.map((project) => (
             <div
@@ -242,44 +227,32 @@ export default function EntrepreneuriatPage() {
                 )}
               </div>
 
-              {/* Author */}
-              <div className="pt-5 border-t border-[#dcdce5] flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <UserAvatar name={project.author} size={36} />
-                  <div>
-                    <p className="font-semibold text-[#121117] text-sm">{project.author}</p>
-                    {project.authorRole && (
-                      <p className="text-xs text-[#6a697c]">{project.authorRole}</p>
-                    )}
-                  </div>
+              <div className="pt-5 border-t border-[#dcdce5] flex items-center justify-end gap-4 text-sm text-[#6a697c]">
+                <div className="flex items-center gap-1.5">
+                  <svg className="w-4 h-4 text-rose-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
+                  </svg>
+                  <span className="font-medium text-[#4d4c5c]">{project.likes}</span>
                 </div>
-                <div className="flex items-center gap-4 text-sm text-[#6a697c]">
-                  <div className="flex items-center gap-1.5">
-                    <svg className="w-4 h-4 text-rose-400" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
-                    </svg>
-                    <span className="font-medium text-[#4d4c5c]">{project.likes}</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                    </svg>
-                    <span className="font-medium text-[#4d4c5c]">{project.views}</span>
-                  </div>
+                <div className="flex items-center gap-1.5">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                  <span className="font-medium text-[#4d4c5c]">{project.views}</span>
                 </div>
               </div>
             </div>
           ))}
         </div>
 
-        {filteredProjects.length === 0 && (
-          <div className="card p-16 text-center">
-            <div className="w-16 h-16 rounded-lg bg-[#f4f4f8] flex items-center justify-center mx-auto mb-4">
-              <svg className="w-8 h-8 text-[#6a697c]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg>
-            </div>
-            <p className="text-[#4d4c5c] font-medium">Aucun projet trouvé</p>
-          </div>
+        {filteredProjects.length === 0 && projects.length > 0 && (
+          <EmptyState
+            title="Aucun projet avec ces criteres"
+            description="Essaie de modifier tes filtres."
+          />
+        )}
+        </>
         )}
 
         <div className="mt-10 text-sm">
@@ -288,110 +261,6 @@ export default function EntrepreneuriatPage() {
           </Link>
         </div>
     </PageShell>
-
-      {/* Modal création projet */}
-      {showCreateModal && (
-        <div
-          className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-end md:items-center justify-center z-50 p-0 md:p-4"
-          onClick={() => setShowCreateModal(false)}
-        >
-          <div
-            className="bg-white w-full md:max-w-2xl md:rounded-2xl rounded-t-2xl max-h-[90vh] overflow-y-auto shadow-2xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Accent bar */}
-            <div className="h-1 bg-[#121117] md:rounded-t-2xl" />
-
-            <div className="p-6 md:p-8 border-b border-[#dcdce5] flex items-center justify-between">
-              <h3 className="text-xl font-bold text-[#121117]">Soumettre mon projet</h3>
-              <button
-                onClick={() => setShowCreateModal(false)}
-                className="w-8 h-8 rounded-full bg-[#f4f4f8] flex items-center justify-center text-[#6a697c] hover:text-[#4d4c5c] hover:bg-[#dcdce5] transition-all"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-
-            <div className="p-6 md:p-8 space-y-5">
-              <div>
-                <label className="block text-sm font-semibold text-[#4d4c5c] mb-2">Nom du projet *</label>
-                <input
-                  type="text"
-                  className="w-full px-4 py-3 rounded-lg border border-[#dcdce5] bg-white focus:outline-none focus:ring-2 focus:ring-[#121117]/20 focus:border-[#121117] text-sm"
-                  placeholder="Ex: GuinéaLearn"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-[#4d4c5c] mb-2">Description *</label>
-                <textarea
-                  rows={4}
-                  className="w-full px-4 py-3 rounded-lg border border-[#dcdce5] bg-white focus:outline-none focus:ring-2 focus:ring-[#121117]/20 focus:border-[#121117] text-sm"
-                  placeholder="Décris ton projet, sa mission, son impact..."
-                />
-              </div>
-
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-semibold text-[#4d4c5c] mb-2">Catégorie *</label>
-                  <select className="w-full px-4 py-3 rounded-lg border border-[#dcdce5] bg-white focus:outline-none focus:ring-2 focus:ring-[#121117]/20 focus:border-[#121117] text-sm">
-                    <option>EdTech</option>
-                    <option>HealthTech</option>
-                    <option>AgriTech</option>
-                    <option>FinTech</option>
-                    <option>GreenTech</option>
-                    <option>Culture & Arts</option>
-                    <option>Autre</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-[#4d4c5c] mb-2">Statut *</label>
-                  <select className="w-full px-4 py-3 rounded-lg border border-[#dcdce5] bg-white focus:outline-none focus:ring-2 focus:ring-[#121117]/20 focus:border-[#121117] text-sm">
-                    <option value="idea">Idée</option>
-                    <option value="in_progress">En cours</option>
-                    <option value="launched">Lancé</option>
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-[#4d4c5c] mb-2">Ce que je recherche</label>
-                <input
-                  type="text"
-                  className="w-full px-4 py-3 rounded-lg border border-[#dcdce5] bg-white focus:outline-none focus:ring-2 focus:ring-[#121117]/20 focus:border-[#121117] text-sm"
-                  placeholder="Ex: Co-fondateur technique, financement, mentors..."
-                />
-              </div>
-
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-semibold text-[#4d4c5c] mb-2">Taille de l'équipe</label>
-                  <input
-                    type="number"
-                    min="1"
-                    defaultValue="1"
-                    className="w-full px-4 py-3 rounded-lg border border-[#dcdce5] bg-white focus:outline-none focus:ring-2 focus:ring-[#121117]/20 focus:border-[#121117] text-sm"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-[#4d4c5c] mb-2">Site web</label>
-                  <input
-                    type="url"
-                    className="w-full px-4 py-3 rounded-lg border border-[#dcdce5] bg-white focus:outline-none focus:ring-2 focus:ring-[#121117]/20 focus:border-[#121117] text-sm"
-                    placeholder="exemple.com"
-                  />
-                </div>
-              </div>
-
-              <button className="btn-primary">
-                Soumettre le projet
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </>
   );
 }
+

@@ -4,6 +4,8 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
+import { API_URL } from "@/lib/api";
+import EmptyState from "@/components/ui/EmptyState";
 import PageShell from "@/components/ui/PageShell";
 import PageHeader from "@/components/ui/PageHeader";
 
@@ -27,36 +29,66 @@ export default function ParcoursPage() {
   const router = useRouter();
   const { user, isLoaded } = useAuth();
   const [activeTab, setActiveTab] = useState<"overview" | "notes" | "objectifs">("overview");
-
-  // Données simulées (seront en BDD plus tard)
-  const [objectifs] = useState<Objectif[]>([
-    { id: "1", titre: "Valider le 1er semestre", description: "Obtenir une moyenne >= 12", statut: "en_cours", semestre: "S1" },
-    { id: "2", titre: "Stage d'observation", description: "Trouver un stage de 2 semaines", statut: "en_cours", semestre: "S2" },
-    { id: "3", titre: "Projet de groupe", description: "Réaliser le projet de fin de semestre", statut: "en_cours", semestre: "S1" },
-  ]);
-
-  const [notes] = useState<Note[]>([
-    { id: "1", matiere: "Mathématiques", note: 14, coefficient: 4, semestre: "S1" },
-    { id: "2", matiere: "Physique", note: 12, coefficient: 3, semestre: "S1" },
-    { id: "3", matiere: "Informatique", note: 16, coefficient: 3, semestre: "S1" },
-    { id: "4", matiere: "Anglais", note: 13, coefficient: 2, semestre: "S1" },
-  ]);
-
-  const moyenne = useMemo(() => {
-    if (notes.length === 0) return 0;
-    const total = notes.reduce((acc, n) => acc + n.note * n.coefficient, 0);
-    const totalCoef = notes.reduce((acc, n) => acc + n.coefficient, 0);
-    return totalCoef > 0 ? (total / totalCoef).toFixed(2) : "0";
-  }, [notes]);
-
-  const objectifsEnCours = objectifs.filter((o) => o.statut === "en_cours").length;
-  const objectifsTermines = objectifs.filter((o) => o.statut === "termine").length;
+  const [objectifs, setObjectifs] = useState<Objectif[]>([]);
+  const [notes, setNotes] = useState<Note[]>([]);
+  const [university, setUniversity] = useState("");
+  const [filiere, setFiliere] = useState("");
+  const [annee, setAnnee] = useState("");
+  const [loadingParcours, setLoadingParcours] = useState(true);
+  const [hasParcours, setHasParcours] = useState(false);
 
   useEffect(() => {
     if (isLoaded && !user) {
       router.replace("/inscription?callbackUrl=/parcours");
     }
   }, [isLoaded, user, router]);
+
+  useEffect(() => {
+    if (!user) return;
+    const load = async () => {
+      setLoadingParcours(true);
+      try {
+        const res = await fetch(`${API_URL}/parcours/${user.id}`);
+        if (res.status === 404) {
+          setUniversity(user.university ?? "Non renseignee");
+          setFiliere(user.field ?? "Non renseignee");
+          setAnnee("Non renseignee");
+          setObjectifs([]);
+          setNotes([]);
+          setHasParcours(false);
+          return;
+        }
+        if (!res.ok) throw new Error("Impossible de charger le parcours");
+        const data = await res.json();
+        setUniversity(data.university ?? user.university ?? "Non renseignee");
+        setFiliere(data.filiere ?? user.field ?? "Non renseignee");
+        setAnnee(data.annee_en_cours ?? "Non renseignee");
+        setObjectifs(Array.isArray(data.objectifs) ? data.objectifs : data.objectifs ? Object.values(data.objectifs) : []);
+        setNotes(Array.isArray(data.notes) ? data.notes : data.notes ? Object.values(data.notes) : []);
+        setHasParcours(true);
+      } catch {
+        setUniversity(user.university ?? "Non renseignee");
+        setFiliere(user.field ?? "Non renseignee");
+        setAnnee("Non renseignee");
+        setObjectifs([]);
+        setNotes([]);
+        setHasParcours(false);
+      } finally {
+        setLoadingParcours(false);
+      }
+    };
+    load();
+  }, [user]);
+
+  const moyenne = useMemo(() => {
+    if (notes.length === 0) return "—";
+    const total = notes.reduce((acc, n) => acc + n.note * n.coefficient, 0);
+    const totalCoef = notes.reduce((acc, n) => acc + n.coefficient, 0);
+    return totalCoef > 0 ? (total / totalCoef).toFixed(2) : "—";
+  }, [notes]);
+
+  const objectifsEnCours = objectifs.filter((o) => o.statut === "en_cours").length;
+  const objectifsTermines = objectifs.filter((o) => o.statut === "termine").length;
 
   if (!isLoaded || !user) {
     return (
@@ -73,6 +105,15 @@ export default function ParcoursPage() {
         title="Mon parcours"
         description="Suis ta progression, tes notes et tes objectifs"
       />
+
+        {!loadingParcours && !hasParcours && objectifs.length === 0 && notes.length === 0 && (
+          <div className="mb-8">
+            <EmptyState
+              title="Parcours non configure"
+              description="Complete ton profil et ajoute tes notes et objectifs depuis ton espace (bientot disponible)."
+            />
+          </div>
+        )}
 
         {/* Tabs */}
         <div className="flex gap-2 mb-8 overflow-x-auto pb-2 -mx-4 px-4">
@@ -104,7 +145,7 @@ export default function ParcoursPage() {
                 { label: "Moyenne generale", value: moyenne, bgClass: "bg-[#f4f4f8]", textClass: "text-[#121117]", borderClass: "border-[#dcdce5]" },
                 { label: "Objectifs en cours", value: objectifsEnCours, bgClass: "bg-amber-50", textClass: "text-amber-600", borderClass: "border-amber-100" },
                 { label: "Objectifs termines", value: objectifsTermines, bgClass: "bg-emerald-50", textClass: "text-emerald-600", borderClass: "border-emerald-100" },
-                { label: "Semestre", value: "S1", bgClass: "bg-violet-50", textClass: "text-[#4d4c5c]", borderClass: "border-violet-100" },
+                { label: "Semestre", value: annee, bgClass: "bg-violet-50", textClass: "text-[#4d4c5c]", borderClass: "border-violet-100" },
               ].map((stat, i) => (
                 <div key={i} className={`card ${stat.bgClass} border ${stat.borderClass} p-5 transition-all`}>
                   <div className={`text-3xl md:text-4xl font-bold ${stat.textClass}`}>{stat.value}</div>
@@ -123,7 +164,7 @@ export default function ParcoursPage() {
                   </div>
                   <div>
                     <span className="text-[#6a697c] text-xs">Universite</span>
-                    <p className="font-semibold text-[#121117]">UGANC</p>
+                    <p className="font-semibold text-[#121117]">{university}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
@@ -132,7 +173,7 @@ export default function ParcoursPage() {
                   </div>
                   <div>
                     <span className="text-[#6a697c] text-xs">Filiere</span>
-                    <p className="font-semibold text-[#121117]">Informatique</p>
+                    <p className="font-semibold text-[#121117]">{filiere}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
@@ -141,7 +182,7 @@ export default function ParcoursPage() {
                   </div>
                   <div>
                     <span className="text-[#6a697c] text-xs">Annee</span>
-                    <p className="font-semibold text-[#121117]">1ere annee</p>
+                    <p className="font-semibold text-[#121117]">{annee}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
@@ -192,6 +233,11 @@ export default function ParcoursPage() {
               </div>
             </div>
             <div className="overflow-x-auto">
+              {notes.length === 0 ? (
+                <div className="p-8">
+                  <EmptyState title="Aucune note enregistree" description="Tes notes apparaitront ici une fois ajoutees." />
+                </div>
+              ) : (
               <table className="w-full text-sm">
                 <thead className="bg-[#f4f4f8]">
                   <tr>
@@ -224,6 +270,7 @@ export default function ParcoursPage() {
                   ))}
                 </tbody>
               </table>
+              )}
             </div>
           </div>
         )}
@@ -231,7 +278,10 @@ export default function ParcoursPage() {
         {/* Objectifs */}
         {activeTab === "objectifs" && (
           <div className="space-y-4">
-            {objectifs.map((obj) => (
+            {objectifs.length === 0 ? (
+              <EmptyState title="Aucun objectif enregistre" description="Tes objectifs apparaitront ici une fois ajoutes." />
+            ) : (
+            objectifs.map((obj) => (
               <div key={obj.id} className="card p-5 md:p-7  transition-all">
                 <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
                   <div className="flex-1">
@@ -256,7 +306,8 @@ export default function ParcoursPage() {
                   </div>
                 </div>
               </div>
-            ))}
+            ))
+            )}
           </div>
         )}
 
