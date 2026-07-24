@@ -11,6 +11,32 @@ const API_URL =
 
 export { API_URL };
 
+export async function apiUpload(
+  path: string,
+  formData: FormData,
+  token?: string
+): Promise<Response> {
+  const headers = new Headers();
+  if (token) {
+    headers.set("Authorization", `Bearer ${token}`);
+  }
+  const url = `${API_URL}${path}`;
+  try {
+    return await fetch(url, { method: "POST", headers, body: formData });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Erreur reseau";
+    throw new Error(
+      `Impossible de joindre l'API (${url}). Verifie que le serveur FastAPI tourne sur le port 8000. ${message}`
+    );
+  }
+}
+
+export function resolveFileUrl(fileUrl: string): string {
+  if (!fileUrl) return "";
+  if (fileUrl.startsWith("http://") || fileUrl.startsWith("https://")) return fileUrl;
+  return `${API_URL}${fileUrl.startsWith("/") ? fileUrl : `/${fileUrl}`}`;
+}
+
 export async function apiFetch(
   path: string,
   options: RequestInit & { token?: string } = {}

@@ -558,10 +558,43 @@ class ForumPostOut(BaseModel):
     category: str
     replies: int
     views: int
+    likes: int = 0
+    author_id: Optional[str] = None
     created_at: datetime
 
     class Config:
         from_attributes = True
+
+
+class ForumPostPublicOut(ForumPostOut):
+    liked_by_me: bool = False
+
+
+class ForumPostCreatePublic(BaseModel):
+    title: str
+    content: str = ""
+    category: str = "Autre"
+
+
+class ForumCommentOut(BaseModel):
+    id: str
+    post_id: str
+    user_id: str
+    author_name: str
+    content: str
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class ForumCommentCreate(BaseModel):
+    content: str
+
+
+class ForumLikeOut(BaseModel):
+    liked: bool
+    likes: int
 
 
 TokenResponse.model_rebuild()

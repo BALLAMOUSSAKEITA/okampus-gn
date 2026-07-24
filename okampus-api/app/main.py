@@ -1,8 +1,10 @@
 from contextlib import asynccontextmanager
 import os
+from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from app.database import engine, Base
 from app.routers import admin, auth, calendar, cv, entrepreneur, forum, mentors, parcours, resources, scholarships, stages, stats, success_stories, users
@@ -54,6 +56,10 @@ app.include_router(success_stories.router)
 app.include_router(forum.router)
 app.include_router(mentors.router)
 app.include_router(stats.router)
+
+_uploads_dir = Path(__file__).resolve().parent.parent / "uploads"
+_uploads_dir.mkdir(parents=True, exist_ok=True)
+app.mount("/uploads", StaticFiles(directory=str(_uploads_dir)), name="uploads")
 
 
 @app.get("/health")

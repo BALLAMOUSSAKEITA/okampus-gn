@@ -104,11 +104,41 @@ class ForumPost(Base):
     title: Mapped[str] = mapped_column("title", String, nullable=False)
     content: Mapped[str] = mapped_column("content", String, nullable=False)
     author: Mapped[str] = mapped_column("author", String, nullable=False)
+    author_id: Mapped[Optional[str]] = mapped_column("authorId", String, ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
     category: Mapped[str] = mapped_column("category", String, nullable=False)
     replies: Mapped[int] = mapped_column("replies", Integer, default=0)
     views: Mapped[int] = mapped_column("views", Integer, default=0)
+    likes: Mapped[int] = mapped_column("likes", Integer, default=0)
     created_at: Mapped[datetime] = mapped_column("createdAt", DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column("updatedAt", DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+    comments: Mapped[list["ForumComment"]] = relationship(back_populates="post", cascade="all, delete-orphan")
+    post_likes: Mapped[list["ForumLike"]] = relationship(back_populates="post", cascade="all, delete-orphan")
+
+
+class ForumComment(Base):
+    __tablename__ = "forum_comments"
+
+    id: Mapped[str] = mapped_column("id", String, primary_key=True, default=gen_id)
+    post_id: Mapped[str] = mapped_column("postId", String, ForeignKey("forum_posts.id", ondelete="CASCADE"))
+    user_id: Mapped[str] = mapped_column("userId", String, ForeignKey("users.id", ondelete="CASCADE"))
+    author_name: Mapped[str] = mapped_column("authorName", String, nullable=False)
+    content: Mapped[str] = mapped_column("content", String, nullable=False)
+    created_at: Mapped[datetime] = mapped_column("createdAt", DateTime(timezone=True), server_default=func.now())
+
+    post: Mapped["ForumPost"] = relationship(back_populates="comments")
+
+
+class ForumLike(Base):
+    __tablename__ = "forum_likes"
+    __table_args__ = (UniqueConstraint("postId", "userId"),)
+
+    id: Mapped[str] = mapped_column("id", String, primary_key=True, default=gen_id)
+    post_id: Mapped[str] = mapped_column("postId", String, ForeignKey("forum_posts.id", ondelete="CASCADE"))
+    user_id: Mapped[str] = mapped_column("userId", String, ForeignKey("users.id", ondelete="CASCADE"))
+    created_at: Mapped[datetime] = mapped_column("createdAt", DateTime(timezone=True), server_default=func.now())
+
+    post: Mapped["ForumPost"] = relationship(back_populates="post_likes")
 
 
 class Parcours(Base):

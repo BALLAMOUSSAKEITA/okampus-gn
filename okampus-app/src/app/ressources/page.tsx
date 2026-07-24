@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { API_URL, apiFetch } from "@/lib/api";
+import { API_URL, apiUpload, resolveFileUrl } from "@/lib/api";
 import EmptyState from "@/components/ui/EmptyState";
 import PageShell from "@/components/ui/PageShell";
 import PageHeader from "@/components/ui/PageHeader";
@@ -36,8 +36,6 @@ const defaultUploadForm = {
   filiere: "",
   university: "",
   year: "",
-  fileUrl: "",
-  fileType: "pdf",
 };
 
 export default function ResourcesPage() {
@@ -51,6 +49,7 @@ export default function ResourcesPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [uploadForm, setUploadForm] = useState(defaultUploadForm);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState("");
 
@@ -130,41 +129,43 @@ export default function ResourcesPage() {
       return;
     }
     setUploadError("");
+    setSelectedFile(null);
     setShowUploadModal(true);
   };
 
   const handleUpload = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!session?.user?.id) return;
+    if (!session?.user?.id || !uploadForm.title.trim()) return;
 
     setUploading(true);
     setUploadError("");
     try {
-      const res = await apiFetch("/resources", {
-        method: "POST",
-        token: session.accessToken,
-        body: JSON.stringify({
-          title: uploadForm.title.trim(),
-          description: uploadForm.description.trim(),
-          category: uploadForm.category,
-          subject: uploadForm.subject.trim(),
-          filiere: uploadForm.filiere.trim() || null,
-          university: uploadForm.university.trim() || null,
-          year: uploadForm.year.trim() || null,
-          file_url: uploadForm.fileUrl.trim(),
-          file_type: uploadForm.fileType.trim() || "pdf",
-          file_size: 0,
-          price: 0,
-          is_premium: false,
-          author_id: session.user.id,
-        }),
-      });
+      const formData = new FormData();
+      formData.append("title", uploadForm.title.trim());
+      formData.append("author_id", session.user.id);
+      if (uploadForm.description.trim()) formData.append("description", uploadForm.description.trim());
+      if (uploadForm.category) formData.append("category", uploadForm.category);
+      if (uploadForm.subject.trim()) formData.append("subject", uploadForm.subject.trim());
+      if (uploadForm.filiere.trim()) formData.append("filiere", uploadForm.filiere.trim());
+      if (uploadForm.university.trim()) formData.append("university", uploadForm.university.trim());
+      if (uploadForm.year.trim()) formData.append("year", uploadForm.year.trim());
+      if (selectedFile) formData.append("file", selectedFile);
+
+      const res = await apiUpload("/resources/upload", formData, session.accessToken);
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
-        throw new Error((err as { detail?: string }).detail ?? "Impossible de publier la ressource");
+        const detail = (err as { detail?: string | Array<{ msg?: string }> }).detail;
+        const message =
+          typeof detail === "string"
+            ? detail
+            : Array.isArray(detail)
+            ? detail.map((d) => d.msg).filter(Boolean).join(", ")
+            : "Impossible de publier la ressource";
+        throw new Error(message);
       }
       setShowUploadModal(false);
       setUploadForm(defaultUploadForm);
+      setSelectedFile(null);
       await loadResources();
     } catch (err) {
       setUploadError(err instanceof Error ? err.message : "Erreur lors de la publication");
@@ -308,7 +309,7 @@ export default function ResourcesPage() {
                     <span className="text-xs text-[#6a697c]">{resource.downloads} telechargement{resource.downloads > 1 ? "s" : ""}</span>
                     {resource.fileUrl ? (
                       <a
-                        href={resource.fileUrl}
+                        href={resolveFileUrl(resource.fileUrl)}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="btn-secondary px-4 py-1.5 text-xs font-bold"
@@ -382,10 +383,9 @@ export default function ResourcesPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-[#4d4c5c] mb-2">Description *</label>
+                <label className="block text-sm font-semibold text-[#4d4c5c] mb-2">Description</label>
                 <textarea
                   rows={3}
-                  required
                   value={uploadForm.description}
                   onChange={(e) => setUploadForm({ ...uploadForm, description: e.target.value })}
                   placeholder="Decris brievement le contenu de la ressource"
@@ -395,7 +395,7 @@ export default function ResourcesPage() {
 
               <div className="grid sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-semibold text-[#4d4c5c] mb-2">Type *</label>
+                  <label className="block text-sm font-semibold text-[#4d4c5c] mb-2">Type</label>
                   <select
                     value={uploadForm.category}
                     onChange={(e) => setUploadForm({ ...uploadForm, category: e.target.value })}
@@ -409,10 +409,9 @@ export default function ResourcesPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-[#4d4c5c] mb-2">Matiere *</label>
+                  <label className="block text-sm font-semibold text-[#4d4c5c] mb-2">Matiere</label>
                   <input
                     type="text"
-                    required
                     value={uploadForm.subject}
                     onChange={(e) => setUploadForm({ ...uploadForm, subject: e.target.value })}
                     placeholder="Ex: Mathematiques"
@@ -454,35 +453,32 @@ export default function ResourcesPage() {
                 </div>
               </div>
 
-              <div className="grid sm:grid-cols-3 gap-4">
-                <div className="sm:col-span-2">
-                  <label className="block text-sm font-semibold text-[#4d4c5c] mb-2">Lien du fichier *</label>
+              <div>
+                <label className="block text-sm font-semibold text-[#4d4c5c] mb-2">Fichier</label>
+                <label className="border-2 border-dashed border-[#dcdce5] rounded-lg p-8 text-center hover:border-[#121117] hover:bg-[#f4f4f8]/30 transition-all cursor-pointer block">
                   <input
-                    type="url"
-                    required
-                    value={uploadForm.fileUrl}
-                    onChange={(e) => setUploadForm({ ...uploadForm, fileUrl: e.target.value })}
-                    placeholder="https://drive.google.com/..."
-                    className={inputClass}
+                    type="file"
+                    accept=".pdf,.doc,.docx,.ppt,.pptx,.txt,.png,.jpg,.jpeg,.webp"
+                    className="sr-only"
+                    onChange={(e) => setSelectedFile(e.target.files?.[0] ?? null)}
                   />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-[#4d4c5c] mb-2">Format</label>
-                  <input
-                    type="text"
-                    value={uploadForm.fileType}
-                    onChange={(e) => setUploadForm({ ...uploadForm, fileType: e.target.value })}
-                    placeholder="pdf"
-                    className={inputClass}
-                  />
-                </div>
+                  <div className="w-12 h-12 rounded-lg bg-[#f4f4f8] flex items-center justify-center mx-auto mb-3">
+                    <svg className="w-6 h-6 text-[#121117]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                    </svg>
+                  </div>
+                  {selectedFile ? (
+                    <p className="text-sm font-medium text-[#121117]">{selectedFile.name}</p>
+                  ) : (
+                    <>
+                      <p className="text-sm text-[#4d4c5c] font-medium">Clique pour selectionner un fichier</p>
+                      <p className="text-xs text-[#6a697c] mt-1.5">PDF, DOCX, PPTX, images (max 20 Mo)</p>
+                    </>
+                  )}
+                </label>
               </div>
 
-              <p className="text-xs text-[#6a697c]">
-                Colle un lien public (Google Drive, Dropbox, etc.). La ressource sera accessible gratuitement par tous.
-              </p>
-
-              <button type="submit" disabled={uploading} className="btn-primary w-full">
+              <button type="submit" disabled={uploading || !uploadForm.title.trim()} className="btn-primary w-full">
                 {uploading ? "Publication..." : "Partager la ressource"}
               </button>
             </form>

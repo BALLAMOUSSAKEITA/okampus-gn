@@ -20,6 +20,8 @@ from app.models import (
     Appointment,
     CalendarEvent,
     EntrepreneurProject,
+    ForumComment,
+    ForumLike,
     ForumPost,
     Resource,
     ResourcePurchase,
@@ -44,6 +46,8 @@ async def cleanup(dry_run: bool = False, keep_email: str = "ballamou38@gmail.com
 
         counts = {
             "forum_posts": await db.scalar(select(func.count()).select_from(ForumPost)) or 0,
+            "forum_comments": await db.scalar(select(func.count()).select_from(ForumComment)) or 0,
+            "forum_likes": await db.scalar(select(func.count()).select_from(ForumLike)) or 0,
             "success_stories": await db.scalar(select(func.count()).select_from(SuccessStory)) or 0,
             "stage_offers": await db.scalar(select(func.count()).select_from(StageOffer)) or 0,
             "stage_applications": await db.scalar(select(func.count()).select_from(StageApplication)) or 0,
@@ -70,6 +74,8 @@ async def cleanup(dry_run: bool = False, keep_email: str = "ballamou38@gmail.com
         await db.execute(delete(StageApplication))
         await db.execute(delete(ResourcePurchase))
         await db.execute(delete(Appointment))
+        await db.execute(delete(ForumLike))
+        await db.execute(delete(ForumComment))
         await db.execute(delete(ForumPost))
         await db.execute(delete(SuccessStory))
         await db.execute(delete(StageOffer))
