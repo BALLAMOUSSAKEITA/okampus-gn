@@ -58,7 +58,7 @@ export default function AdminMentorsPage() {
             <table className="admin-table">
               <thead>
                 <tr>
-                  {["Nom", "Email", "Filiere", "Universite", "Annee", "Description", ""].map((h) => (
+                  {["Nom", "Contact", "Filiere", "Universite", "Annee", "Description", ""].map((h) => (
                     <th key={h || "actions"}>{h}</th>
                   ))}
                 </tr>
@@ -67,7 +67,7 @@ export default function AdminMentorsPage() {
                 {mentors.map((m) => (
                   <tr key={m.user_id}>
                     <td className="font-medium">{m.name}</td>
-                    <td className="text-[#737373]">{m.email}</td>
+                    <td className="text-[#737373]">{m.email || m.phone || "—"}</td>
                     <td>{m.field}</td>
                     <td>{m.university}</td>
                     <td>

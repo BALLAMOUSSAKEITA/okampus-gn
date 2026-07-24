@@ -42,6 +42,7 @@ def _build_user_out(user: User) -> UserOut:
     return UserOut(
         id=user.id,
         email=user.email,
+        phone=user.phone,
         name=user.name,
         role=user.role,
         city=user.city,

@@ -8,6 +8,7 @@ interface AuthShellProps {
   title: string;
   description: string;
   children: ReactNode;
+  compact?: boolean;
 }
 
 const brandCopy = {
@@ -21,7 +22,13 @@ const brandCopy = {
   },
 } as const;
 
-export default function AuthShell({ mode, title, description, children }: AuthShellProps) {
+export default function AuthShell({
+  mode,
+  title,
+  description,
+  children,
+  compact = false,
+}: AuthShellProps) {
   const brand = brandCopy[mode];
 
   return (
@@ -82,30 +89,43 @@ export default function AuthShell({ mode, title, description, children }: AuthSh
       </aside>
 
       {/* Formulaire */}
-      <section className="relative flex items-center justify-center px-4 sm:px-8 py-10 sm:py-14 bg-[#f4f4f8]">
+      <section
+        className={`relative flex items-center justify-center px-4 sm:px-8 bg-[#f4f4f8] ${
+          compact ? "py-8 sm:py-10" : "py-10 sm:py-14"
+        }`}
+      >
         <div className="absolute inset-0 pointer-events-none opacity-60">
           <div className="absolute top-0 right-0 w-64 h-64 bg-[#14b887]/10 rounded-full blur-3xl" />
           <div className="absolute bottom-10 left-0 w-56 h-56 bg-[#99c5ff]/20 rounded-full blur-3xl" />
         </div>
 
         <div className="relative w-full max-w-[420px] animate-slideUp">
-          <div className="lg:hidden mb-8 flex flex-col items-center text-center">
+          <div
+            className={`lg:hidden flex flex-col items-center text-center ${
+              compact ? "mb-5" : "mb-8"
+            }`}
+          >
             <Link href="/">
               <Logo size="md" />
             </Link>
-            <p className="mt-3 text-sm text-[#6a697c]">La plateforme etudiante guineenne</p>
           </div>
 
-          <header className="mb-8">
-            <h2 className="font-display text-3xl sm:text-[34px] font-bold tracking-[-0.02em] text-[#121117]">
+          <header className={compact ? "mb-5" : "mb-8"}>
+            <h2
+              className={`font-display font-bold tracking-[-0.02em] text-[#121117] ${
+                compact ? "text-2xl sm:text-[28px]" : "text-3xl sm:text-[34px]"
+              }`}
+            >
               {title}
             </h2>
-            <p className="mt-2 text-[#4d4c5c] leading-relaxed">{description}</p>
+            <p className={`text-[#4d4c5c] leading-relaxed ${compact ? "mt-1 text-sm" : "mt-2"}`}>
+              {description}
+            </p>
           </header>
 
           {children}
 
-          <p className="text-center text-sm text-[#6a697c] mt-8">
+          <p className={`text-center text-sm text-[#6a697c] ${compact ? "mt-5" : "mt-8"}`}>
             <Link href="/" className="hover:text-[#121117] transition-colors">
               ← Retour a l&apos;accueil
             </Link>

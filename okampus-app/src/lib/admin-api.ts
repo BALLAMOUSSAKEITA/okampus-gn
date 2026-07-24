@@ -35,7 +35,8 @@ export type AdminStats = {
 
 export type AdminUser = {
   id: string;
-  email: string;
+  email?: string | null;
+  phone?: string | null;
   name: string;
   role: string;
   city?: string;
@@ -49,7 +50,8 @@ export type AdminUser = {
 export type AdminMentor = {
   user_id: string;
   name: string;
-  email: string;
+  email?: string | null;
+  phone?: string | null;
   field: string;
   university: string;
   year: string;

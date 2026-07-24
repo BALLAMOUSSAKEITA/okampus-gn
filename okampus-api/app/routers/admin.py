@@ -97,6 +97,7 @@ async def list_users(db: AsyncSession = Depends(get_db)):
         AdminUserOut(
             id=u.id,
             email=u.email,
+            phone=u.phone,
             name=u.name,
             role=u.role,
             city=u.city,
@@ -135,6 +136,7 @@ async def update_user_admin(
     return AdminUserOut(
         id=user.id,
         email=user.email,
+        phone=user.phone,
         name=user.name,
         role=user.role,
         city=user.city,
@@ -170,6 +172,7 @@ async def list_mentors(db: AsyncSession = Depends(get_db)):
             user_id=adv.user_id,
             name=user.name,
             email=user.email,
+            phone=user.phone,
             field=adv.field,
             university=adv.university,
             year=adv.year,

@@ -285,7 +285,7 @@ export default function ProfilPage() {
             <UserAvatar name={user.name} size={72} rounded="lg" />
             <div>
               <h2 className="text-xl font-bold text-[#121117]">{user.name}</h2>
-              <p className="text-[#4d4c5c] mt-0.5">{user.email}</p>
+              <p className="text-[#4d4c5c] mt-0.5">{user.email || user.phone}</p>
               <span
                 className={`inline-block mt-2 px-3 py-1 rounded-lg text-xs font-semibold ${
                   user.role === "bachelier"

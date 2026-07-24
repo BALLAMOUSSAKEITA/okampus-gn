@@ -281,6 +281,12 @@ export default function Home() {
             <p className="text-sm text-[#6a697c]">
               &copy; 2026 BacheliO
             </p>
+            <Link
+              href="/confidentialite"
+              className="text-sm text-[#dcdce5] hover:text-white transition-colors"
+            >
+              Politique de confidentialite
+            </Link>
           </div>
         </div>
       </footer>

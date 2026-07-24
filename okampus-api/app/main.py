@@ -5,6 +5,7 @@ from pathlib import Path
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from sqlalchemy import text
 
 from app.database import engine, Base
 from app.routers import admin, auth, calendar, cv, entrepreneur, forum, mentors, parcours, resources, scholarships, stages, stats, success_stories, users
@@ -13,11 +14,22 @@ from app.routers import admin, auth, calendar, cv, entrepreneur, forum, mentors,
 import app.models  # noqa: F401
 
 
+async def _ensure_schema(conn) -> None:
+    """Patches schema pour bases deja deployees (create_all n'ajoute pas les colonnes)."""
+    try:
+        await conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS phone VARCHAR"))
+        await conn.execute(text("ALTER TABLE users ALTER COLUMN email DROP NOT NULL"))
+        await conn.execute(text("CREATE UNIQUE INDEX IF NOT EXISTS ix_users_phone ON users (phone)"))
+    except Exception as exc:
+        print(f"[SCHEMA] ensure_schema skipped/failed: {type(exc).__name__}: {exc}")
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Créer toutes les tables au démarrage (si elles n'existent pas)
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+        await _ensure_schema(conn)
     yield
 
 

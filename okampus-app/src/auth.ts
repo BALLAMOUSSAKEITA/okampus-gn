@@ -3,24 +3,29 @@ import Credentials from "next-auth/providers/credentials"
 
 const API_URL = process.env.API_URL ?? "http://localhost:8000"
 
-const PUBLIC_PATHS = ["/", "/inscription", "/connexion", "/offline"]
+const PUBLIC_PATHS = ["/", "/inscription", "/connexion", "/confidentialite", "/offline"]
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
     Credentials({
       credentials: {
+        identifier: { label: "Email ou telephone", type: "text" },
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) return null
+        const identifier =
+          (typeof credentials?.identifier === "string" && credentials.identifier) ||
+          (typeof credentials?.email === "string" && credentials.email) ||
+          ""
+        if (!identifier || !credentials?.password) return null
 
         try {
           const res = await fetch(`${API_URL}/auth/login`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              email: credentials.email,
+              identifier,
               password: credentials.password,
             }),
           })
@@ -31,7 +36,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
           return {
             id: data.user.id,
-            email: data.user.email,
+            email: data.user.email || data.user.phone || identifier,
             name: data.user.name,
             role: data.user.role,
             accessToken: data.access_token,

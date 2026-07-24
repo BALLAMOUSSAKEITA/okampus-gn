@@ -20,7 +20,8 @@ class User(Base):
     __tablename__ = "users"
 
     id: Mapped[str] = mapped_column("id", String, primary_key=True, default=gen_id)
-    email: Mapped[str] = mapped_column("email", String, unique=True, nullable=False)
+    email: Mapped[Optional[str]] = mapped_column("email", String, unique=True, nullable=True)
+    phone: Mapped[Optional[str]] = mapped_column("phone", String, unique=True, nullable=True)
     password: Mapped[str] = mapped_column("password", String, nullable=False)
     name: Mapped[str] = mapped_column("name", String, nullable=False)
     role: Mapped[str] = mapped_column("role", String, nullable=False)

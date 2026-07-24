@@ -7,6 +7,7 @@ import { signIn } from "next-auth/react";
 import AuthShell from "@/components/auth/AuthShell";
 import PasswordField, { inputClass } from "@/components/auth/PasswordField";
 import { resolveCallbackUrl } from "@/lib/auth-redirect";
+import { parseContactIdentifier } from "@/lib/contact";
 
 function ConnexionForm() {
   const router = useRouter();
@@ -14,7 +15,7 @@ function ConnexionForm() {
   const callbackUrl = resolveCallbackUrl(searchParams.get("callbackUrl"));
   const authError = searchParams.get("error");
 
-  const [email, setEmail] = useState("");
+  const [contact, setContact] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(
     authError ? "Session expiree ou connexion refusee. Reessaie." : ""
@@ -29,11 +30,19 @@ function ConnexionForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+
+    const parsed = parseContactIdentifier(contact);
+    if (parsed.error) {
+      setError(parsed.error);
+      return;
+    }
+
     setLoading(true);
 
     try {
+      const identifier = parsed.email || parsed.phone || contact.trim();
       const res = await signIn("credentials", {
-        email,
+        identifier,
         password,
         redirect: false,
       });
@@ -43,7 +52,7 @@ function ConnexionForm() {
           router.push(callbackUrl);
         });
       } else {
-        setError("Email ou mot de passe incorrect");
+        setError("Identifiant ou mot de passe incorrect");
       }
     } catch {
       setError("Une erreur est survenue. Verifie ta connexion et reessaie.");
@@ -56,20 +65,21 @@ function ConnexionForm() {
     <AuthShell
       mode="login"
       title="Connexion"
-      description="Connecte-toi pour continuer ton parcours sur BacheliO."
+      description="Connecte-toi avec ton email ou ton telephone."
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-[#4d4c5c] mb-1.5">
-            Email
+          <label htmlFor="contact" className="block text-sm font-medium text-[#4d4c5c] mb-1.5">
+            Email ou telephone
           </label>
           <input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="email@exemple.com"
-            autoComplete="email"
+            id="contact"
+            type="text"
+            inputMode="email"
+            value={contact}
+            onChange={(e) => setContact(e.target.value)}
+            placeholder="email@exemple.com ou 620123456"
+            autoComplete="username"
             required
             className={inputClass}
           />
@@ -119,6 +129,11 @@ function ConnexionForm() {
           className="text-[#121117] font-semibold underline underline-offset-2 hover:text-[#14b887] transition-colors"
         >
           S&apos;inscrire
+        </Link>
+      </p>
+      <p className="text-center text-xs text-[#6a697c] mt-3">
+        <Link href="/confidentialite" className="hover:text-[#121117] underline underline-offset-2">
+          Politique de confidentialite
         </Link>
       </p>
     </AuthShell>

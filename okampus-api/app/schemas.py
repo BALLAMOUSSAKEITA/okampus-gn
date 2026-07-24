@@ -3,6 +3,8 @@ from typing import Any, Optional
 
 from pydantic import BaseModel, EmailStr, field_validator, model_validator
 
+from app.phone import looks_like_email, normalize_phone
+
 
 BAC_OPTIONS = (
     "Sciences Mathématiques",
@@ -15,9 +17,10 @@ BAC_OPTIONS = (
 
 class RegisterRequest(BaseModel):
     name: str
-    email: EmailStr
     password: str
     role: str  # "bachelier" | "etudiant"
+    email: Optional[EmailStr] = None
+    phone: Optional[str] = None
     city: Optional[str] = None
     bac_option: Optional[str] = None
     university: Optional[str] = None
@@ -32,7 +35,14 @@ class RegisterRequest(BaseModel):
         return value
 
     @model_validator(mode="after")
-    def validate_role_fields(self):
+    def validate_contact_and_role(self):
+        if self.email:
+            self.email = str(self.email).strip().lower()
+        if self.phone:
+            self.phone = normalize_phone(self.phone)
+        if not self.email and not self.phone:
+            raise ValueError("Email ou telephone requis")
+
         if self.role == "bachelier":
             if not self.city or not self.city.strip():
                 raise ValueError("La ville est requise pour un nouveau bachelier")
@@ -54,8 +64,21 @@ class RegisterRequest(BaseModel):
 
 
 class LoginRequest(BaseModel):
-    email: EmailStr
     password: str
+    identifier: Optional[str] = None
+    email: Optional[str] = None  # compat anciennes clients
+    phone: Optional[str] = None
+
+    @model_validator(mode="after")
+    def resolve_identifier(self):
+        raw = (self.identifier or self.email or self.phone or "").strip()
+        if not raw:
+            raise ValueError("Email ou telephone requis")
+        if looks_like_email(raw):
+            self.identifier = raw.lower()
+        else:
+            self.identifier = normalize_phone(raw)
+        return self
 
 
 class TokenResponse(BaseModel):
@@ -97,7 +120,8 @@ class AdvisorProfileOut(BaseModel):
 
 class UserOut(BaseModel):
     id: str
-    email: str
+    email: Optional[str] = None
+    phone: Optional[str] = None
     name: str
     role: str
     city: Optional[str] = None
@@ -402,7 +426,8 @@ class AdminStatsOut(BaseModel):
 
 class AdminUserOut(BaseModel):
     id: str
-    email: str
+    email: Optional[str] = None
+    phone: Optional[str] = None
     name: str
     role: str
     city: Optional[str] = None
@@ -424,7 +449,8 @@ class AdminUserUpdate(BaseModel):
 class AdminMentorOut(BaseModel):
     user_id: str
     name: str
-    email: str
+    email: Optional[str] = None
+    phone: Optional[str] = None
     field: str
     university: str
     year: str

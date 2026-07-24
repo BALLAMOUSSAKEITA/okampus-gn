@@ -69,7 +69,7 @@ export default function AdminUsersPage() {
             <table className="admin-table">
               <thead>
                 <tr>
-                  {["Nom", "Email", "Role", "Profil", "Inscription", "Actions"].map((h) => (
+                  {["Nom", "Contact", "Role", "Profil", "Inscription", "Actions"].map((h) => (
                     <th key={h}>{h}</th>
                   ))}
                 </tr>
@@ -78,7 +78,7 @@ export default function AdminUsersPage() {
                 {users.map((u) => (
                   <tr key={u.id}>
                     <td className="font-medium">{u.name}</td>
-                    <td className="text-[#737373]">{u.email}</td>
+                    <td className="text-[#737373]">{u.email || u.phone || "—"}</td>
                     <td>
                       <select
                         value={u.role}

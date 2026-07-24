@@ -9,7 +9,8 @@ export type UserRole = "bachelier" | "etudiant" | "admin";
 
 export interface User {
   id: string;
-  email: string;
+  email?: string;
+  phone?: string;
   name: string;
   role: UserRole;
   city?: string;
@@ -96,7 +97,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           // FastAPI retourne l'objet directement (pas enveloppé dans { user })
           setUser({
             id: data.id,
-            email: data.email,
+            email: data.email ?? undefined,
+            phone: data.phone ?? undefined,
             name: data.name,
             role: data.role,
             city: data.city ?? undefined,
