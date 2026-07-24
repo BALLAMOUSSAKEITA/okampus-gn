@@ -11,7 +11,7 @@ export default function AdminTopBar() {
       <div className="admin-topbar-inner">
         <div className="admin-topbar-meta">
           <span className="admin-pill admin-pill-blue">Administration</span>
-          <span className="admin-topbar-sub">O&apos;Kampus — gestion plateforme</span>
+          <span className="admin-topbar-sub">BacheliO — gestion plateforme</span>
         </div>
         <div className="admin-topbar-actions">
           <Link href="/" className="admin-btn-ghost">

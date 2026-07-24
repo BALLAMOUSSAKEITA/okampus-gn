@@ -147,7 +147,7 @@ function InscriptionForm() {
       <div className="max-w-md w-full">
         <div className="text-center mb-6">
           <Link href="/" className="text-2xl font-bold text-[#121117]">
-            O&apos;Kampus
+            BacheliO
           </Link>
         </div>
 

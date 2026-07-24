@@ -27,7 +27,7 @@ export default function AdminSidebar() {
   return (
     <aside className="admin-sidebar">
       <div className="admin-sidebar-brand">
-        <Link href="/admin">O&apos;Kampus Admin</Link>
+        <Link href="/admin">BacheliO Admin</Link>
         <p>Gestion de la plateforme</p>
       </div>
 

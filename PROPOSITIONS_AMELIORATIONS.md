@@ -1,4 +1,4 @@
-# O'Kampus - Propositions d'améliorations
+# BacheliO - Propositions d'améliorations
 
 ## Vision : Plateforme complète de l’étudiant guinéen
 
@@ -79,7 +79,7 @@ Du **succès au bac** → **orientation** → **pendant les études** → **inse
 | **Partenariat universités** | Validation des infos, accès aux actualités officielles |
 | **Partenariat ONG/Ministère** | Visibilité, soutien, bourses |
 | **Sponsoring** | Entreprises guinéennes pour financer la plateforme |
-| **Ambassadeurs** | Étudiants relais dans les lycées pour promouvoir O'Kampus |
+| **Ambassadeurs** | Étudiants relais dans les lycées pour promouvoir BacheliO |
 
 ---
 
@@ -91,7 +91,7 @@ Du **succès au bac** → **orientation** → **pendant les études** → **inse
 
 ---
 
-## 🎯 Différenciation O'Kampus
+## 🎯 Différenciation BacheliO
 
 - **100% focalisé sur la Guinée** (universités, concours, contexte local)
 - **Pair-à-pair** : étudiants qui conseillent les bacheliers

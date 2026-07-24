@@ -74,7 +74,7 @@ export default function PWAInstallPrompt() {
           </div>
 
           <div className="flex-1 min-w-0">
-            <h3 className="font-display font-bold text-[#121117] text-base mb-1">Installer O&apos;Kampus</h3>
+            <h3 className="font-display font-bold text-[#121117] text-base mb-1">Installer BacheliO</h3>
             <p className="text-sm text-[#4d4c5c] mb-4 leading-relaxed">
               Accede rapidement a la plateforme depuis ton ecran d&apos;accueil
             </p>

@@ -26,15 +26,15 @@ const figtree = Figtree({
 });
 
 export const metadata: Metadata = {
-  title: "O'Kampus - La plateforme etudiante",
+  title: "BacheliO - La plateforme etudiante",
   description:
-    "O'Kampus t'accompagne : orientation IA, mentorat, forum, CV, stages, bourses et insertion professionnelle.",
+    "BacheliO t'accompagne : orientation IA, mentorat, forum, CV, stages, bourses et insertion professionnelle.",
   manifest: "/manifest.json",
   themeColor: "#14b887",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "O'Kampus",
+    title: "BacheliO",
   },
   viewport: {
     width: "device-width",

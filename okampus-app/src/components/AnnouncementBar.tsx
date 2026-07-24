@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 
 const messages = [
   <>
-    <span className="text-[#ffdf3d] font-semibold">O&apos;Kampus</span>
+    <span className="text-[#ffdf3d] font-semibold">BacheliO</span>
     {" "}— du bac a l&apos;emploi, on t&apos;accompagne a chaque etape
   </>,
   <>Orientation IA, mentorat et stages reunis au meme endroit</>,
@@ -42,7 +42,7 @@ export default function AnnouncementBar() {
   return (
     <div
       className="bg-[#121117] text-white text-[13px] h-10 overflow-hidden relative"
-      aria-label="Annonces O'Kampus"
+      aria-label="Annonces BacheliO"
     >
       <div className="announcement-track flex items-center h-full w-max">
         {track}

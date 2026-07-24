@@ -1,6 +1,6 @@
 {
-  "name": "O'Kampus - Plateforme etudiante",
-  "short_name": "O'Kampus",
+  "name": "BacheliO - Plateforme etudiante",
+  "short_name": "BacheliO",
   "description": "Plateforme complete pour les etudiants : orientation, stages, bourses, entrepreneuriat et plus",
   "start_url": "/",
   "display": "standalone",

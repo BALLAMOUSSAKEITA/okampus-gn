@@ -24,7 +24,7 @@ const emptyProfile: OrientationProfile = {
   passions: "",
 };
 
-const WELCOME_MESSAGE = `Bonjour ! Je suis **Kampus**, l'assistant IA d'O'Kampus.
+const WELCOME_MESSAGE = `Bonjour ! Je suis **Kampus**, l'assistant IA de BacheliO.
 
 Je t'accompagne pour choisir ta filiere en Guinee (Sciences Mathematiques, Experimentales ou Sociales), clarifier ton projet d'etudes et trouver les bonnes pistes (universites, mentors, stages).
 

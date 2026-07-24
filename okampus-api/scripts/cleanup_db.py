@@ -61,7 +61,7 @@ async def cleanup(dry_run: bool = False, keep_email: str = "ballamou38@gmail.com
         users_total = await db.scalar(select(func.count()).select_from(User)) or 0
         users_to_delete = users_total - 1
 
-        print("=== Nettoyage O'Kampus ===")
+        print("=== Nettoyage BacheliO ===")
         print(f"Admin conserve: {admin.email} ({admin.name})")
         print(f"Utilisateurs a supprimer: {users_to_delete}")
         for key, value in counts.items():
@@ -90,7 +90,7 @@ async def cleanup(dry_run: bool = False, keep_email: str = "ballamou38@gmail.com
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Nettoyer la base O'Kampus")
+    parser = argparse.ArgumentParser(description="Nettoyer la base BacheliO")
     parser.add_argument("--dry-run", action="store_true", help="Afficher sans modifier")
     parser.add_argument("--keep-email", default="ballamou38@gmail.com", help="Email admin a conserver")
     args = parser.parse_args()

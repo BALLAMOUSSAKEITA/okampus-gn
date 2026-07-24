@@ -21,7 +21,7 @@ async def lifespan(app: FastAPI):
     yield
 
 
-app = FastAPI(title="O'Kampus API", version="1.0.0", lifespan=lifespan)
+app = FastAPI(title="BacheliO API", version="1.0.0", lifespan=lifespan)
 
 # CORS — autorise le frontend Next.js (tous ports localhost en dev)
 _cors_origins = [

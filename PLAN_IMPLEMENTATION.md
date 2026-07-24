@@ -1,4 +1,4 @@
-# O'Kampus — Plan d'implémentation détaillé
+# BacheliO — Plan d'implémentation détaillé
 
 > **Dernière mise à jour** : 28 mars 2026
 > Ce document recense **toutes les tâches** à réaliser pour passer de l'état actuel (prototype avec données fictives) à une plateforme fonctionnelle et connectée.

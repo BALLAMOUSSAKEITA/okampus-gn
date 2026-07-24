@@ -160,7 +160,7 @@ export default function Home() {
       <section className="bg-white py-16 md:py-20 px-4 sm:px-6">
         <div className="max-w-[1200px] mx-auto">
           <h2 className="font-display text-[32px] md:text-[48px] font-bold leading-[1.13] text-[#121117] text-center mb-14 sm:mb-16">
-            Comment fonctionne O&apos;Kampus ?
+            Comment fonctionne BacheliO ?
           </h2>
 
           <div className="grid lg:grid-cols-3 gap-10 lg:gap-12">
@@ -279,7 +279,7 @@ export default function Home() {
 
           <div className="pt-8 border-t border-[#2a2935] flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-sm text-[#6a697c]">
-              &copy; 2026 O&apos;Kampus
+              &copy; 2026 BacheliO
             </p>
           </div>
         </div>

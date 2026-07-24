@@ -719,7 +719,7 @@ export default function ProfilPage() {
                         <input
                           value={pr.name}
                           onChange={(e) => updateProject(idx, { name: e.target.value })}
-                          placeholder="O'Kampus, Portfolio, ..."
+                          placeholder="BacheliO, Portfolio, ..."
                           className={inputSmClass}
                         />
                       </div>

@@ -27,7 +27,7 @@ export default function ComingSoon({
         </span>
         <p className="text-[#4d4c5c] leading-relaxed max-w-md mx-auto">
           Cette fonctionnalite est en cours de preparation. Reviens bientot pour en profiter sur
-          O&apos;Kampus.
+          BacheliO.
         </p>
         <Link href={backHref} className="btn-secondary inline-flex mt-8 bg-white">
           {backLabel}

@@ -1,7 +1,7 @@
 import type { OrientationProfile } from "@/lib/orientation-fallback";
 import { BAC_OPTIONS } from "@/lib/bac-options";
 
-export const SYSTEM_PROMPT = `Tu es Kampus, l'assistant IA d'orientation d'O'Kampus — plateforme dediee aux etudiants guineens.
+export const SYSTEM_PROMPT = `Tu es Kampus, l'assistant IA d'orientation de BacheliO — plateforme dediee aux etudiants guineens.
 
 ## Mission
 Aider les bacheliers et etudiants a choisir une filiere realiste, comprendre les debouches locaux et passer a l'action (mentor, forum, inscription universitaire).

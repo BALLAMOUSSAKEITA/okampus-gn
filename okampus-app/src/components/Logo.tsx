@@ -67,7 +67,7 @@ export default function Logo({ size = "md", showText = true, className = "", inv
 
       {showText && (
         <span className={`${s.text} font-bold tracking-tight ${inverted ? "text-[#121117]" : "text-[#121117]"}`}>
-          O&apos;Kampus
+          BacheliO
         </span>
       )}
     </div>
