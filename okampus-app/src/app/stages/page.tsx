@@ -71,6 +71,7 @@ export default function StagesPage() {
   const [selectedType, setSelectedType] = useState<string>("all");
   const [selectedDomain, setSelectedDomain] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [showFilters, setShowFilters] = useState(false);
   const [selectedOffer, setSelectedOffer] = useState<StageOffer | null>(null);
 
   useEffect(() => {
@@ -139,41 +140,59 @@ export default function StagesPage() {
           />
         ) : (
           <>
-            <div className="card p-5 md:p-7 mb-8">
-              <div className="grid md:grid-cols-3 gap-5">
-                <div className="md:col-span-3">
-                  <div className="relative">
-                    <svg
-                      className="absolute left-4 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-[#6a697c]"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                      />
-                    </svg>
-                    <input
-                      type="text"
-                      placeholder="Rechercher par titre ou entreprise..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      disabled={loading}
-                      className="w-full pl-11 pr-4 py-3 rounded-lg border border-[#dcdce5] bg-white focus:outline-none focus:ring-2 focus:ring-[#121117]/20 focus:border-[#121117] text-sm transition-all disabled:opacity-50"
-                    />
-                  </div>
-                </div>
+            <div className="card p-4 md:p-7 mb-6 md:mb-8">
+              <div className="relative mb-3 md:mb-5">
+                <svg
+                  className="absolute left-4 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-[#6a697c]"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+                <input
+                  type="text"
+                  placeholder="Rechercher par titre ou entreprise..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  disabled={loading}
+                  className="w-full pl-11 pr-4 py-3 rounded-lg border border-[#dcdce5] bg-white focus:outline-none focus:border-[#121117] text-base md:text-sm transition-all disabled:opacity-50"
+                />
+              </div>
 
+              <div className="flex items-center justify-between gap-3 mb-3 md:hidden">
+                <p className="text-sm text-[#4d4c5c]">
+                  {loading ? (
+                    "Chargement..."
+                  ) : (
+                    <>
+                      <span className="font-bold text-[#121117]">{filteredOffers.length}</span> offre
+                      {filteredOffers.length > 1 ? "s" : ""}
+                    </>
+                  )}
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setShowFilters((v) => !v)}
+                  className="min-h-11 px-3 text-sm font-semibold text-[#121117] underline underline-offset-2"
+                >
+                  {showFilters ? "Masquer filtres" : "Filtres"}
+                </button>
+              </div>
+
+              <div className={`${showFilters ? "grid" : "hidden"} md:grid md:grid-cols-3 gap-5`}>
                 <div>
                   <label className="block text-sm font-semibold text-[#4d4c5c] mb-2">Type</label>
                   <select
                     value={selectedType}
                     onChange={(e) => setSelectedType(e.target.value)}
                     disabled={loading}
-                    className="w-full px-4 py-3 rounded-lg border border-[#dcdce5] bg-white focus:outline-none focus:ring-2 focus:ring-[#121117]/20 focus:border-[#121117] text-sm disabled:opacity-50"
+                    className="w-full px-4 py-3 rounded-lg border border-[#dcdce5] bg-white focus:outline-none focus:border-[#121117] text-base md:text-sm disabled:opacity-50"
                   >
                     <option value="all">Tous</option>
                     {types.map((t) => (
@@ -190,7 +209,7 @@ export default function StagesPage() {
                     value={selectedDomain}
                     onChange={(e) => setSelectedDomain(e.target.value)}
                     disabled={loading}
-                    className="w-full px-4 py-3 rounded-lg border border-[#dcdce5] bg-white focus:outline-none focus:ring-2 focus:ring-[#121117]/20 focus:border-[#121117] text-sm disabled:opacity-50"
+                    className="w-full px-4 py-3 rounded-lg border border-[#dcdce5] bg-white focus:outline-none focus:border-[#121117] text-base md:text-sm disabled:opacity-50"
                   >
                     <option value="all">Tous</option>
                     {domains.map((d) => (
@@ -201,7 +220,7 @@ export default function StagesPage() {
                   </select>
                 </div>
 
-                <div className="flex items-end">
+                <div className="hidden md:flex items-end">
                   <div className="text-sm text-[#4d4c5c]">
                     {loading ? (
                       "Chargement..."

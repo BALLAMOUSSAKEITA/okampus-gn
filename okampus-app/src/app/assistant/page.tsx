@@ -1,9 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import PageShell from "@/components/ui/PageShell";
-import PageHeader from "@/components/ui/PageHeader";
 import AssistantMessage from "@/components/AssistantMessage";
 import type { OrientationProfile } from "@/lib/orientation-fallback";
 
@@ -11,9 +9,6 @@ interface ChatMessage {
   role: "user" | "assistant";
   content: string;
 }
-
-const inputClass =
-  "w-full px-4 py-3 text-sm rounded-lg border border-[#dcdce5] bg-white focus:border-[#121117] focus:ring-2 focus:ring-[#121117]/20 outline-none transition-all placeholder:text-[#6a697c]";
 
 const emptyProfile: OrientationProfile = {
   projectEtudes: "",
@@ -31,9 +26,9 @@ Je t'accompagne pour choisir ta filiere en Guinee (Sciences Mathematiques, Exper
 **Comment puis-je t'aider dans ton orientation ?**`;
 
 const SUGGESTIONS = [
-  "Je viens d'avoir le bac en Sciences Experimentales, je ne sais pas quoi choisir",
-  "Je suis en Sciences Mathematiques et je veux faire medecine, c'est realiste ?",
-  "Quelle filiere pour l'informatique apres Sciences Sociales ?",
+  { short: "Bac SE, quoi choisir ?", full: "Je viens d'avoir le bac en Sciences Experimentales, je ne sais pas quoi choisir" },
+  { short: "Medecine apres SM ?", full: "Je suis en Sciences Mathematiques et je veux faire medecine, c'est realiste ?" },
+  { short: "Info apres SS ?", full: "Quelle filiere pour l'informatique apres Sciences Sociales ?" },
 ];
 
 const initialMessages: ChatMessage[] = [
@@ -45,6 +40,12 @@ export default function AssistantPage() {
   const [inputMessage, setInputMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+  }, [messages, isLoading]);
 
   const callAssistant = async (chatMessages: ChatMessage[]): Promise<string> => {
     const res = await fetch("/api/assistant", {
@@ -105,21 +106,24 @@ export default function AssistantPage() {
   };
 
   return (
-    <PageShell narrow>
-      <PageHeader
-        eyebrow="Assistant IA"
-        title="Kampus — ton guide orientation"
-        description="Discute librement pour clarifier ton projet et trouver la filiere qui te correspond"
-      />
+    <div className="flex flex-col h-[calc(100dvh-4rem)] bg-[#f4f4f8]">
+      <div className="shrink-0 px-4 sm:px-6 pt-4 sm:pt-6 pb-3 max-w-[800px] w-full mx-auto">
+        <p className="text-sm font-semibold text-[#14b887] mb-1">Assistant IA</p>
+        <h1 className="font-display text-xl sm:text-2xl font-bold text-[#121117]">
+          Kampus — ton guide orientation
+        </h1>
+        {error && (
+          <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2.5 text-sm text-amber-900">
+            {error}
+          </div>
+        )}
+      </div>
 
-      {error && (
-        <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-          {error}
-        </div>
-      )}
-
-      <div className="card flex flex-col h-[calc(100vh-260px)] md:h-[620px] overflow-hidden">
-        <div className="flex-1 p-5 md:p-6 overflow-y-auto space-y-4 bg-[#f4f4f8]">
+      <div
+        ref={listRef}
+        className="flex-1 min-h-0 overflow-y-auto px-4 sm:px-6"
+      >
+        <div className="max-w-[800px] mx-auto space-y-4 pb-4">
           {messages.map((msg, i) => (
             <div
               key={i}
@@ -133,14 +137,14 @@ export default function AssistantPage() {
                 </div>
               )}
               <div
-                className={`max-w-[85%] md:max-w-[75%] rounded-lg px-4 py-3.5 ${
+                className={`max-w-[88%] md:max-w-[75%] rounded-lg px-4 py-3.5 ${
                   msg.role === "user"
                     ? "bg-[#121117] text-white"
                     : "bg-white border border-[#dcdce5] text-[#4d4c5c]"
                 }`}
               >
                 {msg.role === "user" ? (
-                  <div className="text-sm leading-relaxed whitespace-pre-line">{msg.content}</div>
+                  <div className="text-base md:text-sm leading-relaxed whitespace-pre-line">{msg.content}</div>
                 ) : (
                   <AssistantMessage content={msg.content} />
                 )}
@@ -152,12 +156,13 @@ export default function AssistantPage() {
             <div className="flex flex-wrap gap-2 pl-9">
               {SUGGESTIONS.map((suggestion) => (
                 <button
-                  key={suggestion}
+                  key={suggestion.full}
                   type="button"
-                  onClick={() => sendMessage(suggestion)}
-                  className="text-left text-xs sm:text-sm px-3 py-2 rounded-full border border-[#dcdce5] bg-white text-[#4d4c5c] hover:border-[#121117] hover:text-[#121117] transition-colors"
+                  onClick={() => sendMessage(suggestion.full)}
+                  className="text-left text-sm min-h-11 px-3 py-2 rounded border border-[#dcdce5] bg-white text-[#4d4c5c] hover:border-[#121117] hover:text-[#121117] transition-colors"
                 >
-                  {suggestion}
+                  <span className="sm:hidden">{suggestion.short}</span>
+                  <span className="hidden sm:inline">{suggestion.full}</span>
                 </button>
               ))}
             </div>
@@ -170,33 +175,39 @@ export default function AssistantPage() {
               </div>
             </div>
           )}
+          <div ref={messagesEndRef} />
         </div>
+      </div>
 
-        <form onSubmit={handleSendMessage} className="p-4 md:p-5 border-t border-[#dcdce5] bg-white">
-          <div className="flex gap-3">
+      <div className="shrink-0 border-t border-[#dcdce5] bg-white px-4 sm:px-6 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+        <form onSubmit={handleSendMessage} className="max-w-[800px] mx-auto">
+          <div className="flex gap-2 sm:gap-3">
             <input
               type="text"
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
               placeholder="Ecris ton message..."
-              className={`flex-1 ${inputClass}`}
+              className="flex-1 min-h-12 px-4 py-3 text-base md:text-sm rounded-lg border border-[#dcdce5] bg-white focus:border-[#121117] outline-none placeholder:text-[#6a697c]"
               disabled={isLoading}
             />
-            <button type="submit" className="btn-primary px-5 md:px-6" disabled={isLoading}>
+            <button
+              type="submit"
+              className="btn-primary min-h-12 px-4 sm:px-6"
+              disabled={isLoading}
+            >
               Envoyer
             </button>
           </div>
+          <div className="mt-2 flex gap-3">
+            <Link href="/conseil" className="text-sm font-medium text-[#4d4c5c] hover:text-[#121117]">
+              Mentorat
+            </Link>
+            <Link href="/forum" className="text-sm font-medium text-[#4d4c5c] hover:text-[#121117]">
+              Forum
+            </Link>
+          </div>
         </form>
       </div>
-
-      <div className="mt-8 flex flex-wrap gap-3">
-        <Link href="/conseil" className="btn-secondary text-sm">
-          Parler a un mentor
-        </Link>
-        <Link href="/forum" className="btn-secondary text-sm">
-          Explorer le forum
-        </Link>
-      </div>
-    </PageShell>
+    </div>
   );
 }

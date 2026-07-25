@@ -26,6 +26,7 @@ export default function ConseilPage() {
   const [selectedAdvisor, setSelectedAdvisor] = useState<Advisor | null>(null);
   const [searchField, setSearchField] = useState("");
   const [showBooking, setShowBooking] = useState(false);
+  const [mobileDetailOpen, setMobileDetailOpen] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState("");
   const [bookingConfirmed, setBookingConfirmed] = useState(false);
 
@@ -78,7 +79,82 @@ export default function ConseilPage() {
     setSelectedAdvisor(advisor);
     setBookingConfirmed(false);
     setSelectedSlot("");
+    setMobileDetailOpen(true);
   };
+
+  const advisorDetail = selectedAdvisor ? (
+    <>
+      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6">
+        <div className="flex items-center gap-4">
+          <UserAvatar
+            name={selectedAdvisor.name}
+            gender={inferGenderFromName(selectedAdvisor.name)}
+            size={64}
+          />
+          <div>
+            <h3 className="font-bold text-[#121117] text-lg">{selectedAdvisor.name}</h3>
+            <p className="text-sm text-[#4d4c5c]">
+              {selectedAdvisor.field} • {selectedAdvisor.university} • {selectedAdvisor.year}
+            </p>
+          </div>
+        </div>
+        {selectedAdvisor.availableSlots.length > 0 && (
+          <button
+            type="button"
+            onClick={() => setShowBooking(true)}
+            className="btn-primary shrink-0 min-h-11"
+          >
+            Prendre rendez-vous
+          </button>
+        )}
+      </div>
+
+      <p className="text-sm text-[#4d4c5c] leading-relaxed bg-[#f4f4f8] rounded-lg px-4 py-3 italic">
+        &quot;{selectedAdvisor.description}&quot;
+      </p>
+
+      {selectedAdvisor.meetLink && (
+        <p className="mt-4 text-sm text-[#4d4c5c]">
+          Lien Meet :{" "}
+          <a
+            href={selectedAdvisor.meetLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[#121117] underline"
+          >
+            {selectedAdvisor.meetLink}
+          </a>
+        </p>
+      )}
+
+      {bookingConfirmed && selectedSlot && (
+        <div className="mt-4 p-4 bg-emerald-50 border border-emerald-200 rounded-xl">
+          <p className="font-semibold text-emerald-800 text-sm">Rendez-vous reserve</p>
+          <p className="text-xs text-emerald-700 mt-1">
+            Creneau : {selectedSlot}
+            {selectedAdvisor.meetLink && (
+              <>
+                {" "}
+                •{" "}
+                <a
+                  href={selectedAdvisor.meetLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline"
+                >
+                  Rejoindre l&apos;appel
+                </a>
+              </>
+            )}
+          </p>
+        </div>
+      )}
+
+      {selectedAdvisor.availableSlots.length === 0 && (
+        <p className="mt-4 text-sm text-[#6a697c]">Aucun creneau disponible pour le moment.</p>
+      )}
+    </>
+  ) : null;
 
   const confirmBooking = () => {
     if (selectedSlot && selectedAdvisor) {
@@ -143,16 +219,17 @@ export default function ConseilPage() {
                     placeholder="Rechercher..."
                     value={searchField}
                     onChange={(e) => setSearchField(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2.5 text-sm rounded-lg border border-[#dcdce5] bg-white focus:border-[#121117] focus:ring-2 focus:ring-[#121117]/20 outline-none transition-all placeholder:text-[#6a697c]"
+                    className="w-full pl-10 pr-4 py-3 text-base md:text-sm rounded-lg border border-[#dcdce5] bg-white focus:border-[#121117] outline-none transition-all placeholder:text-[#6a697c]"
                   />
                 </div>
               </div>
-              <div className="divide-y divide-[#dcdce5]/80 max-h-[60vh] lg:max-h-[600px] overflow-y-auto">
+              <div className="divide-y divide-[#dcdce5]/80 max-h-[70vh] lg:max-h-[600px] overflow-y-auto">
                 {filteredAdvisors.map((advisor) => (
                   <button
                     key={advisor.id}
+                    type="button"
                     onClick={() => selectAdvisor(advisor)}
-                    className={`w-full p-3.5 md:p-4 flex items-center gap-3.5 hover:bg-[#f4f4f8]/40 transition-all duration-200 text-left ${
+                    className={`w-full min-h-[72px] p-3.5 md:p-4 flex items-center gap-3.5 hover:bg-[#f4f4f8]/40 transition-all duration-200 text-left ${
                       selectedAdvisor?.id === advisor.id ? "bg-[#f4f4f8] border-l-4 border-[#121117]" : ""
                     }`}
                   >
@@ -170,63 +247,9 @@ export default function ConseilPage() {
             </div>
           </div>
 
-          <div className="lg:col-span-8 xl:col-span-9">
+          <div className="hidden lg:block lg:col-span-8 xl:col-span-9">
             <div className="card border border-[#dcdce5] p-6 md:p-8 min-h-[400px]">
-              {selectedAdvisor ? (
-                <>
-                  <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6">
-                    <div className="flex items-center gap-4">
-                      <UserAvatar name={selectedAdvisor.name} gender={inferGenderFromName(selectedAdvisor.name)} size={64} />
-                      <div>
-                        <h3 className="font-bold text-[#121117] text-lg">{selectedAdvisor.name}</h3>
-                        <p className="text-sm text-[#4d4c5c]">
-                          {selectedAdvisor.field} • {selectedAdvisor.university} • {selectedAdvisor.year}
-                        </p>
-                      </div>
-                    </div>
-                    {selectedAdvisor.availableSlots.length > 0 && (
-                      <button onClick={() => setShowBooking(true)} className="btn-primary shrink-0">
-                        Prendre rendez-vous
-                      </button>
-                    )}
-                  </div>
-
-                  <p className="text-sm text-[#4d4c5c] leading-relaxed bg-[#f4f4f8] rounded-lg px-4 py-3 italic">
-                    &quot;{selectedAdvisor.description}&quot;
-                  </p>
-
-                  {selectedAdvisor.meetLink && (
-                    <p className="mt-4 text-sm text-[#4d4c5c]">
-                      Lien Meet :{" "}
-                      <a href={selectedAdvisor.meetLink} target="_blank" rel="noopener noreferrer" className="text-[#121117] underline">
-                        {selectedAdvisor.meetLink}
-                      </a>
-                    </p>
-                  )}
-
-                  {bookingConfirmed && selectedSlot && (
-                    <div className="mt-4 p-4 bg-emerald-50 border border-emerald-200 rounded-xl">
-                      <p className="font-semibold text-emerald-800 text-sm">Rendez-vous reserve</p>
-                      <p className="text-xs text-emerald-700 mt-1">
-                        Creneau : {selectedSlot}
-                        {selectedAdvisor.meetLink && (
-                          <>
-                            {" "}
-                            •{" "}
-                            <a href={selectedAdvisor.meetLink} target="_blank" rel="noopener noreferrer" className="underline">
-                              Rejoindre l&apos;appel
-                            </a>
-                          </>
-                        )}
-                      </p>
-                    </div>
-                  )}
-
-                  {selectedAdvisor.availableSlots.length === 0 && (
-                    <p className="mt-4 text-sm text-[#6a697c]">Aucun creneau disponible pour le moment.</p>
-                  )}
-                </>
-              ) : (
+              {advisorDetail || (
                 <div className="flex flex-col items-center justify-center h-full py-16 text-center">
                   <h3 className="text-lg font-bold text-[#121117] mb-2">Choisis un mentor</h3>
                   <p className="text-sm text-[#4d4c5c] max-w-sm">
@@ -238,6 +261,28 @@ export default function ConseilPage() {
           </div>
         </div>
       </PageShell>
+
+      {/* Mobile: detail mentor en bottom sheet */}
+      {mobileDetailOpen && selectedAdvisor && (
+        <div className="lg:hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex items-end justify-center z-50">
+          <div className="bg-white rounded-t-2xl w-full max-h-[88vh] overflow-y-auto shadow-2xl pb-[env(safe-area-inset-bottom)]">
+            <div className="sticky top-0 bg-white border-b border-[#dcdce5] px-5 py-4 flex items-center justify-between z-10">
+              <h3 className="font-bold text-[#121117]">Profil mentor</h3>
+              <button
+                type="button"
+                onClick={() => setMobileDetailOpen(false)}
+                className="inline-flex items-center justify-center w-11 h-11 rounded hover:bg-[#f4f4f8]"
+                aria-label="Fermer"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div className="p-5">{advisorDetail}</div>
+          </div>
+        </div>
+      )}
 
       {showBooking && selectedAdvisor && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-end md:items-center justify-center p-0 md:p-4 z-50">

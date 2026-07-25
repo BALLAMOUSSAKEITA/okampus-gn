@@ -10,7 +10,7 @@ import PageShell from "@/components/ui/PageShell";
 import PageHeader from "@/components/ui/PageHeader";
 
 const inputClass =
-  "w-full px-4 py-3 rounded-lg border border-[#dcdce5] bg-white focus:outline-none focus:ring-2 focus:ring-[#121117]/20 focus:border-[#121117] text-sm transition-all";
+  "w-full px-4 py-3 rounded-lg border border-[#dcdce5] bg-white focus:outline-none focus:border-[#121117] text-base md:text-sm transition-all";
 
 interface Resource {
   id: string;
@@ -47,6 +47,7 @@ export default function ResourcesPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [selectedSubject, setSelectedSubject] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [showFilters, setShowFilters] = useState(false);
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [uploadForm, setUploadForm] = useState(defaultUploadForm);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -200,22 +201,35 @@ export default function ResourcesPage() {
         </div>
 
         {/* Filtres */}
-        <div className="card p-5 md:p-7 mb-8">
-          <div className="grid md:grid-cols-3 gap-5">
-            <div className="md:col-span-3">
-              <div className="relative">
-                <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-[#6a697c]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-                <input
-                  type="text"
-                  placeholder="Rechercher une ressource..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-11 pr-4 py-3 rounded-lg border border-[#dcdce5] bg-white focus:outline-none focus:ring-2 focus:ring-[#121117]/20 focus:border-[#121117] text-sm transition-all"
-                />
-              </div>
-            </div>
+        <div className="card p-4 md:p-7 mb-6 md:mb-8">
+          <div className="relative mb-3 md:mb-5">
+            <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-[#6a697c]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <input
+              type="text"
+              placeholder="Rechercher une ressource..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-11 pr-4 py-3 rounded-lg border border-[#dcdce5] bg-white focus:outline-none focus:border-[#121117] text-base md:text-sm transition-all"
+            />
+          </div>
+
+          <div className="flex items-center justify-between gap-3 mb-3 md:hidden">
+            <p className="text-sm text-[#4d4c5c]">
+              <span className="font-bold text-[#121117]">{filteredResources.length}</span> ressource
+              {filteredResources.length > 1 ? "s" : ""}
+            </p>
+            <button
+              type="button"
+              onClick={() => setShowFilters((v) => !v)}
+              className="min-h-11 px-3 text-sm font-semibold text-[#121117] underline underline-offset-2"
+            >
+              {showFilters ? "Masquer filtres" : "Filtres"}
+            </button>
+          </div>
+
+          <div className={`${showFilters ? "grid" : "hidden"} md:grid md:grid-cols-3 gap-5`}>
             <div>
               <label className="block text-sm font-semibold text-[#4d4c5c] mb-2">Type</label>
               <select
@@ -246,9 +260,10 @@ export default function ResourcesPage() {
                 ))}
               </select>
             </div>
-            <div className="flex items-end">
+            <div className="hidden md:flex items-end">
               <div className="text-sm text-[#4d4c5c]">
-                <span className="font-bold text-[#121117]">{filteredResources.length}</span> ressource{filteredResources.length > 1 ? "s" : ""}
+                <span className="font-bold text-[#121117]">{filteredResources.length}</span> ressource
+                {filteredResources.length > 1 ? "s" : ""}
               </div>
             </div>
           </div>

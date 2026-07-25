@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 const inputClass =
-  "w-full px-4 py-3 rounded border border-[#dcdce5] bg-white focus:border-[#121117] outline-none transition-all placeholder:text-[#6a697c]";
+  "w-full px-4 py-3 text-base md:text-sm rounded border border-[#dcdce5] bg-white focus:border-[#121117] outline-none transition-all placeholder:text-[#6a697c]";
 
 interface PasswordFieldProps {
   id: string;

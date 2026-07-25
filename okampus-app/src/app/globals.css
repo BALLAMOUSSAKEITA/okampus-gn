@@ -175,9 +175,15 @@ textarea {
   border: 1px solid var(--color-smoke);
   background: var(--color-soft-white);
   color: var(--color-midnight-ink);
-  font-size: 14px;
+  font-size: 16px;
   outline: none;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+@media (min-width: 768px) {
+  .input-field {
+    font-size: 14px;
+  }
 }
 
 .input-field:focus {

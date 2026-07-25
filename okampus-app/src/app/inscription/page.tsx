@@ -326,14 +326,14 @@ function InscriptionForm() {
             />
             <p className="text-xs text-[#6a697c] -mt-1">Au moins 6 caracteres</p>
 
-            <label className="flex items-start gap-2.5 text-sm text-[#4d4c5c] cursor-pointer pt-1">
+            <label className="flex items-start gap-3 text-sm text-[#4d4c5c] cursor-pointer pt-1 min-h-11">
               <input
                 type="checkbox"
                 checked={acceptedPrivacy}
                 onChange={(e) => setAcceptedPrivacy(e.target.checked)}
-                className="mt-0.5 rounded border-[#dcdce5]"
+                className="mt-1 w-5 h-5 shrink-0 rounded border-[#dcdce5]"
               />
-              <span>
+              <span className="leading-relaxed py-0.5">
                 J&apos;accepte la{" "}
                 <Link
                   href="/confidentialite"

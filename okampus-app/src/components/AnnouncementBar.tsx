@@ -41,11 +41,22 @@ export default function AnnouncementBar() {
 
   return (
     <div
-      className="bg-[#121117] text-white text-[13px] h-10 overflow-hidden relative"
+      className="bg-[#121117] text-white text-[13px] h-9 md:h-10 overflow-hidden relative"
       aria-label="Annonces BacheliO"
     >
-      <div className="announcement-track flex items-center h-full w-max">
-        {track}
+      {/* Mobile: message statique lisible */}
+      <div className="md:hidden flex items-center justify-center h-full px-4 text-center">
+        <p className="truncate">
+          <span className="text-[#ffdf3d] font-semibold">BacheliO</span>
+          {" "}— orientation, mentors et stages
+        </p>
+      </div>
+
+      {/* Desktop / tablette: ticker */}
+      <div className="hidden md:block h-full">
+        <div className="announcement-track flex items-center h-full w-max">
+          {track}
+        </div>
       </div>
     </div>
   );

@@ -230,7 +230,7 @@ export default function ForumPage() {
               placeholder="Rechercher..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 text-sm rounded-lg border border-[#dcdce5] bg-white focus:border-[#121117] focus:ring-2 focus:ring-[#121117]/20 outline-none transition-all"
+              className="w-full pl-10 pr-4 py-3 text-base md:text-sm rounded-lg border border-[#dcdce5] bg-white focus:border-[#121117] outline-none transition-all"
             />
           </div>
         </div>
@@ -253,41 +253,47 @@ export default function ForumPage() {
           <>
             <div className="space-y-3 md:space-y-4">
               {filteredPosts.map((post) => (
-                <Link key={post.id} href={`/forum/${post.id}`} className="block">
-                  <article className="card p-5 md:p-6 group hover:border-[#121117]/30 transition-all">
-                    <div className="flex flex-col gap-3">
-                      <div className="flex-1 min-w-0">
-                        <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium border mb-3 ${categoryColors[post.category] || "bg-[#f4f4f8] text-[#4d4c5c] border-[#dcdce5]"}`}>
-                          {post.category}
-                        </span>
-                        <h3 className="text-base md:text-lg font-semibold text-[#121117] mb-2 leading-snug group-hover:underline">
-                          {post.title}
-                        </h3>
-                        <p className="text-sm text-[#4d4c5c] line-clamp-2 leading-relaxed">{post.content}</p>
-                      </div>
-                      <div className="flex items-center justify-between gap-4 text-xs md:text-sm text-[#6a697c] pt-3 border-t border-[#dcdce5]/80">
-                        <div className="flex items-center gap-3 flex-wrap">
-                          <span className="font-medium text-[#4d4c5c]">{post.author}</span>
-                          <span className="text-[#dcdce5]">·</span>
-                          <span>{post.date}</span>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <button
-                            type="button"
-                            onClick={(e) => toggleLike(post.id, e)}
-                            className={`flex items-center gap-1.5 px-2 py-1 rounded-full transition-colors ${
-                              post.likedByMe ? "text-rose-600 bg-rose-50" : "text-[#6a697c] hover:bg-[#f4f4f8]"
-                            }`}
-                          >
-                            ♥ {post.likes}
-                          </button>
-                          <span>{post.replies} reponses</span>
-                          <span>{post.views} vues</span>
-                        </div>
+                <article
+                  key={post.id}
+                  className="card p-5 md:p-6 group hover:border-[#121117]/30 transition-all"
+                >
+                  <div className="flex flex-col gap-3">
+                    <Link href={`/forum/${post.id}`} className="flex-1 min-w-0 block">
+                      <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium border mb-3 ${categoryColors[post.category] || "bg-[#f4f4f8] text-[#4d4c5c] border-[#dcdce5]"}`}>
+                        {post.category}
+                      </span>
+                      <h3 className="text-base md:text-lg font-semibold text-[#121117] mb-2 leading-snug group-hover:underline">
+                        {post.title}
+                      </h3>
+                      <p className="text-sm text-[#4d4c5c] line-clamp-2 leading-relaxed">{post.content}</p>
+                    </Link>
+                    <div className="flex items-center justify-between gap-4 text-xs md:text-sm text-[#6a697c] pt-3 border-t border-[#dcdce5]/80">
+                      <Link href={`/forum/${post.id}`} className="flex items-center gap-3 flex-wrap min-w-0">
+                        <span className="font-medium text-[#4d4c5c]">{post.author}</span>
+                        <span className="text-[#dcdce5]">·</span>
+                        <span>{post.date}</span>
+                      </Link>
+                      <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+                        <button
+                          type="button"
+                          onClick={(e) => toggleLike(post.id, e)}
+                          className={`inline-flex items-center justify-center gap-1.5 min-h-11 min-w-11 px-3 rounded-full transition-colors ${
+                            post.likedByMe ? "text-rose-600 bg-rose-50" : "text-[#6a697c] hover:bg-[#f4f4f8]"
+                          }`}
+                          aria-label="Aimer"
+                        >
+                          ♥ {post.likes}
+                        </button>
+                        <Link href={`/forum/${post.id}`} className="hidden sm:inline">
+                          {post.replies} reponses
+                        </Link>
+                        <Link href={`/forum/${post.id}`} className="hidden sm:inline">
+                          {post.views} vues
+                        </Link>
                       </div>
                     </div>
-                  </article>
-                </Link>
+                  </div>
+                </article>
               ))}
             </div>
 

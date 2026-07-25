@@ -54,37 +54,62 @@ export default function Home() {
   return (
     <div className="landing">
       {/* Hero */}
-      <section className="hero-canvas px-4 sm:px-6 pt-10 pb-16 md:pb-24 overflow-hidden">
-        <div className="max-w-[1200px] mx-auto grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+      <section className="hero-canvas px-4 sm:px-6 pt-8 sm:pt-10 pb-12 sm:pb-16 md:pb-24 overflow-hidden">
+        <div className="max-w-[1200px] mx-auto grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
           <div className="animate-fadeInUp">
-            <span className="sticker-label rotate-[-2deg] mb-6 inline-block">Plateforme etudiante</span>
-            <h1 className="font-display text-[40px] sm:text-[56px] lg:text-[64px] font-bold leading-[1.06] tracking-[-0.02em] text-[#121117] max-w-[560px]">
+            <p className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-[#121117] mb-3 lg:hidden">
+              BacheliO
+            </p>
+            <span className="sticker-label rotate-[-2deg] mb-4 sm:mb-6 inline-block">
+              Plateforme etudiante
+            </span>
+            <h1 className="font-display text-[34px] sm:text-[56px] lg:text-[64px] font-bold leading-[1.06] tracking-[-0.02em] text-[#121117] max-w-[560px]">
               Reussis plus vite avec la bonne orientation
             </h1>
-            <p className="mt-6 text-lg sm:text-xl text-[#121117]/90 leading-[1.5] max-w-md">
+            <p className="mt-4 sm:mt-6 text-base sm:text-xl text-[#121117]/90 leading-[1.5] max-w-md">
               IA, mentorat, forum et stages — tout ce qu&apos;il faut pour choisir ta filiere et
               construire ton avenir.
             </p>
-            <div className="mt-8 flex flex-col sm:flex-row gap-3">
-              <Link href="/inscription" className="btn-primary">
-                Trouver un mentor
+            <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row gap-3">
+              <Link href="/inscription" className="btn-primary min-h-12 text-center">
+                Commencer
                 <span aria-hidden="true">→</span>
               </Link>
-              <Link href="/assistant" className="btn-secondary bg-white/40 border-[#121117] hover:bg-[#121117]">
-                Tester l&apos;assistant IA
+              <Link
+                href="/assistant"
+                className="btn-secondary bg-white/40 border-[#121117] hover:bg-[#121117] min-h-12 text-center"
+              >
+                Tester l&apos;assistant
               </Link>
             </div>
           </div>
 
-          <div className="relative h-[340px] sm:h-[420px] lg:h-[500px]">
-            {/* Photo mentor — visible devant, en bas a gauche */}
-            <div className={`absolute bottom-2 left-0 sm:left-6 lg:left-10 w-36 sm:w-44 lg:w-48 h-44 sm:h-52 lg:h-56 ${heroMentorPhoto.rotate} z-30`}>
+          {/* Mobile: une seule photo */}
+          <div className="relative h-[260px] sm:h-[340px] lg:hidden animate-scaleIn">
+            <div className="absolute inset-0 landing-photo shadow-[0_8px_24px_rgba(18,17,23,0.15)]">
+              <Image
+                src={heroStudentPhoto.src}
+                alt={heroStudentPhoto.alt}
+                fill
+                priority
+                sizes="(max-width: 1024px) 100vw, 400px"
+                className="object-cover object-center"
+              />
+              <span className="sticker-label absolute bottom-4 left-4 text-sm z-10">
+                {heroStudentPhoto.name}
+              </span>
+            </div>
+          </div>
+
+          {/* Desktop: collage */}
+          <div className="relative h-[500px] hidden lg:block">
+            <div className={`absolute bottom-2 left-10 w-48 h-56 ${heroMentorPhoto.rotate} z-30`}>
               <div className="relative w-full h-full landing-photo shadow-[0_10px_28px_rgba(18,17,23,0.18)] ring-2 ring-[#ffdf3d]">
                 <Image
                   src={heroMentorPhoto.src}
                   alt={heroMentorPhoto.alt}
                   fill
-                  sizes="(max-width: 640px) 144px, (max-width: 1024px) 176px, 192px"
+                  sizes="192px"
                   className="object-cover object-center"
                 />
                 <span className="sticker-label absolute bottom-3 left-3 rotate-[-3deg] text-xs z-10">
@@ -96,18 +121,16 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Photo principale — etudiante */}
-            <div className="absolute top-0 right-0 sm:right-2 lg:right-6 w-44 sm:w-56 lg:w-64 h-56 sm:h-72 lg:h-80 -rotate-3 z-20">
+            <div className="absolute top-0 right-6 w-64 h-80 -rotate-3 z-20">
               <div className="relative w-full h-full landing-photo shadow-[0_8px_24px_rgba(18,17,23,0.15)]">
                 <Image
                   src={heroStudentPhoto.src}
                   alt={heroStudentPhoto.alt}
                   fill
-                  priority
-                  sizes="(max-width: 640px) 176px, (max-width: 1024px) 224px, 256px"
+                  sizes="256px"
                   className="object-cover object-center"
                 />
-                <span className="sticker-label absolute bottom-3 left-3 rotate-[-3deg] text-xs sm:text-sm z-10">
+                <span className="sticker-label absolute bottom-3 left-3 rotate-[-3deg] text-sm z-10">
                   {heroStudentPhoto.name}
                 </span>
                 <span className="absolute top-3 right-3 rotate-[2deg] z-10 rounded px-2.5 py-1 text-xs font-semibold bg-[#14b887] text-[#121117]">
@@ -116,7 +139,7 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="absolute top-[38%] left-[38%] sm:left-[42%] -translate-x-1/2 -translate-y-1/2 sticker-label rotate-[-5deg] text-sm sm:text-base px-3 sm:px-4 py-2 max-w-[140px] sm:max-w-none z-40 pointer-events-none">
+            <div className="absolute top-[38%] left-[42%] -translate-x-1/2 -translate-y-1/2 sticker-label rotate-[-5deg] text-base px-4 py-2 z-40 pointer-events-none">
               La reussite, a deux
             </div>
           </div>

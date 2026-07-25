@@ -1,11 +1,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 }
+
+const AUTH_PATHS = ["/connexion", "/inscription"];
+const PROMPT_DELAY_MS = 12000;
 
 function isIos(): boolean {
   if (typeof window === "undefined") return false;
@@ -22,10 +26,13 @@ function isStandalone(): boolean {
 }
 
 export default function PWAInstallPrompt() {
+  const pathname = usePathname();
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [showPrompt, setShowPrompt] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
   const [iosHint, setIosHint] = useState(false);
+
+  const onAuthPage = AUTH_PATHS.some((p) => pathname === p || pathname.startsWith(`${p}/`));
 
   useEffect(() => {
     if (isStandalone()) {
@@ -39,7 +46,7 @@ export default function PWAInstallPrompt() {
       const timer = setTimeout(() => {
         setIosHint(true);
         setShowPrompt(true);
-      }, 3000);
+      }, PROMPT_DELAY_MS);
       return () => clearTimeout(timer);
     }
 
@@ -53,18 +60,20 @@ export default function PWAInstallPrompt() {
         if (!dismissed) {
           setShowPrompt(true);
         }
-      }, 3000);
+      }, PROMPT_DELAY_MS);
     };
 
     window.addEventListener("beforeinstallprompt", handler);
-    window.addEventListener("appinstalled", () => {
+    const onInstalled = () => {
       setIsInstalled(true);
       setShowPrompt(false);
       localStorage.removeItem("pwa-install-dismissed");
-    });
+    };
+    window.addEventListener("appinstalled", onInstalled);
 
     return () => {
       window.removeEventListener("beforeinstallprompt", handler);
+      window.removeEventListener("appinstalled", onInstalled);
     };
   }, []);
 
@@ -84,10 +93,10 @@ export default function PWAInstallPrompt() {
     }, 7 * 24 * 60 * 60 * 1000);
   };
 
-  if (isInstalled || !showPrompt) return null;
+  if (isInstalled || !showPrompt || onAuthPage) return null;
 
   return (
-    <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-[380px] z-50 animate-slideUp">
+    <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-[380px] z-50 animate-slideUp pb-[env(safe-area-inset-bottom)]">
       <div className="card rounded-lg p-5 overflow-hidden relative border-[#dcdce5]">
         <div className="absolute top-0 left-0 right-0 h-1 bg-[#14b887]" />
 
@@ -111,14 +120,14 @@ export default function PWAInstallPrompt() {
               {!iosHint && (
                 <button
                   onClick={handleInstall}
-                  className="flex-1 px-4 py-2.5 btn-primary text-sm"
+                  className="flex-1 min-h-11 px-4 py-2.5 btn-primary text-sm"
                 >
                   Installer
                 </button>
               )}
               <button
                 onClick={handleDismiss}
-                className={`px-4 py-2.5 rounded border border-[#dcdce5] text-[#4d4c5c] font-medium hover:bg-[#f4f4f8] transition-all text-sm ${iosHint ? "flex-1" : ""}`}
+                className={`min-h-11 px-4 py-2.5 rounded border border-[#dcdce5] text-[#4d4c5c] font-medium hover:bg-[#f4f4f8] transition-all text-sm ${iosHint ? "flex-1" : ""}`}
               >
                 {iosHint ? "Compris" : "Plus tard"}
               </button>
@@ -127,10 +136,10 @@ export default function PWAInstallPrompt() {
 
           <button
             onClick={handleDismiss}
-            className="text-[#6a697c] hover:text-[#121117] transition-colors p-1"
+            className="inline-flex items-center justify-center w-11 h-11 -mr-2 -mt-2 text-[#6a697c] hover:text-[#121117] transition-colors"
             aria-label="Fermer"
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
