@@ -4,7 +4,6 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { apiFetch } from "@/lib/api";
 
-// Types locaux (frontend)
 export type UserRole = "bachelier" | "etudiant" | "admin";
 
 export interface User {
@@ -65,10 +64,57 @@ export interface CvProfile {
 interface AuthContextType {
   user: User | null;
   isLoaded: boolean;
-  updateUser: (updates: Partial<User>) => Promise<void>;
+  updateUser: (updates: Partial<User>) => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+function mapAdvisorProfile(raw: unknown): AdvisorProfile | null {
+  if (!raw || typeof raw !== "object") return null;
+  const data = raw as Record<string, unknown>;
+  return {
+    field: String(data.field ?? ""),
+    university: String(data.university ?? ""),
+    year: String(data.year ?? ""),
+    description: String(data.description ?? ""),
+    meetLink: (data.meet_link ?? data.meetLink ?? undefined) as string | undefined,
+    availableSlots: (data.available_slots ?? data.availableSlots ?? []) as string[],
+  };
+}
+
+function mapCvProfile(raw: unknown): CvProfile | null {
+  if (!raw || typeof raw !== "object") return null;
+  const data = raw as Record<string, unknown>;
+  return {
+    phone: (data.phone as string | undefined) ?? undefined,
+    location: (data.location as string | undefined) ?? undefined,
+    headline: (data.headline as string | undefined) ?? undefined,
+    about: (data.about as string | undefined) ?? undefined,
+    skills: (data.skills as string[]) ?? [],
+    languages: (data.languages as string[]) ?? [],
+    education: (data.education as CvProfile["education"]) ?? [],
+    experiences: (data.experiences as CvProfile["experiences"]) ?? [],
+    projects: (data.projects as CvProfile["projects"]) ?? [],
+  };
+}
+
+function mapUser(data: Record<string, unknown>): User {
+  return {
+    id: String(data.id),
+    email: (data.email as string | undefined) ?? undefined,
+    phone: (data.phone as string | undefined) ?? undefined,
+    name: String(data.name ?? ""),
+    role: data.role as UserRole,
+    city: (data.city as string | undefined) ?? undefined,
+    bacOption: (data.bac_option as string | undefined) ?? undefined,
+    university: (data.university as string | undefined) ?? undefined,
+    field: (data.field as string | undefined) ?? undefined,
+    isAdvisor: Boolean(data.is_advisor),
+    advisorProfile: mapAdvisorProfile(data.advisor_profile),
+    cvProfile: mapCvProfile(data.cv_profile),
+    createdAt: (data.created_at as string | undefined) ?? "",
+  };
+}
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { data: session, status } = useSession();
@@ -94,22 +140,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         });
         if (res.ok) {
           const data = await res.json();
-          // FastAPI retourne l'objet directement (pas enveloppé dans { user })
-          setUser({
-            id: data.id,
-            email: data.email ?? undefined,
-            phone: data.phone ?? undefined,
-            name: data.name,
-            role: data.role,
-            city: data.city ?? undefined,
-            bacOption: data.bac_option ?? undefined,
-            university: data.university ?? undefined,
-            field: data.field ?? undefined,
-            isAdvisor: data.is_advisor,
-            advisorProfile: data.advisor_profile,
-            cvProfile: data.cv_profile,
-            createdAt: data.created_at ?? "",
-          });
+          setUser(mapUser(data));
         } else {
           setUser(null);
         }
@@ -129,35 +160,53 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     fetchUserData();
   }, [session, status]);
 
-  const updateUser = async (updates: Partial<User>) => {
-    if (!user) return;
+  const updateUser = async (updates: Partial<User>): Promise<boolean> => {
+    if (!user) return false;
+
+    const payload: Record<string, unknown> = {};
+
+    if (updates.isAdvisor !== undefined) {
+      payload.is_advisor = updates.isAdvisor;
+    }
+
+    if (updates.advisorProfile !== undefined) {
+      if (updates.advisorProfile) {
+        payload.advisor_profile = {
+          field: updates.advisorProfile.field,
+          university: updates.advisorProfile.university,
+          year: updates.advisorProfile.year,
+          description: updates.advisorProfile.description || "",
+          meet_link: updates.advisorProfile.meetLink || null,
+          available_slots: updates.advisorProfile.availableSlots || [],
+        };
+      } else {
+        payload.advisor_profile = null;
+      }
+    }
+
+    if (updates.cvProfile !== undefined && updates.cvProfile) {
+      payload.cv_profile = updates.cvProfile;
+    }
 
     try {
       const res = await apiFetch(`/users/${user.id}`, {
         method: "PATCH",
         token: session?.accessToken,
-        body: JSON.stringify(updates),
+        body: JSON.stringify(payload),
       });
 
-      if (res.ok) {
-        const data = await res.json();
-        setUser({
-          id: data.id,
-          email: data.email,
-          name: data.name,
-          role: data.role,
-          city: data.city ?? undefined,
-          bacOption: data.bac_option ?? undefined,
-          university: data.university ?? undefined,
-          field: data.field ?? undefined,
-          isAdvisor: data.is_advisor,
-          advisorProfile: data.advisor_profile,
-          cvProfile: data.cv_profile,
-          createdAt: data.created_at ?? "",
-        });
+      if (!res.ok) {
+        const err = await res.json().catch(() => null);
+        console.error("Failed to update user", err);
+        return false;
       }
+
+      const data = await res.json();
+      setUser(mapUser(data));
+      return true;
     } catch (error) {
       console.error("Failed to update user", error);
+      return false;
     }
   };
 

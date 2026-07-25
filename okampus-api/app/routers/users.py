@@ -10,6 +10,15 @@ from app.schemas import AdvisorProfileOut, CvProfileOut, UpdateUserRequest, User
 
 router = APIRouter(prefix="/users", tags=["users"])
 
+_ADVISOR_FIELDS = {
+    "field",
+    "university",
+    "year",
+    "description",
+    "meet_link",
+    "available_slots",
+}
+
 
 def _build_user_out(user: User) -> UserOut:
     cv = None
@@ -90,25 +99,59 @@ async def update_user(
 
     # Profil conseiller
     if body.is_advisor is not None:
-        if body.is_advisor and body.advisor_profile:
+        if body.is_advisor:
+            if user.role not in ("etudiant", "admin"):
+                raise HTTPException(
+                    status_code=400,
+                    detail="Seuls les etudiants peuvent devenir conseillers",
+                )
+            if not body.advisor_profile:
+                raise HTTPException(
+                    status_code=400,
+                    detail="Le profil conseiller est requis",
+                )
+
+            adv_data = {
+                _to_snake(k): v
+                for k, v in body.advisor_profile.items()
+                if _to_snake(k) in _ADVISOR_FIELDS
+            }
+
+            for required in ("field", "university", "year"):
+                value = adv_data.get(required)
+                if not value or not str(value).strip():
+                    raise HTTPException(
+                        status_code=400,
+                        detail=f"Le champ '{required}' est requis",
+                    )
+                adv_data[required] = str(value).strip()
+
+            adv_data["description"] = str(adv_data.get("description") or "").strip()
+            if "available_slots" in adv_data and adv_data["available_slots"] is None:
+                adv_data["available_slots"] = []
+            if "meet_link" in adv_data and adv_data["meet_link"] == "":
+                adv_data["meet_link"] = None
+
             if user.advisor_profile:
-                for k, v in body.advisor_profile.items():
+                for k, v in adv_data.items():
                     setattr(user.advisor_profile, k, v)
             else:
-                adv_data = {_to_snake(k): v for k, v in body.advisor_profile.items()}
                 adv = AdvisorProfile(user_id=user_id, **adv_data)
                 db.add(adv)
-        elif not body.is_advisor and user.advisor_profile:
+        elif user.advisor_profile:
             await db.delete(user.advisor_profile)
 
     # Profil CV
     if body.cv_profile:
+        cv_data = {_to_snake(k): v for k, v in body.cv_profile.items()}
         if user.cv_profile:
-            for k, v in body.cv_profile.items():
-                setattr(user.cv_profile, k, v)
+            for k, v in cv_data.items():
+                if hasattr(user.cv_profile, k):
+                    setattr(user.cv_profile, k, v)
         else:
-            cv_data = {_to_snake(k): v for k, v in body.cv_profile.items()}
-            cv = CvProfile(user_id=user_id, **cv_data)
+            cv = CvProfile(user_id=user_id, **{
+                k: v for k, v in cv_data.items() if hasattr(CvProfile, k)
+            })
             db.add(cv)
 
     await db.commit()
@@ -125,5 +168,6 @@ async def update_user(
 def _to_snake(name: str) -> str:
     """Convert camelCase to snake_case for model attributes."""
     import re
+
     s1 = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", name)
     return re.sub("([a-z0-9])([A-Z])", r"\1_\2", s1).lower()

@@ -142,6 +142,21 @@ class UpdateUserRequest(BaseModel):
     advisor_profile: Optional[dict] = None
     cv_profile: Optional[dict] = None
 
+    @model_validator(mode="before")
+    @classmethod
+    def accept_camel_case(cls, data: Any):
+        """Accepte aussi isAdvisor / advisorProfile / cvProfile depuis le frontend."""
+        if not isinstance(data, dict):
+            return data
+        normalized = dict(data)
+        if "isAdvisor" in normalized and "is_advisor" not in normalized:
+            normalized["is_advisor"] = normalized.pop("isAdvisor")
+        if "advisorProfile" in normalized and "advisor_profile" not in normalized:
+            normalized["advisor_profile"] = normalized.pop("advisorProfile")
+        if "cvProfile" in normalized and "cv_profile" not in normalized:
+            normalized["cv_profile"] = normalized.pop("cvProfile")
+        return normalized
+
 
 # ── Calendar ──────────────────────────────────────────────────────────────────
 
