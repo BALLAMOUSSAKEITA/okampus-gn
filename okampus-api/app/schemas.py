@@ -298,7 +298,7 @@ class ResourceOut(BaseModel):
 
 
 class PurchaseRequest(BaseModel):
-    user_id: str
+    pass
 
 
 # ── Scholarships ──────────────────────────────────────────────────────────────
@@ -374,7 +374,6 @@ class StageOfferOut(BaseModel):
 
 
 class ApplyRequest(BaseModel):
-    user_id: str
     message: Optional[str] = None
 
 

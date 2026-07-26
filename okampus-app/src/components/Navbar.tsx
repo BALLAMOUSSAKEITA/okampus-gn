@@ -6,6 +6,7 @@ import { useState, useEffect, useRef } from "react";
 import { signOut } from "next-auth/react";
 import { useAuth } from "@/context/AuthContext";
 import AnnouncementBar from "./AnnouncementBar";
+import GetStartedLink from "./GetStartedLink";
 import Logo from "./Logo";
 import UserAvatar from "./UserAvatar";
 
@@ -158,12 +159,9 @@ export default function Navbar() {
                     <Link href="/connexion" className="btn-secondary text-sm">
                       Se connecter
                     </Link>
-                    <Link
-                      href="/connexion"
-                      className="btn-primary text-sm !py-2 !px-5"
-                    >
+                    <GetStartedLink className="btn-primary text-sm !py-2 !px-5">
                       Commencer
-                    </Link>
+                    </GetStartedLink>
                   </>
                 ))}
             </div>
@@ -285,13 +283,12 @@ export default function Navbar() {
                       >
                         Se connecter
                       </Link>
-                      <Link
-                        href="/connexion"
+                      <GetStartedLink
                         onClick={() => setIsOpen(false)}
                         className="btn-primary text-center text-base min-h-11"
                       >
                         Commencer
-                      </Link>
+                      </GetStartedLink>
                     </div>
                   ))}
               </div>

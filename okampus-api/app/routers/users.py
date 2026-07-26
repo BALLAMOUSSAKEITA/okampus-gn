@@ -66,7 +66,13 @@ def _build_user_out(user: User) -> UserOut:
 
 
 @router.get("/{user_id}", response_model=UserOut)
-async def get_user(user_id: str, db: AsyncSession = Depends(get_db)):
+async def get_user(
+    user_id: str,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    if current_user.id != user_id and current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Acces refuse")
     result = await db.execute(
         select(User)
         .where(User.id == user_id)

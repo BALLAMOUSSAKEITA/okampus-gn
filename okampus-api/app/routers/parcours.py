@@ -11,7 +11,13 @@ router = APIRouter(prefix="/parcours", tags=["parcours"])
 
 
 @router.get("/{user_id}", response_model=ParcoursOut)
-async def get_parcours(user_id: str, db: AsyncSession = Depends(get_db)):
+async def get_parcours(
+    user_id: str,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    if current_user.id != user_id and current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Acces refuse")
     result = await db.execute(select(Parcours).where(Parcours.user_id == user_id))
     parcours = result.scalar_one_or_none()
     if not parcours:

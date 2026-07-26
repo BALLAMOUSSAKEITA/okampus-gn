@@ -5,8 +5,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 import uuid
 
+from app.auth import get_current_user
 from app.database import get_db
-from app.models import Resource, ResourcePurchase
+from app.models import Resource, ResourcePurchase, User
 from app.schemas import PurchaseRequest, ResourceCreate, ResourceOut
 
 router = APIRouter(prefix="/resources", tags=["resources"])
@@ -34,8 +35,14 @@ async def get_resources(
 
 
 @router.post("", response_model=ResourceOut, status_code=201)
-async def create_resource(body: ResourceCreate, db: AsyncSession = Depends(get_db)):
-    resource = Resource(**body.model_dump())
+async def create_resource(
+    body: ResourceCreate,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    data = body.model_dump()
+    data["author_id"] = current_user.id
+    resource = Resource(**data)
     db.add(resource)
     await db.commit()
     await db.refresh(resource)
@@ -51,9 +58,10 @@ async def upload_resource(
     filiere: str | None = Form(None),
     university: str | None = Form(None),
     year: str | None = Form(None),
-    author_id: str = Form(...),
+    author_id: str | None = Form(None),
     file: UploadFile | None = File(None),
     db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
     file_url = ""
     file_type = "pdf"
@@ -89,7 +97,7 @@ async def upload_resource(
         file_size=file_size,
         price=0,
         is_premium=False,
-        author_id=author_id,
+        author_id=current_user.id,
     )
     db.add(resource)
     await db.commit()
@@ -102,6 +110,7 @@ async def purchase_resource(
     resource_id: str,
     body: PurchaseRequest,
     db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
     result = await db.execute(select(Resource).where(Resource.id == resource_id))
     resource = result.scalar_one_or_none()
@@ -110,14 +119,18 @@ async def purchase_resource(
 
     existing = await db.execute(
         select(ResourcePurchase).where(
-            ResourcePurchase.user_id == body.user_id,
+            ResourcePurchase.user_id == current_user.id,
             ResourcePurchase.resource_id == resource_id,
         )
     )
     if existing.scalar_one_or_none():
         raise HTTPException(status_code=400, detail="Ressource déjà achetée")
 
-    purchase = ResourcePurchase(user_id=body.user_id, resource_id=resource_id, amount=resource.price)
+    purchase = ResourcePurchase(
+        user_id=current_user.id,
+        resource_id=resource_id,
+        amount=resource.price,
+    )
     resource.downloads += 1
     db.add(purchase)
     await db.commit()

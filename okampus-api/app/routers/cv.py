@@ -1,7 +1,9 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from openai import AsyncOpenAI
 
+from app.auth import get_current_user
 from app.config import settings
+from app.models import User
 from app.schemas import GenerateCvRequest
 
 router = APIRouter(prefix="/cv", tags=["cv"])
@@ -80,7 +82,10 @@ Contraintes:
 
 
 @router.post("")
-async def generate_cv(body: GenerateCvRequest):
+async def generate_cv(
+    body: GenerateCvRequest,
+    _current_user: User = Depends(get_current_user),
+):
     if not settings.openai_api_key:
         raise HTTPException(status_code=500, detail="OPENAI_API_KEY manquant")
 

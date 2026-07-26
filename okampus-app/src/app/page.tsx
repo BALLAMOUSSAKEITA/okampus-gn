@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import Logo from "@/components/Logo";
+import GetStartedLink from "@/components/GetStartedLink";
 import SubjectIcon from "@/components/SubjectIcon";
 import OrientationDemo from "@/components/OrientationDemo";
 import { LandingFeaturedMentors } from "@/components/landing/LandingDynamicSections";
@@ -71,10 +72,10 @@ export default function Home() {
               construire ton avenir.
             </p>
             <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row gap-3">
-              <Link href="/connexion" className="btn-primary min-h-12 text-center">
+              <GetStartedLink className="btn-primary min-h-12 text-center">
                 Commencer
                 <span aria-hidden="true">→</span>
-              </Link>
+              </GetStartedLink>
               <Link
                 href="/assistant"
                 className="btn-secondary bg-white/40 border-[#121117] hover:bg-[#121117] min-h-12 text-center"
@@ -207,10 +208,10 @@ export default function Home() {
           <p className="mt-4 text-base sm:text-lg text-[#121117]/80">
             Ton premier mentor ne te convient pas ? Essaie-en un autre mentor.
           </p>
-          <Link href="/connexion" className="btn-primary mt-8 bg-[#121117]">
+          <GetStartedLink className="btn-primary mt-8 bg-[#121117]">
             Commencer maintenant
             <span aria-hidden="true">→</span>
-          </Link>
+          </GetStartedLink>
         </div>
       </section>
 

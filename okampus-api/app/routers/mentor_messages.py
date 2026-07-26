@@ -58,6 +58,18 @@ async def send_mentor_message(
         student_id = body.student_id
         advisor_id = current_user.id
         notify_user_id = student_id
+
+        prior = await db.execute(
+            select(MentorMessage.id).where(
+                MentorMessage.advisor_id == advisor_id,
+                or_(
+                    MentorMessage.student_id == student_id,
+                    MentorMessage.sender_id == student_id,
+                ),
+            ).limit(1)
+        )
+        if not prior.scalar_one_or_none():
+            raise HTTPException(status_code=403, detail="Aucune conversation avec cet etudiant")
     else:
         if body.advisor_id == current_user.id:
             raise HTTPException(status_code=400, detail="Tu ne peux pas t'envoyer un message")
@@ -187,6 +199,12 @@ async def get_thread(
         student_id = current_user.id
         if current_user.id == advisor_id:
             raise HTTPException(status_code=400, detail="Conversation invalide")
+
+        advisor_check = await db.execute(
+            select(AdvisorProfile).where(AdvisorProfile.user_id == advisor_id)
+        )
+        if not advisor_check.scalar_one_or_none():
+            raise HTTPException(status_code=404, detail="Conseiller introuvable")
 
     result = await db.execute(
         select(MentorMessage, User.name)

@@ -59,7 +59,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (PUBLIC_PATHS.includes(pathname)) return true
 
       if (pathname.startsWith("/admin")) {
-        return !!auth?.user
+        return auth?.user?.role === "admin"
       }
 
       return !!auth?.user

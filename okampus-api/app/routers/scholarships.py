@@ -2,8 +2,9 @@ from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
+from app.auth import get_current_admin
 from app.database import get_db
-from app.models import Scholarship
+from app.models import Scholarship, User
 from app.schemas import ScholarshipCreate, ScholarshipOut
 
 router = APIRouter(prefix="/scholarships", tags=["scholarships"])
@@ -25,7 +26,11 @@ async def get_scholarships(
 
 
 @router.post("", response_model=ScholarshipOut, status_code=201)
-async def create_scholarship(body: ScholarshipCreate, db: AsyncSession = Depends(get_db)):
+async def create_scholarship(
+    body: ScholarshipCreate,
+    db: AsyncSession = Depends(get_db),
+    _admin: User = Depends(get_current_admin),
+):
     scholarship = Scholarship(**body.model_dump())
     db.add(scholarship)
     await db.commit()
