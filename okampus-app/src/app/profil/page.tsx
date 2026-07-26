@@ -232,7 +232,14 @@ export default function ProfilPage() {
 
           <MentorInbox isAdvisor={Boolean(user.isAdvisor)} />
 
-          <div className="border-t border-[#dcdce5] pt-6 mt-7">
+          <div className="border-t border-[#dcdce5] pt-6 mt-7 space-y-3">
+            <button
+              type="button"
+              onClick={() => window.dispatchEvent(new Event("bachelio-show-onboarding"))}
+              className="text-sm font-medium text-[#14b887] hover:underline"
+            >
+              Revoir le guide de demarrage
+            </button>
             <button
               type="button"
               onClick={async () => {

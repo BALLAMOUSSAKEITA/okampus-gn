@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import MainWrapper from "@/components/MainWrapper";
 import PWAInstallPrompt from "@/components/PWAInstallPrompt";
+import OnboardingTour from "@/components/OnboardingTour";
 import { AuthProvider } from "@/context/AuthContext";
 import { SessionProvider } from "next-auth/react";
 
@@ -69,6 +70,7 @@ export default function RootLayout({
           <AuthProvider>
             <Navbar />
             <MainWrapper>{children}</MainWrapper>
+            <OnboardingTour />
             <PWAInstallPrompt />
           </AuthProvider>
         </SessionProvider>
