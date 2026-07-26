@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import AssistantMessage from "@/components/AssistantMessage";
@@ -37,6 +37,20 @@ const initialMessages: ChatMessage[] = [
 ];
 
 export default function AssistantPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex flex-col h-[calc(100dvh-4rem)] bg-[#f4f4f8] items-center justify-center text-[#6a697c]">
+          Chargement de Kampus...
+        </div>
+      }
+    >
+      <AssistantChat />
+    </Suspense>
+  );
+}
+
+function AssistantChat() {
   const searchParams = useSearchParams();
   const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
   const [inputMessage, setInputMessage] = useState("");
