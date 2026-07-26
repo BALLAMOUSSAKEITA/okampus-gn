@@ -1,3 +1,5 @@
+import { findInstitutionsForTopic, formatInstitutionFilieres } from "@/lib/universities";
+
 function detectSerie(text: string): "sm" | "se" | "ss" | null {
   const lower = text.toLowerCase();
   if (
@@ -141,6 +143,23 @@ export function generateChatFallback(userMessage: string): string {
       "## En attendant",
       "- Un mentor etudiant peut repondre plus precisement a ta situation"
     );
+  }
+
+  lines.push(
+    "",
+    "## Etablissements en Guinee"
+  );
+
+  const institutions = findInstitutionsForTopic(userMessage, 3);
+  if (institutions.length > 0) {
+    for (const inst of institutions) {
+      lines.push(
+        `- **${inst.shortName}** (${inst.city}, ${inst.sector === "public" ? "public" : "prive"}) : ${formatInstitutionFilieres(inst, 4)}`
+      );
+    }
+    lines.push("- [Voir toutes les universites et ecoles](/universites)");
+  } else {
+    lines.push("- Consulte le [referentiel complet](/universites) pour comparer les etablissements.");
   }
 
   lines.push(

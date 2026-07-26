@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import AssistantMessage from "@/components/AssistantMessage";
 import type { OrientationProfile } from "@/lib/orientation-fallback";
 
@@ -21,14 +22,14 @@ const emptyProfile: OrientationProfile = {
 
 const WELCOME_MESSAGE = `Bonjour ! Je suis **Kampus**, l'assistant IA de BacheliO.
 
-Je t'accompagne pour choisir ta filiere en Guinee (Sciences Mathematiques, Experimentales ou Sociales), clarifier ton projet d'etudes et trouver les bonnes pistes (universites, mentors, stages).
+Je t'accompagne pour choisir ta filiere en Guinee (Sciences Mathematiques, Experimentales ou Sociales), clarifier ton projet d'etudes et trouver les bonnes pistes ([universites & ecoles](/universites), mentors, stages).
 
 **Comment puis-je t'aider dans ton orientation ?**`;
 
 const SUGGESTIONS = [
   { short: "Bac SE, quoi choisir ?", full: "Je viens d'avoir le bac en Sciences Experimentales, je ne sais pas quoi choisir" },
   { short: "Medecine apres SM ?", full: "Je suis en Sciences Mathematiques et je veux faire medecine, c'est realiste ?" },
-  { short: "Info apres SS ?", full: "Quelle filiere pour l'informatique apres Sciences Sociales ?" },
+  { short: "Ou etudier le droit ?", full: "Quelle universite en Guinee pour etudier le droit apres Sciences Sociales ?" },
 ];
 
 const initialMessages: ChatMessage[] = [
@@ -36,12 +37,14 @@ const initialMessages: ChatMessage[] = [
 ];
 
 export default function AssistantPage() {
+  const searchParams = useSearchParams();
   const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
   const [inputMessage, setInputMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
+  const prefilledQuerySent = useRef(false);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
@@ -104,6 +107,14 @@ export default function AssistantPage() {
     e.preventDefault();
     sendMessage(inputMessage);
   };
+
+  useEffect(() => {
+    const q = searchParams.get("q")?.trim();
+    if (!q || prefilledQuerySent.current) return;
+    prefilledQuerySent.current = true;
+    sendMessage(q);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- envoi unique au chargement depuis /universites
+  }, [searchParams]);
 
   return (
     <div className="flex flex-col h-[calc(100dvh-4rem)] bg-[#f4f4f8]">

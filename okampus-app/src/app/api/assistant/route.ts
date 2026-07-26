@@ -9,6 +9,7 @@ import {
 } from "@/lib/orientation-fallback";
 import { buildProfileContext, SYSTEM_PROMPT } from "@/lib/assistant-prompt";
 import { formatAssistantReply } from "@/lib/assistant-format";
+import { buildUniversitiesContextForAI } from "@/lib/universities";
 
 const profileSchema = z.object({
   projectEtudes: z.string(),
@@ -67,6 +68,10 @@ export async function POST(request: Request) {
 
     const { profile } = parsed.data;
     const client = getDeepSeekClient();
+    const lastUserMessage =
+      parsed.data.mode === "chat" ? getLastUserMessage(parsed.data.messages) : "";
+    const universitiesContext = buildUniversitiesContextForAI(lastUserMessage || undefined);
+    const systemWithUniversities = `${SYSTEM_PROMPT}\n\n${universitiesContext}`;
 
     if (!client) {
       const fallback =
@@ -88,7 +93,7 @@ export async function POST(request: Request) {
           temperature: 0.4,
           max_tokens: 320,
           messages: [
-            { role: "system", content: SYSTEM_PROMPT },
+            { role: "system", content: systemWithUniversities },
             {
               role: "user",
               content: `${buildProfileContext(profile)}
@@ -119,7 +124,10 @@ Analyse ce profil. Respecte le format et la limite de 100 mots.`,
         temperature: 0.5,
         max_tokens: 300,
         messages: [
-          { role: "system", content: `${SYSTEM_PROMPT}\n\n${buildProfileContext(profile)}` },
+          {
+            role: "system",
+            content: `${systemWithUniversities}\n\n${buildProfileContext(profile)}`,
+          },
           ...chatMessages,
         ],
       });

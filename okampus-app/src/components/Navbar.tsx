@@ -28,6 +28,7 @@ const mobilePrimaryLinks = [
 ];
 
 const moreLinks = [
+  { href: "/universites", label: "Universites & Ecoles" },
   { href: "/parcours", label: "Mon parcours" },
   { href: "/ressources", label: "Ressources" },
   { href: "/calendrier", label: "Calendrier" },

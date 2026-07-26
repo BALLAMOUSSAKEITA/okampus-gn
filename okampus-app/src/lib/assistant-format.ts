@@ -22,6 +22,12 @@ function autoLinkInternalPaths(text: string): string {
       "[Poser ma question sur le forum](/forum)"
     );
   }
+  if (!text.includes("](/universites)")) {
+    text = text.replace(
+      /\B\/universites\b/g,
+      "[Universites & Ecoles](/universites)"
+    );
+  }
   return text;
 }
 

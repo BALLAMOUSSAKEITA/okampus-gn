@@ -7,6 +7,7 @@ import OrientationDemo from "@/components/OrientationDemo";
 import { LandingFeaturedMentors } from "@/components/landing/LandingDynamicSections";
 
 const subjects = [
+  { id: "universites", title: "Universites & Ecoles", count: "12 etablissements", link: "/universites" },
   { id: "assistant", title: "Assistant IA", count: "Orientation personnalisee", link: "/assistant" },
   { id: "conseil", title: "Mentorat", count: "Conseillers etudiants", link: "/conseil" },
   { id: "forum", title: "Forum", count: "Communaute active", link: "/forum" },
@@ -272,6 +273,7 @@ export default function Home() {
               {
                 title: "Ressources",
                 links: [
+                  { href: "/universites", label: "Universites & Ecoles" },
                   { href: "/stages", label: "Stages & Jobs" },
                   { href: "/bourses", label: "Bourses" },
                   { href: "/ressources", label: "Cours & TD" },
