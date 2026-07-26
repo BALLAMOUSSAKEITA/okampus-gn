@@ -3,7 +3,7 @@
 import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import LoginShell from "@/components/auth/LoginShell";
+import AuthCardShell from "@/components/auth/AuthCardShell";
 import PasswordField, { inputClass } from "@/components/auth/PasswordField";
 import { signInWithRedirect } from "@/lib/auth-client";
 import { resolveCallbackUrl } from "@/lib/auth-redirect";
@@ -66,7 +66,12 @@ function ConnexionForm() {
   };
 
   return (
-    <LoginShell>
+    <AuthCardShell
+      mode="login"
+      title="Se connecter a BacheliO"
+      footerHref={registerHref}
+      footerLabel="Creer un compte"
+    >
       <form onSubmit={handleSubmit} className="space-y-3" noValidate>
         {error && (
           <div
@@ -129,7 +134,7 @@ function ConnexionForm() {
           S&apos;inscrire
         </Link>
       </div>
-    </LoginShell>
+    </AuthCardShell>
   );
 }
 

@@ -4,12 +4,18 @@ import { Suspense, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import type { UserRole } from "@/types";
-import AuthShell from "@/components/auth/AuthShell";
+import AuthCardShell from "@/components/auth/AuthCardShell";
 import PasswordField, { inputClass } from "@/components/auth/PasswordField";
 import { BAC_OPTIONS } from "@/lib/bac-options";
 import { signInWithRedirect } from "@/lib/auth-client";
 import { resolveCallbackUrl } from "@/lib/auth-redirect";
 import { parseContactIdentifier } from "@/lib/contact";
+
+const fieldClass = `${inputClass} !py-3 !text-base !rounded-lg !border-[#dddfe2] focus:!border-[#14b887] focus:!ring-[#14b887]/20`;
+const primaryBtn =
+  "w-full py-3 rounded-lg bg-[#14b887] hover:bg-[#12a578] text-white text-[17px] font-bold transition-colors disabled:opacity-60 disabled:cursor-not-allowed";
+const secondaryBtn =
+  "flex-1 py-3 rounded-lg border border-[#dddfe2] bg-[#f0f2f5] text-[#121117] text-[15px] font-semibold hover:bg-[#e4e6eb] transition-colors";
 
 function InscriptionForm() {
   const searchParams = useSearchParams();
@@ -142,6 +148,7 @@ function InscriptionForm() {
         } else {
           setError("Erreur lors de l'inscription");
         }
+        setLoading(false);
         return;
       }
 
@@ -151,7 +158,6 @@ function InscriptionForm() {
         setError("Inscription reussie mais connexion echouee. Essaie de te connecter.");
         setLoading(false);
       }
-      // Si ok: redirection pleine page en cours
     } catch {
       setError("Une erreur est survenue. Verifie ta connexion et reessaie.");
       setLoading(false);
@@ -164,30 +170,32 @@ function InscriptionForm() {
       : "/connexion";
 
   return (
-    <AuthShell
+    <AuthCardShell
       mode="register"
-      title={step === 1 ? "Qui es-tu ?" : "Ton compte"}
-      description={
+      wide
+      title={step === 1 ? "Creer un compte" : "Securise ton compte"}
+      subtitle={
         step === 1
-          ? "Quelques infos pour personnaliser ton parcours."
-          : "Email ou telephone, puis un mot de passe."
+          ? "Etape 1 sur 2 — dis-nous qui tu es"
+          : "Etape 2 sur 2 — email ou telephone et mot de passe"
       }
-      compact
+      footerHref={loginHref}
+      footerLabel="Se connecter"
     >
-      <div className="mb-5 flex items-center gap-2" aria-label={`Etape ${step} sur 2`}>
+      <div className="mb-4 flex items-center gap-2" aria-label={`Etape ${step} sur 2`}>
         <span
-          className={`h-1.5 flex-1 rounded-full transition-colors ${
-            step >= 1 ? "bg-[#14b887]" : "bg-[#dcdce5]"
+          className={`h-1 flex-1 rounded-full transition-colors ${
+            step >= 1 ? "bg-[#14b887]" : "bg-[#dddfe2]"
           }`}
         />
         <span
-          className={`h-1.5 flex-1 rounded-full transition-colors ${
-            step >= 2 ? "bg-[#14b887]" : "bg-[#dcdce5]"
+          className={`h-1 flex-1 rounded-full transition-colors ${
+            step >= 2 ? "bg-[#14b887]" : "bg-[#dddfe2]"
           }`}
         />
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-3">
+      <form onSubmit={handleSubmit} className="space-y-3" noValidate>
         {step === 1 && (
           <>
             <div className="grid grid-cols-2 gap-2">
@@ -203,10 +211,10 @@ function InscriptionForm() {
                     key={option.id}
                     type="button"
                     onClick={() => setRole(option.id)}
-                    className={`py-2.5 px-3 rounded border-2 text-sm font-semibold transition-all ${
+                    className={`py-2.5 px-3 rounded-lg border-2 text-sm font-semibold transition-all ${
                       active
-                        ? "border-[#121117] bg-white text-[#121117]"
-                        : "border-[#dcdce5] bg-white/70 text-[#4d4c5c] hover:border-[#121117]/35"
+                        ? "border-[#14b887] bg-[#14b887]/5 text-[#121117]"
+                        : "border-[#dddfe2] bg-white text-[#4d4c5c] hover:border-[#14b887]/40"
                     }`}
                   >
                     {option.label}
@@ -216,7 +224,7 @@ function InscriptionForm() {
             </div>
 
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-[#4d4c5c] mb-1">
+              <label htmlFor="name" className="sr-only">
                 Nom complet
               </label>
               <input
@@ -224,16 +232,16 @@ function InscriptionForm() {
                 type="text"
                 value={formData.name}
                 onChange={(e) => update("name", e.target.value)}
-                placeholder="Aissatou Diallo"
+                placeholder="Nom complet"
                 autoComplete="name"
-                className={inputClass}
+                className={fieldClass}
               />
             </div>
 
             {role === "bachelier" ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <>
                 <div>
-                  <label htmlFor="city" className="block text-sm font-medium text-[#4d4c5c] mb-1">
+                  <label htmlFor="city" className="sr-only">
                     Ville
                   </label>
                   <input
@@ -241,21 +249,21 @@ function InscriptionForm() {
                     type="text"
                     value={formData.city}
                     onChange={(e) => update("city", e.target.value)}
-                    placeholder="Conakry, Labe..."
-                    className={inputClass}
+                    placeholder="Ville (Conakry, Labe...)"
+                    className={fieldClass}
                   />
                 </div>
                 <div>
-                  <label htmlFor="bacOption" className="block text-sm font-medium text-[#4d4c5c] mb-1">
+                  <label htmlFor="bacOption" className="sr-only">
                     Option bac
                   </label>
                   <select
                     id="bacOption"
                     value={formData.bacOption}
                     onChange={(e) => update("bacOption", e.target.value)}
-                    className={`${inputClass} text-[#4d4c5c]`}
+                    className={`${fieldClass} text-[#4d4c5c]`}
                   >
-                    <option value="">Choisir</option>
+                    <option value="">Option au bac</option>
                     {BAC_OPTIONS.map((option) => (
                       <option key={option} value={option}>
                         {option}
@@ -263,11 +271,11 @@ function InscriptionForm() {
                     ))}
                   </select>
                 </div>
-              </div>
+              </>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <>
                 <div>
-                  <label htmlFor="university" className="block text-sm font-medium text-[#4d4c5c] mb-1">
+                  <label htmlFor="university" className="sr-only">
                     Universite
                   </label>
                   <input
@@ -275,12 +283,12 @@ function InscriptionForm() {
                     type="text"
                     value={formData.university}
                     onChange={(e) => update("university", e.target.value)}
-                    placeholder="UGB, Gamal..."
-                    className={inputClass}
+                    placeholder="Universite (UGANC, Gamal...)"
+                    className={fieldClass}
                   />
                 </div>
                 <div>
-                  <label htmlFor="field" className="block text-sm font-medium text-[#4d4c5c] mb-1">
+                  <label htmlFor="field" className="sr-only">
                     Filiere
                   </label>
                   <input
@@ -288,11 +296,11 @@ function InscriptionForm() {
                     type="text"
                     value={formData.field}
                     onChange={(e) => update("field", e.target.value)}
-                    placeholder="Informatique..."
-                    className={inputClass}
+                    placeholder="Filiere (Informatique, Medecine...)"
+                    className={fieldClass}
                   />
                 </div>
-              </div>
+              </>
             )}
           </>
         )}
@@ -300,7 +308,7 @@ function InscriptionForm() {
         {step === 2 && (
           <>
             <div>
-              <label htmlFor="contact" className="block text-sm font-medium text-[#4d4c5c] mb-1">
+              <label htmlFor="contact" className="sr-only">
                 Email ou telephone
               </label>
               <input
@@ -309,36 +317,37 @@ function InscriptionForm() {
                 inputMode="email"
                 value={formData.contact}
                 onChange={(e) => update("contact", e.target.value)}
-                placeholder="email@exemple.com ou 620123456"
+                placeholder="Email ou numero de telephone"
                 autoComplete="username"
                 required
-                className={inputClass}
+                className={fieldClass}
               />
             </div>
 
             <PasswordField
               id="password"
-              label="Mot de passe"
+              label="Mot de passe (6 caracteres min.)"
               value={formData.password}
               onChange={(value) => update("password", value)}
               autoComplete="new-password"
               required
+              hideLabel
+              inputClassName={fieldClass}
             />
-            <p className="text-xs text-[#6a697c] -mt-1">Au moins 6 caracteres</p>
 
-            <label className="flex items-start gap-3 text-sm text-[#4d4c5c] cursor-pointer pt-1 min-h-11">
+            <label className="flex items-start gap-3 text-sm text-[#4d4c5c] cursor-pointer min-h-11">
               <input
                 type="checkbox"
                 checked={acceptedPrivacy}
                 onChange={(e) => setAcceptedPrivacy(e.target.checked)}
-                className="mt-1 w-5 h-5 shrink-0 rounded border-[#dcdce5]"
+                className="mt-1 w-5 h-5 shrink-0 rounded border-[#dddfe2] accent-[#14b887]"
               />
               <span className="leading-relaxed py-0.5">
                 J&apos;accepte la{" "}
                 <Link
                   href="/confidentialite"
                   target="_blank"
-                  className="font-semibold text-[#121117] underline underline-offset-2 hover:text-[#14b887]"
+                  className="font-semibold text-[#14b887] underline underline-offset-2"
                 >
                   politique de confidentialite
                 </Link>
@@ -350,16 +359,15 @@ function InscriptionForm() {
         {error && (
           <div
             role="alert"
-            className="rounded border border-red-300 bg-red-50 px-3 py-2 text-sm font-medium text-red-700"
+            className="rounded-lg border border-red-200 bg-red-50 px-3 py-2.5 text-sm font-medium text-red-700 text-center"
           >
             {error}
           </div>
         )}
 
         {step === 1 ? (
-          <button type="submit" className="btn-primary w-full">
+          <button type="submit" className={primaryBtn}>
             Continuer
-            <span aria-hidden="true">→</span>
           </button>
         ) : (
           <div className="flex gap-2">
@@ -369,41 +377,24 @@ function InscriptionForm() {
                 setError("");
                 setStep(1);
               }}
-              className="btn-secondary flex-1 !py-3.5"
+              className={secondaryBtn}
             >
               Retour
             </button>
-            <button
-              type="submit"
-              disabled={loading}
-              className="btn-primary flex-[1.4] disabled:opacity-60 disabled:cursor-not-allowed"
-            >
-              {loading ? (
-                <>
-                  <span className="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  Creation...
-                </>
-              ) : (
-                <>
-                  S&apos;inscrire
-                  <span aria-hidden="true">→</span>
-                </>
-              )}
+            <button type="submit" disabled={loading} className={`${primaryBtn} flex-[1.4]`}>
+              {loading ? "Creation..." : "S'inscrire"}
             </button>
           </div>
         )}
       </form>
 
-      <p className="text-center text-sm text-[#4d4c5c] mt-5">
+      <div className="hidden sm:block mt-4 pt-4 border-t border-[#dddfe2] text-center text-sm text-[#4d4c5c]">
         Deja un compte ?{" "}
-        <Link
-          href={loginHref}
-          className="text-[#121117] font-semibold underline underline-offset-2 hover:text-[#14b887] transition-colors"
-        >
+        <Link href={loginHref} className="font-semibold text-[#14b887] hover:underline">
           Se connecter
         </Link>
-      </p>
-    </AuthShell>
+      </div>
+    </AuthCardShell>
   );
 }
 
@@ -411,7 +402,7 @@ export default function InscriptionPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center text-[#6a697c]">
+        <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center bg-[#f0f2f5] text-[#6a697c]">
           Chargement...
         </div>
       }
