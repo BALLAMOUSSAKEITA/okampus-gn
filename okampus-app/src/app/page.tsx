@@ -71,7 +71,7 @@ export default function Home() {
               construire ton avenir.
             </p>
             <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row gap-3">
-              <Link href="/inscription" className="btn-primary min-h-12 text-center">
+              <Link href="/connexion" className="btn-primary min-h-12 text-center">
                 Commencer
                 <span aria-hidden="true">→</span>
               </Link>
@@ -207,7 +207,7 @@ export default function Home() {
           <p className="mt-4 text-base sm:text-lg text-[#121117]/80">
             Ton premier mentor ne te convient pas ? Essaie-en un autre mentor.
           </p>
-          <Link href="/inscription" className="btn-primary mt-8 bg-[#121117]">
+          <Link href="/connexion" className="btn-primary mt-8 bg-[#121117]">
             Commencer maintenant
             <span aria-hidden="true">→</span>
           </Link>

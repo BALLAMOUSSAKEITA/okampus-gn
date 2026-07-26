@@ -230,7 +230,7 @@ export default function ProfilPage() {
             </div>
           )}
 
-          <MentorInbox isAdvisor={Boolean(user.isAdvisor && user.advisorProfile)} />
+          <MentorInbox isAdvisor={Boolean(user.isAdvisor)} />
 
           <div className="border-t border-[#dcdce5] pt-6 mt-7">
             <button

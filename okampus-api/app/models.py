@@ -335,12 +335,16 @@ class MentorMessage(Base):
     id: Mapped[str] = mapped_column("id", String, primary_key=True, default=gen_id)
     sender_id: Mapped[str] = mapped_column("senderId", String, ForeignKey("users.id", ondelete="CASCADE"))
     advisor_id: Mapped[str] = mapped_column("advisorId", String, ForeignKey("users.id", ondelete="CASCADE"))
+    student_id: Mapped[str] = mapped_column(
+        "studentId", String, ForeignKey("users.id", ondelete="CASCADE"), nullable=True
+    )
     content: Mapped[str] = mapped_column("content", String, nullable=False)
     read: Mapped[bool] = mapped_column("read", Boolean, default=False)
     created_at: Mapped[datetime] = mapped_column("createdAt", DateTime(timezone=True), server_default=func.now())
 
     sender: Mapped["User"] = relationship(foreign_keys=[sender_id], back_populates="mentor_messages_sent")
     advisor: Mapped["User"] = relationship(foreign_keys=[advisor_id], back_populates="mentor_messages_received")
+    student: Mapped["User"] = relationship(foreign_keys=[student_id])
 
 
 class PushSubscription(Base):

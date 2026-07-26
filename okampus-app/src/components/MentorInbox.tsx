@@ -1,130 +1,101 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { apiFetch } from "@/lib/api";
 
-export interface MentorInboxMessage {
-  id: string;
-  sender_id: string;
-  sender_name: string;
+interface Conversation {
   advisor_id: string;
-  content: string;
-  read: boolean;
-  created_at: string;
+  student_id: string;
+  other_user_name: string;
+  last_message: string;
+  unread_count: number;
 }
 
 interface MentorInboxProps {
-  isAdvisor: boolean;
+  isAdvisor?: boolean;
 }
 
-export default function MentorInbox({ isAdvisor }: MentorInboxProps) {
+export default function MentorInbox({ isAdvisor = false }: MentorInboxProps) {
   const { data: session } = useSession();
-  const [messages, setMessages] = useState<MentorInboxMessage[]>([]);
+  const [conversations, setConversations] = useState<Conversation[]>([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
 
-  const loadInbox = useCallback(async () => {
-    if (!isAdvisor || !session?.accessToken) return;
+  const loadConversations = useCallback(async () => {
+    if (!session?.accessToken) return;
     setLoading(true);
-    setError("");
     try {
-      const res = await apiFetch("/mentor-messages/inbox", {
+      const res = await apiFetch("/mentor-messages/conversations", {
         token: session.accessToken,
       });
-      if (!res.ok) throw new Error("Impossible de charger les messages");
-      const data = (await res.json()) as MentorInboxMessage[];
-      setMessages(data);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Erreur");
-      setMessages([]);
+      if (res.ok) {
+        setConversations((await res.json()) as Conversation[]);
+      }
     } finally {
       setLoading(false);
     }
-  }, [isAdvisor, session?.accessToken]);
+  }, [session?.accessToken]);
 
   useEffect(() => {
-    void loadInbox();
-  }, [loadInbox]);
+    void loadConversations();
+  }, [loadConversations]);
 
-  const markRead = async (messageId: string) => {
-    if (!session?.accessToken) return;
-    const res = await apiFetch(`/mentor-messages/${messageId}/read`, {
-      method: "PATCH",
-      token: session.accessToken,
-    });
-    if (res.ok) {
-      setMessages((prev) =>
-        prev.map((m) => (m.id === messageId ? { ...m, read: true } : m))
-      );
-    }
-  };
+  const unread = conversations.reduce((sum, c) => sum + c.unread_count, 0);
 
-  if (!isAdvisor) return null;
-
-  const unread = messages.filter((m) => !m.read).length;
+  const conversationHref = (conv: Conversation) =>
+    isAdvisor
+      ? `/messages?advisor=${conv.advisor_id}&student=${conv.student_id}`
+      : `/messages?advisor=${conv.advisor_id}`;
 
   return (
     <div className="border-t border-[#dcdce5] pt-7 mt-7">
       <div className="flex items-center justify-between mb-4">
         <h3 className="font-semibold text-[#121117] text-sm uppercase tracking-wide">
-          Boite de communication
+          Messages
           {unread > 0 && (
             <span className="ml-2 inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 rounded-full bg-[#14b887] text-white text-xs font-bold normal-case">
               {unread}
             </span>
           )}
         </h3>
-        <button
-          type="button"
-          onClick={() => void loadInbox()}
-          className="text-xs text-[#6a697c] hover:text-[#121117]"
-        >
-          Actualiser
-        </button>
+        <Link href="/messages" className="text-xs font-semibold text-[#14b887] hover:underline">
+          Tout voir
+        </Link>
       </div>
 
       {loading && <p className="text-sm text-[#6a697c]">Chargement...</p>}
-      {error && <p className="text-sm text-red-600">{error}</p>}
 
-      {!loading && !error && messages.length === 0 && (
-        <p className="text-sm text-[#6a697c]">Aucun message pour le moment.</p>
+      {!loading && conversations.length === 0 && (
+        <p className="text-sm text-[#6a697c]">Aucune conversation pour le moment.</p>
       )}
 
-      <ul className="space-y-3">
-        {messages.map((msg) => (
-          <li
-            key={msg.id}
-            className={`rounded-lg border p-4 ${
-              msg.read
-                ? "border-[#dcdce5] bg-white"
-                : "border-[#14b887]/40 bg-emerald-50/50"
-            }`}
-          >
-            <div className="flex items-start justify-between gap-3 mb-2">
-              <p className="font-semibold text-sm text-[#121117]">{msg.sender_name}</p>
-              <time className="text-xs text-[#6a697c] shrink-0">
-                {new Date(msg.created_at).toLocaleString("fr-FR", {
-                  day: "numeric",
-                  month: "short",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
-              </time>
-            </div>
-            <p className="text-sm text-[#4d4c5c] whitespace-pre-wrap">{msg.content}</p>
-            {!msg.read && (
-              <button
-                type="button"
-                onClick={() => void markRead(msg.id)}
-                className="mt-3 text-xs font-semibold text-[#14b887] hover:underline"
-              >
-                Marquer comme lu
-              </button>
-            )}
+      <ul className="space-y-2 mb-4">
+        {conversations.slice(0, 3).map((conv) => (
+          <li key={`${conv.advisor_id}-${conv.student_id}`}>
+            <Link
+              href={conversationHref(conv)}
+              className="block rounded-lg border border-[#dcdce5] p-3 hover:border-[#14b887]/40 hover:bg-[#14b887]/5 transition-colors"
+            >
+              <div className="flex items-center justify-between gap-2">
+                <p className="font-semibold text-sm text-[#121117] truncate">
+                  {conv.other_user_name}
+                </p>
+                {conv.unread_count > 0 && (
+                  <span className="shrink-0 text-xs font-bold text-[#14b887]">
+                    {conv.unread_count} nouveau{conv.unread_count > 1 ? "x" : ""}
+                  </span>
+                )}
+              </div>
+              <p className="text-xs text-[#6a697c] truncate mt-1">{conv.last_message}</p>
+            </Link>
           </li>
         ))}
       </ul>
+
+      <Link href="/messages" className="btn-secondary w-full text-center text-sm">
+        Repondre dans Messenger
+      </Link>
     </div>
   );
 }

@@ -12,6 +12,7 @@ import UserAvatar from "./UserAvatar";
 const mainNavLinks = [
   { href: "/assistant", label: "Assistant IA" },
   { href: "/conseil", label: "Mentorat" },
+  { href: "/messages", label: "Messages" },
   { href: "/forum", label: "Forum" },
   { href: "/stages", label: "Stages" },
 ];
@@ -19,6 +20,7 @@ const mainNavLinks = [
 const mobilePrimaryLinks = [
   { href: "/assistant", label: "Assistant IA" },
   { href: "/conseil", label: "Mentorat" },
+  { href: "/messages", label: "Messages" },
   { href: "/forum", label: "Forum" },
   { href: "/stages", label: "Stages" },
   { href: "/bourses", label: "Bourses" },
@@ -156,7 +158,10 @@ export default function Navbar() {
                     <Link href="/connexion" className="btn-secondary text-sm">
                       Se connecter
                     </Link>
-                    <Link href="/inscription" className="btn-primary text-sm !py-2 !px-5">
+                    <Link
+                      href="/connexion"
+                      className="btn-primary text-sm !py-2 !px-5"
+                    >
                       Commencer
                     </Link>
                   </>
@@ -281,7 +286,7 @@ export default function Navbar() {
                         Se connecter
                       </Link>
                       <Link
-                        href="/inscription"
+                        href="/connexion"
                         onClick={() => setIsOpen(false)}
                         className="btn-primary text-center text-base min-h-11"
                       >

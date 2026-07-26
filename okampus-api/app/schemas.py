@@ -641,6 +641,7 @@ class ForumLikeOut(BaseModel):
 class MentorMessageCreate(BaseModel):
     advisor_id: str
     content: str
+    student_id: Optional[str] = None
 
     @field_validator("content")
     @classmethod
@@ -658,9 +659,20 @@ class MentorMessageOut(BaseModel):
     sender_id: str
     sender_name: str
     advisor_id: str
+    student_id: Optional[str] = None
     content: str
     read: bool
     created_at: datetime
+
+
+class MentorConversationOut(BaseModel):
+    advisor_id: str
+    student_id: str
+    other_user_id: str
+    other_user_name: str
+    last_message: str
+    last_message_at: datetime
+    unread_count: int
 
 
 class PushSubscriptionCreate(BaseModel):

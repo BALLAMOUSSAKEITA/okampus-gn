@@ -20,6 +20,13 @@ async def _ensure_schema(conn) -> None:
         await conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS phone VARCHAR"))
         await conn.execute(text("ALTER TABLE users ALTER COLUMN email DROP NOT NULL"))
         await conn.execute(text("CREATE UNIQUE INDEX IF NOT EXISTS ix_users_phone ON users (phone)"))
+        await conn.execute(text('ALTER TABLE mentor_messages ADD COLUMN IF NOT EXISTS "studentId" VARCHAR'))
+        await conn.execute(
+            text(
+                'UPDATE mentor_messages SET "studentId" = "senderId" '
+                'WHERE "studentId" IS NULL AND "senderId" != "advisorId"'
+            )
+        )
     except Exception as exc:
         print(f"[SCHEMA] ensure_schema skipped/failed: {type(exc).__name__}: {exc}")
 

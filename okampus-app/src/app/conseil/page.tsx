@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
@@ -136,7 +137,8 @@ export default function ConseilPage() {
       }
       setMessageSent(true);
       setMessageText("");
-      setTimeout(() => setShowMessage(false), 1500);
+      setShowMessage(false);
+      router.push(`/messages?advisor=${selectedAdvisor.id}`);
     } catch (e) {
       setMessageError(e instanceof Error ? e.message : "Erreur d'envoi");
     } finally {
@@ -177,6 +179,14 @@ export default function ConseilPage() {
         >
           Envoyer un message
         </button>
+        {user && (
+          <Link
+            href={`/messages?advisor=${selectedAdvisor.id}`}
+            className="btn-secondary shrink-0 min-h-11 text-center"
+          >
+            Ouvrir la conversation
+          </Link>
+        )}
         </div>
       </div>
 
