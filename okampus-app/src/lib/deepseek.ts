@@ -25,20 +25,55 @@ function createInsecureFetch(): typeof fetch {
   };
 }
 
-export function getDeepSeekClient() {
+export function getDeepSeekClient(forceInsecureSsl = false) {
   const apiKey = process.env.DEEPSEEK_API_KEY?.trim();
   if (!apiKey) {
     return null;
   }
 
+  const useInsecure = forceInsecureSsl || shouldSkipSslVerify();
+
   return new OpenAI({
     apiKey,
     baseURL: process.env.DEEPSEEK_BASE_URL?.trim() || "https://api.deepseek.com",
-    ...(shouldSkipSslVerify() ? { fetch: createInsecureFetch() } : {}),
+    ...(useInsecure ? { fetch: createInsecureFetch() } : {}),
   });
 }
 
 export function getDeepSeekModel() {
   const model = process.env.DEEPSEEK_MODEL?.trim() || "deepseek-chat";
   return VALID_MODELS.has(model) ? model : "deepseek-chat";
+}
+
+function isSslOrNetworkError(message: string): boolean {
+  return (
+    message.includes("UNABLE_TO_VERIFY") ||
+    message.includes("certificate") ||
+    message.includes("SSL") ||
+    message.includes("fetch failed") ||
+    message.includes("ECONNRESET") ||
+    message.includes("ETIMEDOUT")
+  );
+}
+
+export async function createDeepSeekCompletion(
+  params: OpenAI.Chat.Completions.ChatCompletionCreateParamsNonStreaming
+) {
+  const client = getDeepSeekClient();
+  if (!client) {
+    throw new Error("DEEPSEEK_API_KEY manquant");
+  }
+
+  try {
+    return await client.chat.completions.create(params);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    if (!shouldSkipSslVerify() && isSslOrNetworkError(message)) {
+      const insecureClient = getDeepSeekClient(true);
+      if (insecureClient) {
+        return await insecureClient.chat.completions.create(params);
+      }
+    }
+    throw error;
+  }
 }

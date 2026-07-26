@@ -68,8 +68,8 @@ export default function AssistantPage() {
     if (!data.content) {
       throw new Error("Reponse vide de l'assistant");
     }
-    if (data.fallback && data.error?.includes("Insufficient Balance")) {
-      setError("Compte DeepSeek sans credits — recharge sur platform.deepseek.com");
+    if (data.fallback && data.error) {
+      setError(data.error);
     } else {
       setError("");
     }

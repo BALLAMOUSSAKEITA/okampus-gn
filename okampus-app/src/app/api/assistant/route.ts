@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { auth } from "@/auth";
-import { getDeepSeekClient, getDeepSeekModel } from "@/lib/deepseek";
+import { generateChatFallback, mapAssistantErrorMessage } from "@/lib/chat-fallback";
+import { createDeepSeekCompletion, getDeepSeekClient, getDeepSeekModel } from "@/lib/deepseek";
 import {
   generateOrientationAdvice,
   type OrientationProfile,
@@ -35,6 +36,13 @@ const requestSchema = z.discriminatedUnion("mode", [
   }),
 ]);
 
+function getLastUserMessage(messages: Array<{ role: string; content: string }>): string {
+  for (let i = messages.length - 1; i >= 0; i -= 1) {
+    if (messages[i].role === "user") return messages[i].content;
+  }
+  return "";
+}
+
 export async function POST(request: Request) {
   try {
     const session = await auth();
@@ -64,14 +72,18 @@ export async function POST(request: Request) {
       const fallback =
         parsed.data.mode === "orientation"
           ? generateOrientationAdvice(profile)
-          : "Service IA indisponible. Consulte /conseil ou le forum.";
+          : generateChatFallback(getLastUserMessage(parsed.data.messages));
 
-      return NextResponse.json({ content: fallback, fallback: true });
+      return NextResponse.json({
+        content: fallback,
+        fallback: true,
+        error: "DEEPSEEK_API_KEY manquant sur le serveur",
+      });
     }
 
     try {
       if (parsed.data.mode === "orientation") {
-        const completion = await client.chat.completions.create({
+        const completion = await createDeepSeekCompletion({
           model: getDeepSeekModel(),
           temperature: 0.4,
           max_tokens: 320,
@@ -97,16 +109,18 @@ Analyse ce profil. Respecte le format et la limite de 100 mots.`,
         });
       }
 
-      const completion = await client.chat.completions.create({
+      const chatMessages = parsed.data.messages.map((m) => ({
+        role: m.role as "user" | "assistant",
+        content: m.content,
+      }));
+
+      const completion = await createDeepSeekCompletion({
         model: getDeepSeekModel(),
         temperature: 0.5,
         max_tokens: 300,
         messages: [
           { role: "system", content: `${SYSTEM_PROMPT}\n\n${buildProfileContext(profile)}` },
-          ...parsed.data.messages.map((m) => ({
-            role: m.role as "user" | "assistant",
-            content: m.content,
-          })),
+          ...chatMessages,
         ],
       });
 
@@ -120,6 +134,7 @@ Analyse ce profil. Respecte le format et la limite de 100 mots.`,
       const message = error instanceof Error ? error.message : "Erreur DeepSeek";
       console.error("[assistant]", message, error);
 
+      const userError = mapAssistantErrorMessage(message);
       const isLowBalance =
         message.includes("Insufficient Balance") || message.includes("402");
 
@@ -131,14 +146,16 @@ Analyse ce profil. Respecte le format et la limite de 100 mots.`,
         return NextResponse.json({
           content: `${intro}${generateOrientationAdvice(profile)}`,
           fallback: true,
-          error: message,
+          error: userError,
         });
       }
 
+      const lastUser = getLastUserMessage(parsed.data.messages);
+
       return NextResponse.json({
-        content: "Reessaie dans un instant ou contacte un mentor sur /conseil.",
+        content: generateChatFallback(lastUser),
         fallback: true,
-        error: message,
+        error: userError,
       });
     }
   } catch (error) {
