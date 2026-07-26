@@ -65,7 +65,7 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
       </head>
       <body className={`${manrope.variable} ${figtree.variable} ${inter.variable} antialiased`}>
-        <SessionProvider>
+        <SessionProvider refetchInterval={5 * 60} refetchOnWindowFocus>
           <AuthProvider>
             <Navbar />
             <MainWrapper>{children}</MainWrapper>

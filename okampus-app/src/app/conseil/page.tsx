@@ -1,7 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { API_URL } from "@/lib/api";
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
+import { API_URL, apiFetch } from "@/lib/api";
+import { useAuth } from "@/context/AuthContext";
 import EmptyState from "@/components/ui/EmptyState";
 import PageShell from "@/components/ui/PageShell";
 import PageHeader from "@/components/ui/PageHeader";
@@ -20,12 +23,20 @@ interface Advisor {
 }
 
 export default function ConseilPage() {
+  const router = useRouter();
+  const { data: session } = useSession();
+  const { user } = useAuth();
   const [advisors, setAdvisors] = useState<Advisor[]>([]);
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState("");
   const [selectedAdvisor, setSelectedAdvisor] = useState<Advisor | null>(null);
   const [searchField, setSearchField] = useState("");
   const [showBooking, setShowBooking] = useState(false);
+  const [showMessage, setShowMessage] = useState(false);
+  const [messageText, setMessageText] = useState("");
+  const [messageLoading, setMessageLoading] = useState(false);
+  const [messageError, setMessageError] = useState("");
+  const [messageSent, setMessageSent] = useState(false);
   const [mobileDetailOpen, setMobileDetailOpen] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState("");
   const [bookingConfirmed, setBookingConfirmed] = useState(false);
@@ -82,9 +93,60 @@ export default function ConseilPage() {
     setMobileDetailOpen(true);
   };
 
+  const confirmBooking = () => {
+    if (selectedSlot && selectedAdvisor) {
+      setBookingConfirmed(true);
+      setShowBooking(false);
+    }
+  };
+
+  const openMessageModal = () => {
+    if (!user) {
+      router.push(`/connexion?callbackUrl=${encodeURIComponent("/conseil")}`);
+      return;
+    }
+    setMessageText("");
+    setMessageError("");
+    setMessageSent(false);
+    setShowMessage(true);
+  };
+
+  const sendMessage = async () => {
+    if (!selectedAdvisor || !session?.accessToken) return;
+    const content = messageText.trim();
+    if (!content) {
+      setMessageError("Ecris un message");
+      return;
+    }
+
+    setMessageLoading(true);
+    setMessageError("");
+    try {
+      const res = await apiFetch("/mentor-messages", {
+        method: "POST",
+        token: session.accessToken,
+        body: JSON.stringify({
+          advisor_id: selectedAdvisor.id,
+          content,
+        }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => null);
+        throw new Error(err?.detail || "Envoi impossible");
+      }
+      setMessageSent(true);
+      setMessageText("");
+      setTimeout(() => setShowMessage(false), 1500);
+    } catch (e) {
+      setMessageError(e instanceof Error ? e.message : "Erreur d'envoi");
+    } finally {
+      setMessageLoading(false);
+    }
+  };
+
   const advisorDetail = selectedAdvisor ? (
     <>
-      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6">
+      <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-start justify-between gap-3 mb-6">
         <div className="flex items-center gap-4">
           <UserAvatar
             name={selectedAdvisor.name}
@@ -98,6 +160,7 @@ export default function ConseilPage() {
             </p>
           </div>
         </div>
+        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
         {selectedAdvisor.availableSlots.length > 0 && (
           <button
             type="button"
@@ -107,6 +170,14 @@ export default function ConseilPage() {
             Prendre rendez-vous
           </button>
         )}
+        <button
+          type="button"
+          onClick={openMessageModal}
+          className="btn-secondary shrink-0 min-h-11"
+        >
+          Envoyer un message
+        </button>
+        </div>
       </div>
 
       <p className="text-sm text-[#4d4c5c] leading-relaxed bg-[#f4f4f8] rounded-lg px-4 py-3 italic">
@@ -155,13 +226,6 @@ export default function ConseilPage() {
       )}
     </>
   ) : null;
-
-  const confirmBooking = () => {
-    if (selectedSlot && selectedAdvisor) {
-      setBookingConfirmed(true);
-      setShowBooking(false);
-    }
-  };
 
   if (loading) {
     return (
@@ -280,6 +344,55 @@ export default function ConseilPage() {
               </button>
             </div>
             <div className="p-5">{advisorDetail}</div>
+          </div>
+        </div>
+      )}
+
+      {showMessage && selectedAdvisor && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-end md:items-center justify-center p-0 md:p-4 z-50">
+          <div className="bg-white rounded-t-2xl md:rounded-2xl w-full md:max-w-md max-h-[85vh] overflow-y-auto shadow-2xl">
+            <div className="h-1 bg-[#121117] rounded-t-2xl" />
+            <div className="p-5 md:p-6 border-b border-[#dcdce5]">
+              <h3 className="text-lg font-bold text-[#121117]">Message au mentor</h3>
+              <p className="text-sm text-[#4d4c5c] mt-1">Pour {selectedAdvisor.name}</p>
+            </div>
+            <div className="p-5 md:p-6 space-y-4">
+              {messageSent ? (
+                <p className="text-sm font-medium text-emerald-700 bg-emerald-50 rounded-lg px-4 py-3">
+                  Message envoye ! Le mentor sera notifie.
+                </p>
+              ) : (
+                <>
+                  {messageError && (
+                    <p className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2">{messageError}</p>
+                  )}
+                  <textarea
+                    value={messageText}
+                    onChange={(e) => setMessageText(e.target.value)}
+                    placeholder="Pose ta question ou presente-toi..."
+                    rows={5}
+                    className="w-full px-4 py-3 rounded-lg border border-[#dcdce5] focus:border-[#121117] outline-none resize-none text-base"
+                  />
+                  <div className="flex gap-3 pt-2">
+                    <button
+                      type="button"
+                      onClick={() => setShowMessage(false)}
+                      className="flex-1 px-4 py-2.5 rounded-lg border border-[#dcdce5] text-[#4d4c5c] font-medium hover:bg-[#f4f4f8]"
+                    >
+                      Annuler
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => void sendMessage()}
+                      disabled={messageLoading}
+                      className="btn-primary flex-1 disabled:opacity-60"
+                    >
+                      {messageLoading ? "Envoi..." : "Envoyer"}
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </div>
       )}

@@ -41,6 +41,15 @@ class User(Base):
     resource_purchases: Mapped[list["ResourcePurchase"]] = relationship(back_populates="user", cascade="all, delete-orphan")
     entrepreneur_projects: Mapped[list["EntrepreneurProject"]] = relationship(back_populates="author", cascade="all, delete-orphan")
     success_stories: Mapped[list["SuccessStory"]] = relationship(back_populates="author", cascade="all, delete-orphan")
+    mentor_messages_sent: Mapped[list["MentorMessage"]] = relationship(
+        foreign_keys="[MentorMessage.sender_id]", back_populates="sender", cascade="all, delete-orphan"
+    )
+    mentor_messages_received: Mapped[list["MentorMessage"]] = relationship(
+        foreign_keys="[MentorMessage.advisor_id]", back_populates="advisor", cascade="all, delete-orphan"
+    )
+    push_subscriptions: Mapped[list["PushSubscription"]] = relationship(
+        back_populates="user", cascade="all, delete-orphan"
+    )
 
 
 class CvProfile(Base):
@@ -318,3 +327,31 @@ class SuccessStory(Base):
     updated_at: Mapped[datetime] = mapped_column("updatedAt", DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
     author: Mapped["User"] = relationship(back_populates="success_stories")
+
+
+class MentorMessage(Base):
+    __tablename__ = "mentor_messages"
+
+    id: Mapped[str] = mapped_column("id", String, primary_key=True, default=gen_id)
+    sender_id: Mapped[str] = mapped_column("senderId", String, ForeignKey("users.id", ondelete="CASCADE"))
+    advisor_id: Mapped[str] = mapped_column("advisorId", String, ForeignKey("users.id", ondelete="CASCADE"))
+    content: Mapped[str] = mapped_column("content", String, nullable=False)
+    read: Mapped[bool] = mapped_column("read", Boolean, default=False)
+    created_at: Mapped[datetime] = mapped_column("createdAt", DateTime(timezone=True), server_default=func.now())
+
+    sender: Mapped["User"] = relationship(foreign_keys=[sender_id], back_populates="mentor_messages_sent")
+    advisor: Mapped["User"] = relationship(foreign_keys=[advisor_id], back_populates="mentor_messages_received")
+
+
+class PushSubscription(Base):
+    __tablename__ = "push_subscriptions"
+    __table_args__ = (UniqueConstraint("userId", "endpoint"),)
+
+    id: Mapped[str] = mapped_column("id", String, primary_key=True, default=gen_id)
+    user_id: Mapped[str] = mapped_column("userId", String, ForeignKey("users.id", ondelete="CASCADE"))
+    endpoint: Mapped[str] = mapped_column("endpoint", String, nullable=False)
+    p256dh: Mapped[str] = mapped_column("p256dh", String, nullable=False)
+    auth: Mapped[str] = mapped_column("auth", String, nullable=False)
+    created_at: Mapped[datetime] = mapped_column("createdAt", DateTime(timezone=True), server_default=func.now())
+
+    user: Mapped["User"] = relationship(back_populates="push_subscriptions")

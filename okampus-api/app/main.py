@@ -8,7 +8,7 @@ from fastapi.staticfiles import StaticFiles
 from sqlalchemy import text
 
 from app.database import engine, Base
-from app.routers import admin, auth, calendar, cv, entrepreneur, forum, mentors, parcours, resources, scholarships, stages, stats, success_stories, users
+from app.routers import admin, auth, calendar, cv, entrepreneur, forum, mentor_messages, mentors, parcours, resources, scholarships, stages, stats, success_stories, users
 
 # Importer tous les modèles pour que Base.metadata les connaisse
 import app.models  # noqa: F401
@@ -67,6 +67,7 @@ app.include_router(stages.router)
 app.include_router(success_stories.router)
 app.include_router(forum.router)
 app.include_router(mentors.router)
+app.include_router(mentor_messages.router)
 app.include_router(stats.router)
 
 _uploads_dir = Path(__file__).resolve().parent.parent / "uploads"

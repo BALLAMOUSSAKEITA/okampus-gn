@@ -13,6 +13,8 @@ interface PasswordFieldProps {
   placeholder?: string;
   required?: boolean;
   autoComplete?: string;
+  hideLabel?: boolean;
+  inputClassName?: string;
 }
 
 export default function PasswordField({
@@ -23,12 +25,18 @@ export default function PasswordField({
   placeholder = "••••••••",
   required,
   autoComplete = "current-password",
+  hideLabel = false,
+  inputClassName,
 }: PasswordFieldProps) {
   const [visible, setVisible] = useState(false);
+  const fieldClass = inputClassName ?? inputClass;
 
   return (
     <div>
-      <label htmlFor={id} className="block text-sm font-medium text-[#4d4c5c] mb-1.5">
+      <label
+        htmlFor={id}
+        className={hideLabel ? "sr-only" : "block text-sm font-medium text-[#4d4c5c] mb-1.5"}
+      >
         {label}
       </label>
       <div className="relative">
@@ -37,10 +45,10 @@ export default function PasswordField({
           type={visible ? "text" : "password"}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          placeholder={placeholder}
+          placeholder={hideLabel ? label : placeholder}
           required={required}
           autoComplete={autoComplete}
-          className={`${inputClass} pr-12`}
+          className={`${fieldClass} pr-12`}
         />
         <button
           type="button"

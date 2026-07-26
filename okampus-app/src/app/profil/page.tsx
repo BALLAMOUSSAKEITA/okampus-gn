@@ -8,6 +8,8 @@ import { useAuth } from "@/context/AuthContext";
 import PageShell from "@/components/ui/PageShell";
 import PageHeader from "@/components/ui/PageHeader";
 import UserAvatar from "@/components/UserAvatar";
+import MentorInbox from "@/components/MentorInbox";
+import PushNotificationSetup from "@/components/PushNotificationSetup";
 
 const emptyAdvisorForm = {
   field: "",
@@ -26,6 +28,19 @@ export default function ProfilPage() {
   const [advisorLoading, setAdvisorLoading] = useState(false);
   const [advisorError, setAdvisorError] = useState("");
   const [advisorSuccess, setAdvisorSuccess] = useState("");
+
+  const openAdvisorForm = () => {
+    setAdvisorError("");
+    setAdvisorForm({
+      field: user?.field?.trim() || "",
+      university: user?.university?.trim() || "",
+      year: "",
+      description: "",
+      meetLink: "",
+      availableSlotsText: "",
+    });
+    setShowAdvisorForm(true);
+  };
 
   useEffect(() => {
     if (isLoaded && !user) {
@@ -159,6 +174,7 @@ export default function ProfilPage() {
               </h3>
               {user.isAdvisor && user.advisorProfile ? (
                 <div className="bg-emerald-50/80 rounded-lg p-5 mb-4 border border-emerald-100">
+                  <PushNotificationSetup enabled />
                   <p className="text-emerald-700 font-semibold mb-2">Conseiller actif</p>
                   <p className="text-sm text-[#4d4c5c]">
                     <strong>{user.advisorProfile.field}</strong> •{" "}
@@ -204,10 +220,7 @@ export default function ProfilPage() {
                   </p>
                   <button
                     type="button"
-                    onClick={() => {
-                      setAdvisorError("");
-                      setShowAdvisorForm(true);
-                    }}
+                    onClick={openAdvisorForm}
                     className="btn-primary"
                   >
                     Devenir conseiller
@@ -216,6 +229,8 @@ export default function ProfilPage() {
               )}
             </div>
           )}
+
+          <MentorInbox isAdvisor={Boolean(user.isAdvisor && user.advisorProfile)} />
 
           <div className="border-t border-[#dcdce5] pt-6 mt-7">
             <button
@@ -279,6 +294,9 @@ export default function ProfilPage() {
               <h3 className="text-xl font-bold text-[#121117]">Devenir conseiller</h3>
               <p className="text-sm text-[#4d4c5c] mt-1">
                 Ces infos seront visibles par les bacheliers sur la page Mentorat.
+                {(user.field || user.university) && (
+                  <> Filiere et universite pre-remplies depuis ton inscription.</>
+                )}
               </p>
             </div>
             <form onSubmit={handleBecomeAdvisor} className="p-6 md:p-8 space-y-5">

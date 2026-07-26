@@ -159,7 +159,7 @@ function InscriptionForm() {
   };
 
   const loginHref =
-    callbackUrl !== "/assistant"
+    callbackUrl !== "/"
       ? `/connexion?callbackUrl=${encodeURIComponent(callbackUrl)}`
       : "/connexion";
 

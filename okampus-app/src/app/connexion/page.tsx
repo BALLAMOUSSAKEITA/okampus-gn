@@ -3,15 +3,17 @@
 import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import AuthShell from "@/components/auth/AuthShell";
+import LoginShell from "@/components/auth/LoginShell";
 import PasswordField, { inputClass } from "@/components/auth/PasswordField";
 import { signInWithRedirect } from "@/lib/auth-client";
 import { resolveCallbackUrl } from "@/lib/auth-redirect";
 import { parseContactIdentifier } from "@/lib/contact";
 
+const loginInputClass = `${inputClass} !py-3 !text-[17px] !rounded-lg !border-[#dddfe2] focus:!border-[#14b887] focus:!ring-[#14b887]/20`;
+
 function ConnexionForm() {
   const searchParams = useSearchParams();
-  const callbackUrl = resolveCallbackUrl(searchParams.get("callbackUrl"));
+  const callbackUrl = resolveCallbackUrl(searchParams.get("callbackUrl"), "/");
 
   const [contact, setContact] = useState("");
   const [password, setPassword] = useState("");
@@ -29,7 +31,7 @@ function ConnexionForm() {
   }, [searchParams]);
 
   const registerHref =
-    callbackUrl !== "/assistant"
+    callbackUrl !== "/"
       ? `/inscription?callbackUrl=${encodeURIComponent(callbackUrl)}`
       : "/inscription";
 
@@ -57,7 +59,6 @@ function ConnexionForm() {
         setError(result.error || "Identifiant ou mot de passe incorrect");
         setLoading(false);
       }
-      // Si ok: redirection pleine page en cours, on laisse le loading
     } catch {
       setError("Une erreur est survenue. Verifie ta connexion et reessaie.");
       setLoading(false);
@@ -65,23 +66,19 @@ function ConnexionForm() {
   };
 
   return (
-    <AuthShell
-      mode="login"
-      title="Connexion"
-      description="Connecte-toi avec ton email ou ton telephone."
-    >
-      <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+    <LoginShell>
+      <form onSubmit={handleSubmit} className="space-y-3" noValidate>
         {error && (
           <div
             role="alert"
-            className="rounded border border-red-300 bg-red-50 px-3 py-2.5 text-sm font-medium text-red-700"
+            className="rounded-lg border border-red-200 bg-red-50 px-3 py-2.5 text-sm font-medium text-red-700 text-center"
           >
             {error}
           </div>
         )}
 
         <div>
-          <label htmlFor="contact" className="block text-sm font-medium text-[#4d4c5c] mb-1.5">
+          <label htmlFor="contact" className="sr-only">
             Email ou telephone
           </label>
           <input
@@ -90,10 +87,10 @@ function ConnexionForm() {
             inputMode="email"
             value={contact}
             onChange={(e) => setContact(e.target.value)}
-            placeholder="email@exemple.com ou 620123456"
+            placeholder="Email ou numero de telephone"
             autoComplete="username"
             required
-            className={inputClass}
+            className={loginInputClass}
           />
         </div>
 
@@ -104,42 +101,35 @@ function ConnexionForm() {
           onChange={setPassword}
           autoComplete="current-password"
           required
+          hideLabel
+          inputClassName={loginInputClass}
         />
 
         <button
           type="submit"
           disabled={loading}
-          className="btn-primary w-full disabled:opacity-60 disabled:cursor-not-allowed"
+          className="w-full py-3 rounded-lg bg-[#14b887] hover:bg-[#12a578] text-white text-[17px] font-bold transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
         >
-          {loading ? (
-            <>
-              <span className="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              Connexion...
-            </>
-          ) : (
-            <>
-              Se connecter
-              <span aria-hidden="true">→</span>
-            </>
-          )}
+          {loading ? "Connexion..." : "Se connecter"}
         </button>
+
+        <div className="text-center pt-1">
+          <Link
+            href={registerHref}
+            className="text-sm text-[#14b887] font-medium hover:underline underline-offset-2"
+          >
+            Mot de passe oublie ? Contacte le support
+          </Link>
+        </div>
       </form>
 
-      <p className="text-center text-sm text-[#4d4c5c] mt-6">
+      <div className="hidden sm:block mt-4 pt-4 border-t border-[#dddfe2] text-center text-sm text-[#4d4c5c]">
         Pas encore de compte ?{" "}
-        <Link
-          href={registerHref}
-          className="text-[#121117] font-semibold underline underline-offset-2 hover:text-[#14b887] transition-colors"
-        >
+        <Link href={registerHref} className="font-semibold text-[#14b887] hover:underline">
           S&apos;inscrire
         </Link>
-      </p>
-      <p className="text-center text-xs text-[#6a697c] mt-3">
-        <Link href="/confidentialite" className="hover:text-[#121117] underline underline-offset-2">
-          Politique de confidentialite
-        </Link>
-      </p>
-    </AuthShell>
+      </div>
+    </LoginShell>
   );
 }
 
@@ -147,7 +137,7 @@ export default function ConnexionPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center text-[#6a697c]">
+        <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center bg-[#f0f2f5] text-[#6a697c]">
           Chargement...
         </div>
       }

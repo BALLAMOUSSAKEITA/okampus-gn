@@ -638,4 +638,40 @@ class ForumLikeOut(BaseModel):
     likes: int
 
 
+class MentorMessageCreate(BaseModel):
+    advisor_id: str
+    content: str
+
+    @field_validator("content")
+    @classmethod
+    def content_not_empty(cls, value: str) -> str:
+        value = value.strip()
+        if not value:
+            raise ValueError("Message requis")
+        if len(value) > 2000:
+            raise ValueError("Message trop long (2000 caracteres max)")
+        return value
+
+
+class MentorMessageOut(BaseModel):
+    id: str
+    sender_id: str
+    sender_name: str
+    advisor_id: str
+    content: str
+    read: bool
+    created_at: datetime
+
+
+class PushSubscriptionCreate(BaseModel):
+    endpoint: str
+    keys: dict[str, str]
+
+    @model_validator(mode="after")
+    def validate_keys(self):
+        if not self.keys.get("p256dh") or not self.keys.get("auth"):
+            raise ValueError("Cles push invalides")
+        return self
+
+
 TokenResponse.model_rebuild()
