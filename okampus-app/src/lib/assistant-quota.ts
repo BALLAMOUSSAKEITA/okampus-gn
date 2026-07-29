@@ -1,0 +1,71 @@
+import { apiFetch } from "@/lib/api";
+
+export type AssistantMode = "chat" | "orientation";
+
+export interface AssistantQuotaInfo {
+  mode: AssistantMode;
+  limit: number | null;
+  used: number;
+  remaining: number | null;
+  unlimited: boolean;
+  periodLabel: string;
+}
+
+export interface AssistantConsumeResult extends AssistantQuotaInfo {
+  allowed: boolean;
+}
+
+function mapQuota(data: Record<string, unknown>): AssistantQuotaInfo {
+  return {
+    mode: data.mode as AssistantMode,
+    limit: typeof data.limit === "number" ? data.limit : null,
+    used: typeof data.used === "number" ? data.used : 0,
+    remaining: typeof data.remaining === "number" ? data.remaining : null,
+    unlimited: Boolean(data.unlimited),
+    periodLabel: typeof data.period_label === "string" ? data.period_label : "",
+  };
+}
+
+export async function fetchAssistantQuota(
+  token: string,
+  mode: AssistantMode = "chat"
+): Promise<AssistantQuotaInfo> {
+  const res = await apiFetch(`/assistant/quota?mode=${mode}`, { token });
+  if (!res.ok) {
+    throw new Error("Impossible de recuperer le quota assistant");
+  }
+  const data = (await res.json()) as Record<string, unknown>;
+  return mapQuota(data);
+}
+
+export async function consumeAssistantQuota(
+  token: string,
+  mode: AssistantMode
+): Promise<AssistantConsumeResult> {
+  const res = await apiFetch("/assistant/consume", {
+    method: "POST",
+    token,
+    body: JSON.stringify({ mode }),
+  });
+
+  if (!res.ok) {
+    throw new Error("Impossible de verifier le quota assistant");
+  }
+
+  const data = (await res.json()) as Record<string, unknown>;
+  return {
+    allowed: Boolean(data.allowed),
+    ...mapQuota(data),
+  };
+}
+
+export function buildQuotaExceededMessage(mode: AssistantMode, limit: number): string {
+  const period = mode === "chat" ? "aujourd'hui" : "ce mois-ci";
+  const unit = mode === "chat" ? "messages" : "analyses d'orientation";
+
+  return `Tu as bien avance avec Kampus ${period} ! Tu as atteint ta limite de **${limit} ${unit}**.
+
+Pour aller plus loin sur ton cas personnel, un [mentor etudiant](/conseil) peut t'accompagner gratuitement sur BacheliO — c'est un retour d'experience reel de quelqu'un qui a vecu les memes choix que toi.
+
+→ [Contacter un mentor](/conseil)`;
+}

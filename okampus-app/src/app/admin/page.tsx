@@ -67,6 +67,9 @@ export default function AdminDashboardPage() {
           <Link href="/admin/users" className="admin-btn-secondary">
             Gerer les utilisateurs
           </Link>
+          <Link href="/admin/assistant" className="admin-btn-secondary">
+            Consommation IA
+          </Link>
         </div>
       </div>
     </div>

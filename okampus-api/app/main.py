@@ -8,7 +8,7 @@ from fastapi.staticfiles import StaticFiles
 from sqlalchemy import text
 
 from app.database import engine, Base
-from app.routers import admin, auth, calendar, cv, entrepreneur, forum, mentor_messages, mentors, parcours, resources, scholarships, stages, stats, success_stories, users
+from app.routers import admin, assistant, auth, calendar, cv, entrepreneur, forum, mentor_messages, mentors, parcours, resources, scholarships, stages, stats, success_stories, users
 
 # Importer tous les modèles pour que Base.metadata les connaisse
 import app.models  # noqa: F401
@@ -62,6 +62,7 @@ app.add_middleware(
 )
 
 app.include_router(admin.router)
+app.include_router(assistant.router)
 app.include_router(auth.router)
 app.include_router(users.router)
 app.include_router(calendar.router)

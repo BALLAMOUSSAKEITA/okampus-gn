@@ -1,14 +1,16 @@
 from typing import Any, Type
 
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy import func, select
+from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.auth import get_current_admin
+from app.config import settings
 from app.database import get_db
 from app.models import (
     AdvisorProfile,
+    AssistantUsage,
     CalendarEvent,
     EntrepreneurProject,
     ForumPost,
@@ -19,6 +21,9 @@ from app.models import (
     User,
 )
 from app.schemas import (
+    AdminAssistantUsageOut,
+    AdminAssistantUsageSummaryOut,
+    AdminAssistantUsageUserOut,
     AdminMentorOut,
     AdminStatsOut,
     AdminUserOut,
@@ -81,6 +86,128 @@ async def admin_stats(db: AsyncSession = Depends(get_db)):
         entrepreneur_projects=await count(EntrepreneurProject),
         forum_posts=await count(ForumPost),
     )
+
+
+# ── Assistant IA — consommation ───────────────────────────────────────────────
+
+def _assistant_period_key(mode: str) -> str:
+    from datetime import datetime, timezone
+
+    current = datetime.now(timezone.utc)
+    if mode == "chat":
+        return current.strftime("%Y-%m-%d")
+    return current.strftime("%Y-%m")
+
+
+@router.get("/assistant-usage", response_model=AdminAssistantUsageOut)
+async def admin_assistant_usage(db: AsyncSession = Depends(get_db)):
+    chat_period = _assistant_period_key("chat")
+    orientation_period = _assistant_period_key("orientation")
+    chat_limit = settings.assistant_chat_daily_limit
+    orientation_limit = settings.assistant_orientation_monthly_limit
+
+    result = await db.execute(
+        select(AssistantUsage, User)
+        .join(User, User.id == AssistantUsage.user_id)
+        .where(
+            or_(
+                (AssistantUsage.mode == "chat") & (AssistantUsage.period_key == chat_period),
+                (AssistantUsage.mode == "orientation") & (AssistantUsage.period_key == orientation_period),
+            )
+        )
+        .order_by(User.name.asc())
+    )
+    rows = result.all()
+
+    usage_by_user: dict[str, dict] = {}
+    for usage, user in rows:
+        entry = usage_by_user.setdefault(
+            user.id,
+            {
+                "user": user,
+                "chat_used": 0,
+                "orientation_used": 0,
+                "last_used_at": None,
+            },
+        )
+        if usage.mode == "chat":
+            entry["chat_used"] = usage.count
+        elif usage.mode == "orientation":
+            entry["orientation_used"] = usage.count
+
+        updated = usage.updated_at
+        if updated and (
+            entry["last_used_at"] is None or updated > entry["last_used_at"]
+        ):
+            entry["last_used_at"] = updated
+
+    chat_total_today = 0
+    orientation_total_month = 0
+    users_at_chat_limit = 0
+    users_at_orientation_limit = 0
+    active_chat_users_today = 0
+    active_orientation_users_month = 0
+    user_rows: list[AdminAssistantUsageUserOut] = []
+
+    for entry in usage_by_user.values():
+        user: User = entry["user"]
+        chat_used = entry["chat_used"]
+        orientation_used = entry["orientation_used"]
+        unlimited = user.role == "admin"
+
+        chat_total_today += chat_used
+        orientation_total_month += orientation_used
+
+        if chat_used > 0:
+            active_chat_users_today += 1
+        if orientation_used > 0:
+            active_orientation_users_month += 1
+
+        chat_remaining = None if unlimited else max(0, chat_limit - chat_used)
+        orientation_remaining = None if unlimited else max(0, orientation_limit - orientation_used)
+        chat_at_limit = not unlimited and chat_used >= chat_limit
+        orientation_at_limit = not unlimited and orientation_used >= orientation_limit
+
+        if chat_at_limit:
+            users_at_chat_limit += 1
+        if orientation_at_limit:
+            users_at_orientation_limit += 1
+
+        user_rows.append(
+            AdminAssistantUsageUserOut(
+                user_id=user.id,
+                name=user.name,
+                email=user.email,
+                phone=user.phone,
+                role=user.role,
+                chat_used=chat_used,
+                chat_limit=None if unlimited else chat_limit,
+                chat_remaining=chat_remaining,
+                orientation_used=orientation_used,
+                orientation_limit=None if unlimited else orientation_limit,
+                orientation_remaining=orientation_remaining,
+                chat_at_limit=chat_at_limit,
+                orientation_at_limit=orientation_at_limit,
+                last_used_at=entry["last_used_at"],
+            )
+        )
+
+    user_rows.sort(key=lambda row: (row.chat_used + row.orientation_used, row.chat_used), reverse=True)
+
+    summary = AdminAssistantUsageSummaryOut(
+        chat_daily_limit=chat_limit,
+        orientation_monthly_limit=orientation_limit,
+        chat_total_today=chat_total_today,
+        orientation_total_month=orientation_total_month,
+        active_chat_users_today=active_chat_users_today,
+        active_orientation_users_month=active_orientation_users_month,
+        users_at_chat_limit=users_at_chat_limit,
+        users_at_orientation_limit=users_at_orientation_limit,
+        chat_period_key=chat_period,
+        orientation_period_key=orientation_period,
+    )
+
+    return AdminAssistantUsageOut(summary=summary, users=user_rows)
 
 
 # ── Users ─────────────────────────────────────────────────────────────────────

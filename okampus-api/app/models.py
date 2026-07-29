@@ -347,6 +347,20 @@ class MentorMessage(Base):
     student: Mapped["User"] = relationship(foreign_keys=[student_id])
 
 
+class AssistantUsage(Base):
+    __tablename__ = "assistant_usage"
+    __table_args__ = (UniqueConstraint("userId", "mode", "periodKey"),)
+
+    id: Mapped[str] = mapped_column("id", String, primary_key=True, default=gen_id)
+    user_id: Mapped[str] = mapped_column("userId", String, ForeignKey("users.id", ondelete="CASCADE"))
+    mode: Mapped[str] = mapped_column("mode", String, nullable=False)
+    period_key: Mapped[str] = mapped_column("periodKey", String, nullable=False)
+    count: Mapped[int] = mapped_column("count", Integer, default=0)
+    updated_at: Mapped[datetime] = mapped_column(
+        "updatedAt", DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
+
+
 class PushSubscription(Base):
     __tablename__ = "push_subscriptions"
     __table_args__ = (UniqueConstraint("userId", "endpoint"),)

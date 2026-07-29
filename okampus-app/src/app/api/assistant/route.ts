@@ -1,6 +1,11 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { auth } from "@/auth";
+import {
+  buildQuotaExceededMessage,
+  consumeAssistantQuota,
+  type AssistantMode,
+} from "@/lib/assistant-quota";
 import { generateChatFallback, mapAssistantErrorMessage } from "@/lib/chat-fallback";
 import { createDeepSeekCompletion, getDeepSeekClient, getDeepSeekModel } from "@/lib/deepseek";
 import {
@@ -66,6 +71,40 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Donnees invalides" }, { status: 400 });
     }
 
+    const mode: AssistantMode = parsed.data.mode;
+    const accessToken = session.accessToken;
+    if (!accessToken) {
+      return NextResponse.json(
+        { error: "Session expiree — reconnecte-toi pour utiliser l'assistant IA" },
+        { status: 401 }
+      );
+    }
+
+    let quota;
+    try {
+      quota = await consumeAssistantQuota(accessToken, mode);
+    } catch (quotaError) {
+      console.error("[assistant] quota check failed", quotaError);
+      return NextResponse.json(
+        { error: "Impossible de verifier ton quota d'utilisation" },
+        { status: 503 }
+      );
+    }
+
+    if (!quota.allowed && quota.limit != null) {
+      return NextResponse.json(
+        {
+          content: buildQuotaExceededMessage(mode, quota.limit),
+          quotaExceeded: true,
+          limit: quota.limit,
+          used: quota.used,
+          remaining: 0,
+          mode,
+        },
+        { status: 429 }
+      );
+    }
+
     const { profile } = parsed.data;
     const client = getDeepSeekClient();
     const lastUserMessage =
@@ -111,6 +150,8 @@ Analyse ce profil. Respecte le format et la limite de 100 mots.`,
         return NextResponse.json({
           content,
           fallback: false,
+          remaining: quota.remaining,
+          unlimited: quota.unlimited,
         });
       }
 
@@ -137,7 +178,12 @@ Analyse ce profil. Respecte le format et la limite de 100 mots.`,
       );
       if (!content) throw new Error("Reponse vide");
 
-      return NextResponse.json({ content, fallback: false });
+      return NextResponse.json({
+        content,
+        fallback: false,
+        remaining: quota.remaining,
+        unlimited: quota.unlimited,
+      });
     } catch (error) {
       const message = error instanceof Error ? error.message : "Erreur DeepSeek";
       console.error("[assistant]", message, error);

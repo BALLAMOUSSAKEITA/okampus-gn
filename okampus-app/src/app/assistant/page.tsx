@@ -3,7 +3,9 @@
 import { Suspense, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { useSession } from "next-auth/react";
 import AssistantMessage from "@/components/AssistantMessage";
+import { fetchAssistantQuota } from "@/lib/assistant-quota";
 import type { OrientationProfile } from "@/lib/orientation-fallback";
 
 interface ChatMessage {
@@ -52,10 +54,13 @@ export default function AssistantPage() {
 
 function AssistantChat() {
   const searchParams = useSearchParams();
+  const { data: session } = useSession();
   const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
   const [inputMessage, setInputMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [quotaExceeded, setQuotaExceeded] = useState(false);
+  const [remainingMessages, setRemainingMessages] = useState<number | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const prefilledQuerySent = useRef(false);
@@ -64,7 +69,26 @@ function AssistantChat() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [messages, isLoading]);
 
-  const callAssistant = async (chatMessages: ChatMessage[]): Promise<string> => {
+  useEffect(() => {
+    if (!session?.accessToken) return;
+    fetchAssistantQuota(session.accessToken, "chat")
+      .then((quota) => {
+        if (quota.unlimited) {
+          setRemainingMessages(null);
+          setQuotaExceeded(false);
+          return;
+        }
+        setRemainingMessages(quota.remaining);
+        setQuotaExceeded(quota.remaining === 0);
+      })
+      .catch(() => {
+        // Quota indisponible : l'assistant reste utilisable, le serveur bloquera si besoin.
+      });
+  }, [session?.accessToken]);
+
+  const callAssistant = async (
+    chatMessages: ChatMessage[]
+  ): Promise<{ content: string; quotaExceeded?: boolean; remaining?: number | null }> => {
     const res = await fetch("/api/assistant", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -75,7 +99,22 @@ function AssistantChat() {
       }),
     });
 
-    const data = (await res.json()) as { content?: string; error?: string; fallback?: boolean };
+    const data = (await res.json()) as {
+      content?: string;
+      error?: string;
+      fallback?: boolean;
+      quotaExceeded?: boolean;
+      remaining?: number | null;
+      unlimited?: boolean;
+    };
+
+    if (res.status === 429 && data.content) {
+      setQuotaExceeded(true);
+      setRemainingMessages(0);
+      setError("");
+      return { content: data.content, quotaExceeded: true, remaining: 0 };
+    }
+
     if (!res.ok) {
       if (res.status === 401) {
         throw new Error("Connecte-toi pour utiliser l'assistant IA");
@@ -90,12 +129,20 @@ function AssistantChat() {
     } else {
       setError("");
     }
-    return data.content;
+
+    if (data.unlimited) {
+      setRemainingMessages(null);
+    } else if (typeof data.remaining === "number") {
+      setRemainingMessages(data.remaining);
+      setQuotaExceeded(data.remaining === 0);
+    }
+
+    return { content: data.content, remaining: data.remaining };
   };
 
   const sendMessage = async (text: string) => {
     const userMessage = text.trim();
-    if (!userMessage || isLoading) return;
+    if (!userMessage || isLoading || quotaExceeded) return;
 
     const nextMessages: ChatMessage[] = [
       ...messages,
@@ -108,8 +155,8 @@ function AssistantChat() {
     setError("");
 
     try {
-      const content = await callAssistant(nextMessages);
-      setMessages((prev) => [...prev, { role: "assistant", content }]);
+      const result = await callAssistant(nextMessages);
+      setMessages((prev) => [...prev, { role: "assistant", content: result.content }]);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erreur inconnue");
     } finally {
@@ -137,6 +184,11 @@ function AssistantChat() {
         <h1 className="font-display text-xl sm:text-2xl font-bold text-[#121117]">
           Kampus — ton guide orientation
         </h1>
+        {remainingMessages !== null && !quotaExceeded && (
+          <p className="mt-1 text-sm text-[#6a697c]">
+            {remainingMessages} message{remainingMessages > 1 ? "s" : ""} restant{remainingMessages > 1 ? "s" : ""} aujourd&apos;hui
+          </p>
+        )}
         {error && (
           <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2.5 text-sm text-amber-900">
             {error}
@@ -177,7 +229,7 @@ function AssistantChat() {
             </div>
           ))}
 
-          {messages.length === 1 && !isLoading && (
+          {messages.length === 1 && !isLoading && !quotaExceeded && (
             <div className="flex flex-wrap gap-2 pl-9">
               {SUGGESTIONS.map((suggestion) => (
                 <button
@@ -205,6 +257,16 @@ function AssistantChat() {
       </div>
 
       <div className="shrink-0 border-t border-[#dcdce5] bg-white px-4 sm:px-6 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+        {quotaExceeded ? (
+          <div className="max-w-[800px] mx-auto rounded-lg border border-[#dcdce5] bg-[#f4f4f8] px-4 py-4">
+            <p className="text-sm text-[#4d4c5c] mb-3">
+              Limite quotidienne atteinte. Un mentor peut t&apos;accompagner gratuitement pour la suite.
+            </p>
+            <Link href="/conseil" className="btn-primary inline-flex min-h-11 px-5">
+              Contacter un mentor
+            </Link>
+          </div>
+        ) : (
         <form onSubmit={handleSendMessage} className="max-w-[800px] mx-auto">
           <div className="flex gap-2 sm:gap-3">
             <input
@@ -232,6 +294,7 @@ function AssistantChat() {
             </Link>
           </div>
         </form>
+        )}
       </div>
     </div>
   );

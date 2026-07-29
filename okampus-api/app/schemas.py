@@ -472,6 +472,41 @@ class AdminMentorOut(BaseModel):
     meet_link: Optional[str] = None
 
 
+class AdminAssistantUsageSummaryOut(BaseModel):
+    chat_daily_limit: int
+    orientation_monthly_limit: int
+    chat_total_today: int
+    orientation_total_month: int
+    active_chat_users_today: int
+    active_orientation_users_month: int
+    users_at_chat_limit: int
+    users_at_orientation_limit: int
+    chat_period_key: str
+    orientation_period_key: str
+
+
+class AdminAssistantUsageUserOut(BaseModel):
+    user_id: str
+    name: str
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    role: str
+    chat_used: int
+    chat_limit: Optional[int] = None
+    chat_remaining: Optional[int] = None
+    orientation_used: int
+    orientation_limit: Optional[int] = None
+    orientation_remaining: Optional[int] = None
+    chat_at_limit: bool = False
+    orientation_at_limit: bool = False
+    last_used_at: Optional[datetime] = None
+
+
+class AdminAssistantUsageOut(BaseModel):
+    summary: AdminAssistantUsageSummaryOut
+    users: list[AdminAssistantUsageUserOut]
+
+
 class MentorOut(BaseModel):
     id: str
     name: str
@@ -683,6 +718,38 @@ class PushSubscriptionCreate(BaseModel):
         if not self.keys.get("p256dh") or not self.keys.get("auth"):
             raise ValueError("Cles push invalides")
         return self
+
+
+# ── Assistant IA ──────────────────────────────────────────────────────────────
+
+class AssistantModeRequest(BaseModel):
+    mode: str  # "chat" | "orientation"
+
+    @field_validator("mode")
+    @classmethod
+    def validate_mode(cls, value: str) -> str:
+        if value not in ("chat", "orientation"):
+            raise ValueError("Mode assistant invalide")
+        return value
+
+
+class AssistantQuotaOut(BaseModel):
+    mode: str
+    limit: Optional[int] = None
+    used: int = 0
+    remaining: Optional[int] = None
+    unlimited: bool = False
+    period_label: str
+
+
+class AssistantConsumeOut(BaseModel):
+    allowed: bool
+    mode: str
+    limit: Optional[int] = None
+    used: int = 0
+    remaining: Optional[int] = None
+    unlimited: bool = False
+    period_label: str
 
 
 TokenResponse.model_rebuild()

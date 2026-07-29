@@ -11,6 +11,8 @@ class Settings(BaseSettings):
     vapid_subject: str = "mailto:support@bachelio.gn"
     openai_api_key: str = ""
     openai_model: str = "gpt-4o-mini"
+    assistant_chat_daily_limit: int = 15
+    assistant_orientation_monthly_limit: int = 5
 
     model_config = {"env_file": ".env"}
 

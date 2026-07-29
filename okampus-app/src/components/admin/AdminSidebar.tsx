@@ -11,6 +11,7 @@ const links: Array<{
 }> = [
   { href: "/admin", label: "Tableau de bord", dot: "bg-[#2563eb]" },
   { href: "/admin/users", label: "Utilisateurs", dot: "bg-[#7c3aed]" },
+  { href: "/admin/assistant", label: "Assistant IA", dot: "bg-[#2563eb]" },
   { href: "/admin/mentors", label: "Mentors", dot: "bg-[#16a34a]" },
   { href: "/admin/stages", label: "Stages", dot: "bg-[#ea580c]" },
   { href: "/admin/stories", label: "Success Stories", dot: "bg-[#2563eb]" },
