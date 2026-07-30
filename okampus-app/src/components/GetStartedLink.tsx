@@ -7,17 +7,26 @@ import { useAuth } from "@/context/AuthContext";
 interface GetStartedLinkProps {
   href?: string;
   className?: string;
-  children: ReactNode;
+  children?: ReactNode;
   onClick?: () => void;
 }
 
-export default function GetStartedLink({ href, className, children, onClick }: GetStartedLinkProps) {
-  const { user, isLoaded } = useAuth();
-  const target = href ?? (isLoaded && user ? "/" : "/inscription");
+export default function GetStartedLink({
+  href,
+  className,
+  children,
+  onClick,
+}: GetStartedLinkProps) {
+  const { user, isLoaded, isAuthenticated } = useAuth();
+
+  const target = href ?? (isAuthenticated ? "/assistant" : "/inscription");
+  const label =
+    children ??
+    (isLoaded && isAuthenticated ? "Mon espace" : "Commencer");
 
   return (
     <Link href={target} className={className} onClick={onClick}>
-      {children}
+      {label}
     </Link>
   );
 }

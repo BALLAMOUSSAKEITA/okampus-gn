@@ -47,7 +47,7 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [showMoreDropdown, setShowMoreDropdown] = useState(false);
   const [showMobileMore, setShowMobileMore] = useState(false);
-  const { user } = useAuth();
+  const { user, isLoaded } = useAuth();
   const [mounted, setMounted] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -139,8 +139,9 @@ export default function Navbar() {
             </div>
 
             <div className="hidden lg:flex items-center gap-3">
-              {mounted &&
-                (user ? (
+              {!mounted || !isLoaded ? (
+                <div className="h-9 w-28 bg-[#121117]/10 rounded animate-pulse" aria-hidden="true" />
+              ) : user ? (
                   <>
                     {user.role === "admin" && (
                       <Link href="/admin" className="btn-secondary text-sm !py-2 !px-3">
@@ -152,7 +153,7 @@ export default function Navbar() {
                       className="flex items-center gap-2 text-sm font-semibold text-[#121117]"
                     >
                       <UserAvatar name={user.name} size={32} />
-                      <span className="hidden xl:inline">{user.name.split(" ")[0]}</span>
+                      <span className="hidden lg:inline max-w-[120px] truncate">{user.name.split(" ")[0]}</span>
                     </Link>
                   </>
                 ) : (
@@ -164,7 +165,7 @@ export default function Navbar() {
                       Commencer
                     </GetStartedLink>
                   </>
-                ))}
+                )}
             </div>
 
             <button
@@ -241,8 +242,11 @@ export default function Navbar() {
                   </div>
                 )}
 
-                {mounted &&
-                  (user ? (
+                {!mounted || !isLoaded ? (
+                  <div className="pt-3 px-1 border-t border-[#dcdce5] mt-2">
+                    <div className="h-11 bg-[#121117]/10 rounded animate-pulse" aria-hidden="true" />
+                  </div>
+                ) : user ? (
                     <div className="pt-3 px-1 flex flex-col gap-2 border-t border-[#dcdce5] mt-2">
                       <Link
                         href="/profil"
@@ -291,7 +295,7 @@ export default function Navbar() {
                         Commencer
                       </GetStartedLink>
                     </div>
-                  ))}
+                  )}
               </div>
             </div>
           )}

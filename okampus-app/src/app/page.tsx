@@ -5,6 +5,7 @@ import GetStartedLink from "@/components/GetStartedLink";
 import SubjectIcon from "@/components/SubjectIcon";
 import OrientationDemo from "@/components/OrientationDemo";
 import { LandingFeaturedMentors } from "@/components/landing/LandingDynamicSections";
+import LandingHero from "@/components/landing/LandingHero";
 
 const subjects = [
   { id: "universites", title: "Universités & Écoles", count: "12 établissements", link: "/universites" },
@@ -58,33 +59,7 @@ export default function Home() {
       {/* Hero */}
       <section className="hero-canvas px-4 sm:px-6 pt-8 sm:pt-10 pb-12 sm:pb-16 md:pb-24 overflow-hidden">
         <div className="max-w-[1200px] mx-auto grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
-          <div className="animate-fadeInUp">
-            <p className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-[#121117] mb-3 lg:hidden">
-              BacheliO
-            </p>
-            <span className="sticker-label rotate-[-2deg] mb-4 sm:mb-6 inline-block">
-              Plateforme étudiante
-            </span>
-            <h1 className="font-display text-[34px] sm:text-[56px] lg:text-[64px] font-bold leading-[1.06] tracking-[-0.02em] text-[#121117] max-w-[560px]">
-              Réussis plus vite avec la bonne orientation
-            </h1>
-            <p className="mt-4 sm:mt-6 text-base sm:text-xl text-[#121117]/90 leading-[1.5] max-w-md">
-              IA, mentorat, forum et stages — tout ce qu&apos;il faut pour choisir ta filière et
-              construire ton avenir.
-            </p>
-            <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row gap-3">
-              <GetStartedLink className="btn-primary min-h-12 text-center">
-                Commencer
-                <span aria-hidden="true">→</span>
-              </GetStartedLink>
-              <Link
-                href="/assistant"
-                className="btn-secondary bg-white/40 border-[#121117] hover:bg-[#121117] min-h-12 text-center"
-              >
-                Tester l&apos;assistant
-              </Link>
-            </div>
-          </div>
+          <LandingHero />
 
           {/* Mobile: une seule photo */}
           <div className="relative h-[260px] sm:h-[340px] lg:hidden animate-scaleIn">

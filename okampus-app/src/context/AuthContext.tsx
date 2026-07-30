@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
+import type { Session } from "next-auth";
 import { apiFetch } from "@/lib/api";
 
 export type UserRole = "bachelier" | "etudiant" | "admin";
@@ -64,6 +65,7 @@ export interface CvProfile {
 interface AuthContextType {
   user: User | null;
   isLoaded: boolean;
+  isAuthenticated: boolean;
   updateUser: (updates: Partial<User>) => Promise<boolean>;
 }
 
@@ -116,10 +118,22 @@ function mapUser(data: Record<string, unknown>): User {
   };
 }
 
+function userFromSession(session: Session): User {
+  return {
+    id: session.user.id,
+    email: session.user.email || undefined,
+    name: session.user.name || "Utilisateur",
+    role: (session.user.role as UserRole) || "bachelier",
+    createdAt: "",
+  };
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { data: session, status } = useSession();
   const [user, setUser] = useState<User | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
+
+  const isAuthenticated = isLoaded && !!user;
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -134,22 +148,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return;
       }
 
+      const fallback = userFromSession(session);
+
       try {
         const res = await apiFetch(`/users/${session.user.id}`);
         if (res.ok) {
           const data = await res.json();
           setUser(mapUser(data));
         } else {
-          setUser(null);
+          setUser(fallback);
         }
       } catch (error) {
         if (process.env.NODE_ENV === "development") {
           console.warn(
-            "Impossible de charger le profil utilisateur. Vérifie que l'API FastAPI est démarrée (port 8000).",
+            "Impossible de charger le profil utilisateur — affichage depuis la session.",
             error
           );
         }
-        setUser(null);
+        setUser(fallback);
       } finally {
         setIsLoaded(true);
       }
@@ -208,7 +224,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, isLoaded, updateUser }}>
+    <AuthContext.Provider value={{ user, isLoaded, isAuthenticated, updateUser }}>
       {children}
     </AuthContext.Provider>
   );
