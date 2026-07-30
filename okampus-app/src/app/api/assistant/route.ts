@@ -3,9 +3,9 @@ import { z } from "zod";
 import { auth } from "@/auth";
 import {
   buildQuotaExceededMessage,
-  consumeAssistantQuota,
   type AssistantMode,
 } from "@/lib/assistant-quota";
+import { consumeAssistantQuota } from "@/lib/assistant-quota-server";
 import { generateChatFallback } from "@/lib/chat-fallback";
 import { createDeepSeekCompletion, getDeepSeekClient, getDeepSeekModel } from "@/lib/deepseek";
 import {

@@ -1,5 +1,4 @@
 import { apiFetch } from "@/lib/api";
-import { getServerAccessToken } from "@/lib/server-auth";
 
 export type AssistantMode = "chat" | "orientation";
 
@@ -16,7 +15,7 @@ export interface AssistantConsumeResult extends AssistantQuotaInfo {
   allowed: boolean;
 }
 
-function mapQuota(data: Record<string, unknown>): AssistantQuotaInfo {
+export function mapQuota(data: Record<string, unknown>): AssistantQuotaInfo {
   return {
     mode: data.mode as AssistantMode,
     limit: typeof data.limit === "number" ? data.limit : null,
@@ -27,43 +26,15 @@ function mapQuota(data: Record<string, unknown>): AssistantQuotaInfo {
   };
 }
 
-async function serverAuthOptions(options: RequestInit = {}): Promise<RequestInit & { serverToken?: string }> {
-  if (typeof window !== "undefined") return options;
-  const token = await getServerAccessToken();
-  return { ...options, serverToken: token ?? undefined };
-}
-
 export async function fetchAssistantQuota(
   mode: AssistantMode = "chat"
 ): Promise<AssistantQuotaInfo> {
-  const res = await apiFetch(`/assistant/quota?mode=${mode}`, await serverAuthOptions());
+  const res = await apiFetch(`/assistant/quota?mode=${mode}`);
   if (!res.ok) {
     throw new Error("Impossible de récupérer le quota assistant");
   }
   const data = (await res.json()) as Record<string, unknown>;
   return mapQuota(data);
-}
-
-export async function consumeAssistantQuota(
-  mode: AssistantMode
-): Promise<AssistantConsumeResult> {
-  const res = await apiFetch(
-    "/assistant/consume",
-    await serverAuthOptions({
-      method: "POST",
-      body: JSON.stringify({ mode }),
-    })
-  );
-
-  if (!res.ok) {
-    throw new Error("Impossible de vérifier le quota assistant");
-  }
-
-  const data = (await res.json()) as Record<string, unknown>;
-  return {
-    allowed: Boolean(data.allowed),
-    ...mapQuota(data),
-  };
 }
 
 export function buildQuotaExceededMessage(mode: AssistantMode, limit: number): string {
