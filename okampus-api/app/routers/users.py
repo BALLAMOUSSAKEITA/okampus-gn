@@ -5,6 +5,7 @@ from sqlalchemy.orm import selectinload
 
 from app.auth import get_current_user
 from app.database import get_db
+from app.models import AdvisorProfile, CvProfile, User
 from app.url_validation import validate_optional_external_url
 from app.schemas import AdvisorProfileOut, CvProfileOut, UpdateUserRequest, UserOut
 
