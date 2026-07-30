@@ -64,7 +64,7 @@ class CvProfile(Base):
     skills: Mapped[Optional[list]] = mapped_column("skills", ARRAY(String), nullable=True)
     languages: Mapped[Optional[list]] = mapped_column("languages", ARRAY(String), nullable=True)
     education: Mapped[Optional[dict]] = mapped_column("education", JSON, nullable=True)
-    expériences: Mapped[Optional[dict]] = mapped_column("expériences", JSON, nullable=True)
+    expériences: Mapped[Optional[dict]] = mapped_column("experiences", JSON, nullable=True)
     projects: Mapped[Optional[dict]] = mapped_column("projects", JSON, nullable=True)
     created_at: Mapped[datetime] = mapped_column("createdAt", DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column("updatedAt", DateTime(timezone=True), server_default=func.now(), onupdate=func.now())

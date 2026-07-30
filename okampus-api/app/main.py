@@ -25,6 +25,29 @@ async def _ensure_schema(conn) -> None:
                 'WHERE "studentId" IS NULL AND "senderId" != "advisorId"'
             )
         )
+        # cv_profiles : colonne ASCII en prod (experiences), pas expériences
+        await conn.execute(
+            text(
+                """
+                DO $$
+                BEGIN
+                  IF EXISTS (
+                    SELECT 1 FROM information_schema.columns
+                    WHERE table_schema = 'public'
+                      AND table_name = 'cv_profiles'
+                      AND column_name = 'expériences'
+                  ) AND NOT EXISTS (
+                    SELECT 1 FROM information_schema.columns
+                    WHERE table_schema = 'public'
+                      AND table_name = 'cv_profiles'
+                      AND column_name = 'experiences'
+                  ) THEN
+                    ALTER TABLE cv_profiles RENAME COLUMN "expériences" TO experiences;
+                  END IF;
+                END $$;
+                """
+            )
+        )
     except Exception as exc:
         print(f"[SCHEMA] ensure_schema skipped/failed: {type(exc).__name__}: {exc}")
 
