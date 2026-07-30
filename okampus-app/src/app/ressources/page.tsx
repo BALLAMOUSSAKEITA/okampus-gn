@@ -118,7 +118,7 @@ export default function ResourcesPage() {
   const categories = useMemo(() => Array.from(new Set(resources.map((r) => r.category))).sort(), [resources]);
 
   const formatFileSize = (bytes: number) => {
-    if (bytes <= 0) return "—";
+    if (bytes <= 0) return "N/A";
     if (bytes < 1024) return bytes + " B";
     if (bytes < 1048576) return (bytes / 1024).toFixed(1) + " KB";
     return (bytes / 1048576).toFixed(1) + " MB";
@@ -196,7 +196,7 @@ export default function ResourcesPage() {
             </svg>
           </div>
           <span className="text-sm font-medium text-[#4d4c5c]">
-            Toutes les ressources sont gratuites — partage tes notes, TD et cours avec la communauté étudiante.
+            Toutes les ressources sont gratuites. Partage tes notes, TD et cours avec la communauté étudiante.
           </span>
         </div>
 

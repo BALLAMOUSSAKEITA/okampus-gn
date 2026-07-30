@@ -151,7 +151,7 @@ export default function UniversitésPage() {
       <PageHeader
         eyebrow="Orientation"
         title="Universités & Écoles"
-        description="Référentiel des établissements d'enseignement supérieur en Guinée — filières, villes et sites officiels."
+        description="Référentiel des établissements d'enseignement supérieur en Guinée : filières, villes et sites officiels."
       />
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">

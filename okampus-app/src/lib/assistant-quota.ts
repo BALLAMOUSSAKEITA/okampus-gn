@@ -43,7 +43,7 @@ export function buildQuotaExceededMessage(mode: AssistantMode, limit: number): s
 
   return `Tu as bien avance avec Kampus ${period} ! Tu as atteint ta limite de **${limit} ${unit}**.
 
-Pour aller plus loin sur ton cas personnel, un [mentor étudiant](/conseil) peut t'accompagner gratuitement sur BacheliO — c'est un retour d'expérience réel de quelqu'un qui a vécu les mêmes choix que toi.
+Pour aller plus loin sur ton cas personnel, un [mentor étudiant](/conseil) peut t'accompagner gratuitement sur BacheliO. C'est un retour d'expérience réel de quelqu'un qui a vécu les mêmes choix que toi.
 
 → [Contacter un mentor](/conseil)`;
 }

@@ -115,7 +115,11 @@ export async function POST(request: Request) {
     const lastUserMessage =
       parsed.data.mode === "chat" ? getLastUserMessage(parsed.data.messages) : "";
     const universitiesContext = buildUniversitiesContextForAI(lastUserMessage || undefined);
-    const systemWithUniversities = `${SYSTEM_PROMPT}\n\n${universitiesContext}`;
+    const firstName = session.user.name?.split(" ")[0];
+    const studentContext = firstName
+      ? `\n\nPrénom de l'étudiant : ${firstName}. Utilise-le avec parcimonie dans tes réponses.`
+      : "";
+    const systemWithUniversities = `${SYSTEM_PROMPT}${studentContext}\n\n${universitiesContext}`;
 
     if (!client) {
       const fallback =

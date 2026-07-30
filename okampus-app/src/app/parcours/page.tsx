@@ -81,10 +81,10 @@ export default function ParcoursPage() {
   }, [user]);
 
   const moyenne = useMemo(() => {
-    if (notes.length === 0) return "—";
+    if (notes.length === 0) return "N/A";
     const total = notes.reduce((acc, n) => acc + n.note * n.coefficient, 0);
     const totalCoef = notes.reduce((acc, n) => acc + n.coefficient, 0);
-    return totalCoef > 0 ? (total / totalCoef).toFixed(2) : "—";
+    return totalCoef > 0 ? (total / totalCoef).toFixed(2) : "N/A";
   }, [notes]);
 
   const objectifsEnCours = objectifs.filter((o) => o.statut === "en_cours").length;

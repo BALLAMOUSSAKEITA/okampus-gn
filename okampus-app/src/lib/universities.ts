@@ -377,7 +377,7 @@ export function buildUniversitiesContextForAI(userMessage?: string): string {
     return `- **${inst.shortName}** (${inst.city}, ${inst.sector === "public" ? "public" : "privé"}) : ${filieresPreview}${extra}${web}`;
   });
 
-  return `## Référentiel établissements Guinée (source BacheliO — cite uniquement si pertinent)
+  return `## Référentiel établissements Guinée (source BacheliO, cite uniquement si pertinent)
 ${list.join("\n")}
 
 Regles :

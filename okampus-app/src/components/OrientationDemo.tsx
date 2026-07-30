@@ -40,7 +40,7 @@ const demoMessages: DemoMessage[] = [
         <strong className="font-semibold">Médecine</strong>,{" "}
         <strong className="font-semibold">Pharmacie</strong> ou{" "}
         <strong className="font-semibold">Sciences de la Santé</strong> (Gamal, UGB). Tu as une
-        bonne base en sciences — veux-tu qu&apos;on compare les deux filières ?
+        bonne base en sciences. Veux-tu qu&apos;on compare les deux filières ?
       </>
     ),
   },
@@ -78,7 +78,7 @@ const demoMessages: DemoMessage[] = [
     text: (
       <>
         Coucou Fatoumata ! Je suis en 3e année de médecine à Gamal. J&apos;ai eu les mêmes doutes
-        l&apos;année dernière. On peut en parler 20 min — je te partage mon quotidien et les pièges
+        l&apos;année dernière. On peut en parler 20 min, je te partage mon quotidien et les pièges
         à éviter.
       </>
     ),
@@ -152,7 +152,7 @@ export default function OrientationDemo() {
             </h2>
             <p className="mt-4 text-[#4d4c5c] text-lg leading-relaxed max-w-xl">
               Voici comment Fatoumata, bachelière de Conakry, a clarifié son choix en quelques
-              echanges — d&apos;abord avec l&apos;assistant, puis avec une mentorante en médecine.
+              échanges : d&apos;abord avec l&apos;assistant, puis avec une mentorante en médecine.
             </p>
 
             <div className="mt-8 card p-4 sm:p-5 bg-white shadow-[0_8px_32px_rgba(18,17,23,0.06)]">

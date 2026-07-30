@@ -76,7 +76,7 @@ export default function ProfilPage() {
     if (advisorForm.meetLink.trim()) {
       const safeMeet = sanitizeExternalHref(advisorForm.meetLink.trim());
       if (!safeMeet) {
-        setAdvisorError("Lien Meet invalide — utilise une URL https://");
+        setAdvisorError("Lien Meet invalide. Utilise une URL https://");
         return;
       }
     }

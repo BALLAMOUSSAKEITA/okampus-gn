@@ -177,8 +177,8 @@ function InscriptionForm() {
       title={step === 1 ? "Créer un compte" : "Sécurise ton compte"}
       subtitle={
         step === 1
-          ? "Étape 1 sur 2 — dis-nous qui tu es"
-          : "Étape 2 sur 2 — email ou téléphone et mot de passe"
+          ? "Étape 1 sur 2 : dis-nous qui tu es"
+          : "Étape 2 sur 2 : email ou téléphone et mot de passe"
       }
       footerHref={loginHref}
       footerLabel="Se connecter"

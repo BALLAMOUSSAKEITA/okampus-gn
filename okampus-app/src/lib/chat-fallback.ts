@@ -74,7 +74,7 @@ export function generateChatFallback(userMessage: string): string {
     if (serie === "se" || serie === "sm") {
       lines.push(
         "## Filières",
-        "- Médecine, Pharmacie, Sciences infirmières (très sélectif — prépare-toi tot)",
+        "- Médecine, Pharmacie, Sciences infirmières (très sélectif, prépare-toi tôt)",
         "",
         "## Conseils",
         "- Vérifie les conditions d'admission à l'UGANC ou l'Université Kofi Annan",
@@ -86,7 +86,7 @@ export function generateChatFallback(userMessage: string): string {
         "- Sciences infirmières, Sante publique, ou passerelle vers SE/SM selon ton parcours",
         "",
         "## Conseils",
-        "- La médecine classique demande surtout SE ou SM — un mentor peut t'expliquer les options"
+        "- La médecine classique demande surtout SE ou SM. Un mentor peut t'expliquer les options"
       );
     }
   } else if (topic === "info") {
@@ -122,7 +122,7 @@ export function generateChatFallback(userMessage: string): string {
       "- Médecine, Pharmacie, Agronomie, Sciences de la Vie",
       "",
       "## Conseils",
-      "- Les filières santé sont très demandées — anticipe la préparation",
+      "- Les filières santé sont très demandées. Anticipe la préparation",
       "- Discute avec un mentor de ta serie"
     );
   } else if (serie === "ss") {

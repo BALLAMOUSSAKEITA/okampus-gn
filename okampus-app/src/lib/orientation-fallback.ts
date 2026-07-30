@@ -62,7 +62,7 @@ export function generateOrientationAdvice(data: OrientationProfile): string {
         ];
       } else {
         conseils.push(
-          "La médecine est surtout accèssible depuis Sciences Expérimentales ou Mathématiques — vérifie les conditions d'accès."
+          "La médecine est surtout accessible depuis Sciences Expérimentales ou Mathématiques. Vérifie les conditions d'accès."
         );
         recommandations = ["Sciences Infirmières", "Santé publique", ...recommandations];
       }

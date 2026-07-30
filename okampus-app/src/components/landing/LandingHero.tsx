@@ -32,7 +32,7 @@ export default function LandingHero() {
           Bonjour {firstName}
         </h1>
         <p className="mt-4 sm:mt-6 text-base sm:text-xl text-[#121117]/90 leading-[1.5] max-w-md">
-          Reprends là où tu t&apos;es arrêté — assistant IA, mentorat, forum et stages t&apos;attendent.
+          Reprends là où tu t&apos;es arrêté : assistant IA, mentorat, forum et stages t&apos;attendent.
         </p>
         <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row gap-3">
           <Link href="/assistant" className="btn-primary min-h-12 text-center">
@@ -59,7 +59,7 @@ export default function LandingHero() {
         Réussis plus vite avec la bonne orientation
       </h1>
       <p className="mt-4 sm:mt-6 text-base sm:text-xl text-[#121117]/90 leading-[1.5] max-w-md">
-        IA, mentorat, forum et stages — tout ce qu&apos;il faut pour choisir ta filière et
+        IA, mentorat, forum et stages : tout ce qu&apos;il faut pour choisir ta filière et
         construire ton avenir.
       </p>
       <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row gap-3">

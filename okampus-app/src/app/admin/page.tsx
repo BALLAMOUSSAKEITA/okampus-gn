@@ -35,7 +35,7 @@ export default function AdminDashboardPage() {
       <AdminPageHeader
         pill={{ label: "Vue d'ensemble", variant: "blue" }}
         title="Tableau de bord"
-        description={`Bienvenue ${session?.user?.name ?? "Admin"} — suivi en temps réel de la plateforme.`}
+        description={`Bienvenue ${session?.user?.name ?? "Admin"}. Suivi en temps réel de la plateforme.`}
       />
 
       {error && <div className="admin-alert-error">{error}</div>}
@@ -45,7 +45,7 @@ export default function AdminDashboardPage() {
           <Link key={card.key} href={card.href} className="admin-stat-card">
             <span className={`admin-pill admin-pill-${card.pill} mb-3`}>{card.label}</span>
             <p className="admin-stat-value">
-              {stats ? stats[card.key as keyof AdminStats] : "—"}
+              {stats ? stats[card.key as keyof AdminStats] : "N/A"}
             </p>
             <p className="admin-stat-label">elements enregistrés</p>
           </Link>

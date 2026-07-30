@@ -73,7 +73,7 @@ export function LandingFeaturedMentors() {
               <div className="p-4">
                 <p className="font-semibold text-[#121117]">{m.name}</p>
                 <p className="text-xs text-[#4d4c5c] mt-1">
-                  {m.field} — {m.university}
+                  {m.field} · {m.university}
                 </p>
               </div>
             </Link>

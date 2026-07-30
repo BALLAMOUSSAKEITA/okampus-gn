@@ -27,7 +27,7 @@ export default function AdminBoursesPage() {
         { key: "title", label: "Titre" },
         { key: "organization", label: "Organisation" },
         { key: "type", label: "Type" },
-        { key: "deadline", label: "Deadline", render: (r) => (r.deadline ? String(r.deadline).slice(0, 10) : "—") },
+        { key: "deadline", label: "Deadline", render: (r) => (r.deadline ? String(r.deadline).slice(0, 10) : "N/A") },
       ]}
       createDefaults={{ is_active: true }}
     />

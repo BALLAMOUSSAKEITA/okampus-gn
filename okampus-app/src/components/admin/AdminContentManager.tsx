@@ -252,7 +252,7 @@ export default function AdminContentManager({
                   <tr key={String(row[idKey])}>
                     {columns.map((col) => (
                       <td key={col.key} className="max-w-[200px] truncate">
-                        {col.render ? col.render(row) : String(row[col.key] ?? "—")}
+                        {col.render ? col.render(row) : String(row[col.key] ?? "N/A")}
                       </td>
                     ))}
                     <td className="admin-table-actions">

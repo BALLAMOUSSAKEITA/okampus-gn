@@ -161,7 +161,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       } catch (error) {
         if (process.env.NODE_ENV === "development") {
           console.warn(
-            "Impossible de charger le profil utilisateur — affichage depuis la session.",
+            "Impossible de charger le profil utilisateur, affichage depuis la session.",
             error
           );
         }

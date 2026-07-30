@@ -67,7 +67,7 @@ export default function AdminMentorsPage() {
                 {mentors.map((m) => (
                   <tr key={m.user_id}>
                     <td className="font-medium">{m.name}</td>
-                    <td className="text-[#737373]">{m.email || m.phone || "—"}</td>
+                    <td className="text-[#737373]">{m.email || m.phone || "N/A"}</td>
                     <td>{m.field}</td>
                     <td>{m.university}</td>
                     <td>

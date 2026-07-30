@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 const messages = [
   <>
     <span className="text-[#ffdf3d] font-semibold">BacheliO</span>
-    {" "}— du bac a l&apos;emploi, on t&apos;accompagne à chaque étape
+    {", du bac à l'emploi, on t'accompagne à chaque étape"}
   </>,
   <>Orientation IA, mentorat et stages réunis au même endroit</>,
   <>Des étudiants mentors disponibles pour te guider filière par filière</>,
@@ -12,7 +12,7 @@ const messages = [
     <Link href="/inscription" className="underline underline-offset-2 hover:text-[#ffdf3d] transition-colors font-semibold">
       Crée ton compte
     </Link>
-    {" "}— ça prend moins de 2 minutes
+    {", ça prend moins de 2 minutes"}
   </>,
 ];
 
@@ -48,7 +48,7 @@ export default function AnnouncementBar() {
       <div className="md:hidden flex items-center justify-center h-full px-4 text-center">
         <p className="truncate">
           <span className="text-[#ffdf3d] font-semibold">BacheliO</span>
-          {" "}— orientation, mentors et stages
+          {", orientation, mentors et stages"}
         </p>
       </div>
 

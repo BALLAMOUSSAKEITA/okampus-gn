@@ -5,7 +5,9 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import AssistantMessage from "@/components/AssistantMessage";
+import { useAuth } from "@/context/AuthContext";
 import { fetchAssistantQuota } from "@/lib/assistant-quota";
+import { buildWelcomeMessage } from "@/lib/assistant-prompt";
 import type { OrientationProfile } from "@/lib/orientation-fallback";
 
 interface ChatMessage {
@@ -22,20 +24,10 @@ const emptyProfile: OrientationProfile = {
   passions: "",
 };
 
-const WELCOME_MESSAGE = `Bonjour ! Je suis **Kampus**, l'assistant IA de BacheliO.
-
-Je t'accompagne pour choisir ta filière en Guinée (Sciences Mathématiques, Expérimentales ou Sociales), clarifier ton projet d'études et trouver les bonnes pistes ([universités & écoles](/universites), mentors, stages).
-
-**Comment puis-je t'aider dans ton orientation ?**`;
-
 const SUGGESTIONS = [
   { short: "Bac SE, quoi choisir ?", full: "Je viens d'avoir le bac en Sciences Expérimentales, je ne sais pas quoi choisir" },
   { short: "Médecine après SM ?", full: "Je suis en Sciences Mathématiques et je veux faire médecine, c'est réaliste ?" },
   { short: "Ou étudier le droit ?", full: "Quelle université en Guinée pour étudier le droit après Sciences Sociales ?" },
-];
-
-const initialMessages: ChatMessage[] = [
-  { role: "assistant", content: WELCOME_MESSAGE },
 ];
 
 export default function AssistantPage() {
@@ -55,7 +47,8 @@ export default function AssistantPage() {
 function AssistantChat() {
   const searchParams = useSearchParams();
   const { data: session } = useSession();
-  const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
+  const { user, isLoaded } = useAuth();
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputMessage, setInputMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -68,6 +61,15 @@ function AssistantChat() {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [messages, isLoading]);
+
+  useEffect(() => {
+    if (!isLoaded) return;
+    setMessages((prev) => {
+      if (prev.length > 0) return prev;
+      const firstName = user?.name?.split(" ")[0];
+      return [{ role: "assistant", content: buildWelcomeMessage(firstName) }];
+    });
+  }, [isLoaded, user?.name]);
 
   useEffect(() => {
     if (!session?.user) return;
@@ -171,18 +173,18 @@ function AssistantChat() {
 
   useEffect(() => {
     const q = searchParams.get("q")?.trim();
-    if (!q || prefilledQuerySent.current) return;
+    if (!q || prefilledQuerySent.current || !isLoaded || messages.length === 0) return;
     prefilledQuerySent.current = true;
     sendMessage(q);
     // eslint-disable-next-line react-hooks/exhaustive-deps -- envoi unique au chargement depuis /universites
-  }, [searchParams]);
+  }, [searchParams, isLoaded, messages.length]);
 
   return (
     <div className="flex flex-col h-[calc(100dvh-4rem)] bg-[#f4f4f8]">
       <div className="shrink-0 px-4 sm:px-6 pt-4 sm:pt-6 pb-3 max-w-[800px] w-full mx-auto">
         <p className="text-sm font-semibold text-[#14b887] mb-1">Assistant IA</p>
         <h1 className="font-display text-xl sm:text-2xl font-bold text-[#121117]">
-          Kampus — ton guide orientation
+          Kampus, ton guide orientation
         </h1>
         {remainingMessages !== null && !quotaExceeded && (
           <p className="mt-1 text-sm text-[#6a697c]">

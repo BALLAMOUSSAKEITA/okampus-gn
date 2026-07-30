@@ -11,14 +11,14 @@ router = APIRouter(prefix="/cv", tags=["cv"])
 
 def _build_prompt(body: GenerateCvRequest) -> str:
     cv = body.cv_profile
-    safe = lambda v: v.strip() if v and str(v).strip() else "—"
+    safe = lambda v: v.strip() if v and str(v).strip() else "N/A"
 
-    skills = "\n".join(f"- {s}" for s in cv.get("skills", [])) or "—"
-    languages = "\n".join(f"- l" for l in cv.get("languages", [])) or "—"
+    skills = "\n".join(f"- {s}" for s in cv.get("skills", [])) or "N/A"
+    languages = "\n".join(f"- l" for l in cv.get("languages", [])) or "N/A"
 
     education_lines = []
     for e in cv.get("education", []):
-        line = f"- {e.get('degree')} — {e.get('school')} ({safe(e.get('startYear'))} - {safe(e.get('endYear'))})"
+        line = f"- {e.get('degree')}, {e.get('school')} ({safe(e.get('startYear'))} - {safe(e.get('endYear'))})"
         if e.get("details"):
             line += f"\n  - {e['details']}"
         education_lines.append(line)
@@ -26,7 +26,7 @@ def _build_prompt(body: GenerateCvRequest) -> str:
     exp_lines = []
     for x in cv.get("expériences", []):
         end = x.get("end", "").strip() or "Présent"
-        line = f"- {x.get('title')} — {x.get('company')} ({safe(x.get('start'))} - {end})"
+        line = f"- {x.get('title')}, {x.get('company')} ({safe(x.get('start'))} - {end})"
         bullets = "\n".join(f"  - {b}" for b in x.get("bullets", []) if b)
         if bullets:
             line += f"\n{bullets}"
@@ -71,13 +71,13 @@ Contraintes:
 {languages}
 
 ## Formation
-{chr(10).join(education_lines) or "—"}
+{chr(10).join(education_lines) or "N/A"}
 
 ## Expériences
-{chr(10).join(exp_lines) or "—"}
+{chr(10).join(exp_lines) or "N/A"}
 
 ## Projets
-{chr(10).join(project_lines) or "—"}
+{chr(10).join(project_lines) or "N/A"}
 """
 
 

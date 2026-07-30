@@ -92,7 +92,7 @@ export default function AdminAssistantUsagePage() {
       <AdminPageHeader
         pill={{ label: "Assistant IA", variant: "blue" }}
         title="Consommation Kampus"
-        description="Suivi de l'utilisation DeepSeek par compte — période chat du jour et orientation du mois en cours."
+        description="Suivi de l'utilisation DeepSeek par compte : période chat du jour et orientation du mois en cours."
         action={
           <button type="button" onClick={load} className="admin-btn-secondary">
             Actualiser
@@ -185,7 +185,7 @@ export default function AdminAssistantUsagePage() {
                         <td>
                           <div className="font-medium">{user.name}</div>
                           <div className="text-xs text-[#737373]">
-                            {user.email || user.phone || "—"}
+                            {user.email || user.phone || "N/A"}
                           </div>
                           {(user.chat_at_limit || user.orientation_at_limit) && (
                             <div className="mt-1">
@@ -206,7 +206,7 @@ export default function AdminAssistantUsagePage() {
                         <td className="text-xs text-[#737373] whitespace-nowrap">
                           {user.last_used_at
                             ? new Date(user.last_used_at).toLocaleString("fr-FR")
-                            : "—"}
+                            : "N/A"}
                         </td>
                       </tr>
                     ))}

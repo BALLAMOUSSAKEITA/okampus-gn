@@ -78,7 +78,7 @@ export default function AdminUsersPage() {
                 {users.map((u) => (
                   <tr key={u.id}>
                     <td className="font-medium">{u.name}</td>
-                    <td className="text-[#737373]">{u.email || u.phone || "—"}</td>
+                    <td className="text-[#737373]">{u.email || u.phone || "N/A"}</td>
                     <td>
                       <select
                         value={u.role}
@@ -91,14 +91,14 @@ export default function AdminUsersPage() {
                       </select>
                     </td>
                     <td className="text-xs text-[#737373] max-w-[180px]">
-                      {u.role === "bachelier" && u.city && `${u.city} — ${u.bac_option ?? ""}`}
-                      {u.role === "etudiant" && u.university && `${u.university} — ${u.field ?? ""}`}
+                      {u.role === "bachelier" && u.city && `${u.city} · ${u.bac_option ?? ""}`}
+                      {u.role === "etudiant" && u.university && `${u.university} · ${u.field ?? ""}`}
                       {u.is_advisor && (
                         <span className="admin-pill admin-pill-green ml-1">Mentor</span>
                       )}
                     </td>
                     <td className="text-xs text-[#737373]">
-                      {u.created_at ? new Date(u.created_at).toLocaleDateString("fr-FR") : "—"}
+                      {u.created_at ? new Date(u.created_at).toLocaleDateString("fr-FR") : "N/A"}
                     </td>
                     <td className="admin-table-actions">
                       {u.role !== "admin" && (

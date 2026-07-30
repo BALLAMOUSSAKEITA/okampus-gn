@@ -18,7 +18,7 @@ const brandCopy = {
   },
   register: {
     headline: "Rejoins BacheliO",
-    support: "Orientation IA, mentors étudiants et opportunités — tout pour avancer après le bac.",
+    support: "Orientation IA, mentors étudiants et opportunités pour avancer après le bac.",
   },
 } as const;
 
@@ -33,7 +33,7 @@ export default function AuthShell({
 
   return (
     <div className="min-h-[calc(100vh-4rem)] grid lg:grid-cols-2">
-      {/* Panneau brand — plein cadre */}
+      {/* Panneau brand plein cadre */}
       <aside className="relative hidden lg:flex flex-col justify-between overflow-hidden hero-canvas px-10 xl:px-14 py-12">
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute -top-24 -right-16 w-72 h-72 rounded-full bg-white/10 blur-2xl" />
