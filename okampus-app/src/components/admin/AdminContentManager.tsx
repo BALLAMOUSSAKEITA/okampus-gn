@@ -43,7 +43,7 @@ export default function AdminContentManager({
   pillVariant = "blue",
 }: AdminContentManagerProps) {
   const { data: session } = useSession();
-  const token = session?.accèssToken;
+  const isAuthenticated = !!session?.user;
 
   const [items, setItems] = useState<Record<string, unknown>[]>([]);
   const [loading, setLoading] = useState(true);
@@ -53,18 +53,18 @@ export default function AdminContentManager({
   const [saving, setSaving] = useState(false);
 
   const load = useCallback(async () => {
-    if (!token) return;
+    if (!isAuthenticated) return;
     setLoading(true);
     setError("");
     try {
-      const data = await adminFetch<Record<string, unknown>[]>(endpoint, token);
+      const data = await adminFetch<Record<string, unknown>[]>(endpoint);
       setItems(data);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Erreur de chargement");
     } finally {
       setLoading(false);
     }
-  }, [endpoint, token]);
+  }, [endpoint, isAuthenticated]);
 
   useEffect(() => {
     load();
@@ -77,7 +77,7 @@ export default function AdminContentManager({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!token) return;
+    if (!isAuthenticated) return;
     setSaving(true);
     setError("");
     try {
@@ -91,12 +91,12 @@ export default function AdminContentManager({
       });
 
       if (editingId) {
-        await adminFetch(`${endpoint}/${editingId}`, token, {
+        await adminFetch(`${endpoint}/${editingId}`, {
           method: "PATCH",
           body: JSON.stringify(payload),
         });
       } else {
-        await adminFetch(endpoint, token, {
+        await adminFetch(endpoint, {
           method: "POST",
           body: JSON.stringify({ ...createDefaults, ...payload }),
         });
@@ -126,9 +126,9 @@ export default function AdminContentManager({
   };
 
   const handleDelete = async (id: string) => {
-    if (!token || !confirm("Supprimer cet element ?")) return;
+    if (!isAuthenticated || !confirm("Supprimer cet element ?")) return;
     try {
-      await adminFetch(`${endpoint}/${id}`, token, { method: "DELETE" });
+      await adminFetch(`${endpoint}/${id}`, { method: "DELETE" });
       if (editingId === id) resetForm();
       await load();
     } catch (e) {

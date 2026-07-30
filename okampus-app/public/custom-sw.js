@@ -1,3 +1,8 @@
+function safePushUrl(raw: string | undefined): string {
+  if (!raw || !/^\/(?!\/|\\)/.test(raw)) return "/profil";
+  return raw;
+}
+
 self.addEventListener("push", (event) => {
   let data = { title: "BacheliO", body: "Nouveau message", url: "/profil" };
   try {
@@ -13,14 +18,14 @@ self.addEventListener("push", (event) => {
       body: data.body,
       icon: "/icon-192x192.png",
       badge: "/icon-192x192.png",
-      data: { url: data.url || "/profil" },
+      data: { url: safePushUrl(data.url) },
     })
   );
 });
 
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
-  const url = event.notification.data?.url || "/profil";
+  const url = safePushUrl(event.notification.data?.url);
   event.waitUntil(
     self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((clientList) => {
       for (const client of clientList) {

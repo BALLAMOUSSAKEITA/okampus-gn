@@ -1,4 +1,5 @@
 import { apiFetch } from "@/lib/api";
+import { getServerAccessToken } from "@/lib/server-auth";
 
 export type AssistantMode = "chat" | "orientation";
 
@@ -26,11 +27,16 @@ function mapQuota(data: Record<string, unknown>): AssistantQuotaInfo {
   };
 }
 
+async function serverAuthOptions(options: RequestInit = {}): Promise<RequestInit & { serverToken?: string }> {
+  if (typeof window !== "undefined") return options;
+  const token = await getServerAccessToken();
+  return { ...options, serverToken: token ?? undefined };
+}
+
 export async function fetchAssistantQuota(
-  token: string,
   mode: AssistantMode = "chat"
 ): Promise<AssistantQuotaInfo> {
-  const res = await apiFetch(`/assistant/quota?mode=${mode}`, { token });
+  const res = await apiFetch(`/assistant/quota?mode=${mode}`, await serverAuthOptions());
   if (!res.ok) {
     throw new Error("Impossible de récupérer le quota assistant");
   }
@@ -39,14 +45,15 @@ export async function fetchAssistantQuota(
 }
 
 export async function consumeAssistantQuota(
-  token: string,
   mode: AssistantMode
 ): Promise<AssistantConsumeResult> {
-  const res = await apiFetch("/assistant/consume", {
-    method: "POST",
-    token,
-    body: JSON.stringify({ mode }),
-  });
+  const res = await apiFetch(
+    "/assistant/consume",
+    await serverAuthOptions({
+      method: "POST",
+      body: JSON.stringify({ mode }),
+    })
+  );
 
   if (!res.ok) {
     throw new Error("Impossible de vérifier le quota assistant");

@@ -172,22 +172,6 @@ export function generateChatFallback(userMessage: string): string {
   return lines.join("\n");
 }
 
-export function mapAssistantErrorMessage(error: string): string {
-  if (error.includes("Insufficient Balance") || error.includes("402")) {
-    return "Credits DeepSeek épuisés — ajoute des credits sur platform.deepseek.com ou réessaie plus tard.";
-  }
-  if (
-    error.includes("UNABLE_TO_VERIFY") ||
-    error.includes("certificate") ||
-    error.includes("SSL")
-  ) {
-    return "Erreur de connexion au service IA — réessaie dans un instant.";
-  }
-  if (error.includes("401") || error.includes("Authentication") || error.includes("invalid")) {
-    return "Cle API DeepSeek invalide — vérifie DEEPSEEK_API_KEY sur le serveur.";
-  }
-  if (error.includes("timeout") || error.includes("ETIMEDOUT") || error.includes("fetch failed")) {
-    return "Délai dépassé — vérifie ta connexion et réessaie.";
-  }
+export function mapAssistantErrorMessage(_error: string): string {
   return "Service IA temporairement indisponible.";
 }

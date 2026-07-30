@@ -11,7 +11,7 @@ function urlBase64ToUint8Array(base64String: string) {
   return output;
 }
 
-export async function subscribeToPushNotifications(token: string): Promise<boolean> {
+export async function subscribeToPushNotifications(): Promise<boolean> {
   const publicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
   if (!publicKey) return false;
   if (typeof window === "undefined") return false;
@@ -39,7 +39,6 @@ export async function subscribeToPushNotifications(token: string): Promise<boole
 
     const res = await apiFetch("/push-subscriptions", {
       method: "POST",
-      token,
       body: JSON.stringify({
         endpoint: json.endpoint,
         keys: {

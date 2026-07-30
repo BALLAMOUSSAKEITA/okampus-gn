@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { API_URL, apiUpload, resolveFileUrl } from "@/lib/api";
+import { API_URL, apiUpload, resolveDownloadUrl } from "@/lib/api";
 import EmptyState from "@/components/ui/EmptyState";
 import PageShell from "@/components/ui/PageShell";
 import PageHeader from "@/components/ui/PageHeader";
@@ -152,7 +152,7 @@ export default function ResourcesPage() {
       if (uploadForm.year.trim()) formData.append("year", uploadForm.year.trim());
       if (selectedFile) formData.append("file", selectedFile);
 
-      const res = await apiUpload("/resources/upload", formData, session.accèssToken);
+      const res = await apiUpload("/resources/upload", formData);
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
         const detail = (err as { detail?: string | Array<{ msg?: string }> }).detail;
@@ -324,7 +324,7 @@ export default function ResourcesPage() {
                     <span className="text-xs text-[#6a697c]">{resource.downloads} téléchargement{resource.downloads > 1 ? "s" : ""}</span>
                     {resource.fileUrl ? (
                       <a
-                        href={resolveFileUrl(resource.fileUrl)}
+                        href={resolveDownloadUrl(resource.id)}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="btn-secondary px-4 py-1.5 text-xs font-bold"

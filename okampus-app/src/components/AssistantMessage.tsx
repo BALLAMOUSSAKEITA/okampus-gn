@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
+import { sanitizeLinkHref } from "@/lib/safe-url";
 
 function renderInline(text: string): ReactNode[] {
   const regex = /(\*\*[^*]+\*\*|\[[^\]]+\]\([^)]+\))/g;
@@ -20,17 +21,22 @@ function renderInline(text: string): ReactNode[] {
       const [, label, href] = linkMatch;
       const linkClass =
         "font-semibold text-[#121117] underline underline-offset-2 hover:text-[#14b887] transition-colors";
+      const safeHref = sanitizeLinkHref(href);
 
-      if (href.startsWith("/")) {
+      if (!safeHref) {
+        return <span key={index}>{label}</span>;
+      }
+
+      if (safeHref.startsWith("/")) {
         return (
-          <Link key={index} href={href} className={linkClass}>
+          <Link key={index} href={safeHref} className={linkClass}>
             {label}
           </Link>
         );
       }
 
       return (
-        <a key={index} href={href} target="_blank" rel="noopener noreferrer" className={linkClass}>
+        <a key={index} href={safeHref} target="_blank" rel="noopener noreferrer" className={linkClass}>
           {label}
         </a>
       );

@@ -23,19 +23,17 @@ export default function MentorInbox({ isAdvisor = false }: MentorInboxProps) {
   const [loading, setLoading] = useState(false);
 
   const loadConversations = useCallback(async () => {
-    if (!session?.accèssToken) return;
+    if (!session?.user) return;
     setLoading(true);
     try {
-      const res = await apiFetch("/mentor-messages/conversations", {
-        token: session.accèssToken,
-      });
+      const res = await apiFetch("/mentor-messages/conversations");
       if (res.ok) {
         setConversations((await res.json()) as Conversation[]);
       }
     } finally {
       setLoading(false);
     }
-  }, [session?.accèssToken]);
+  }, [session?.user]);
 
   useEffect(() => {
     void loadConversations();

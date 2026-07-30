@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { API_URL, apiFetch } from "@/lib/api";
+import { apiFetch } from "@/lib/api";
 import EmptyState from "@/components/ui/EmptyState";
 import PageShell from "@/components/ui/PageShell";
 
@@ -64,9 +64,7 @@ export default function ForumPostPage() {
   const [commentError, setCommentError] = useState("");
 
   const loadPost = useCallback(async () => {
-    const res = session?.accèssToken
-      ? await apiFetch(`/forum/${postId}`, { token: session.accèssToken })
-      : await fetch(`${API_URL}/forum/${postId}`);
+    const res = await apiFetch(`/forum/${postId}`);
     if (!res.ok) throw new Error("Discussion introuvable");
     const data = await res.json();
     setPost({
@@ -81,10 +79,10 @@ export default function ForumPostPage() {
       likedByMe: data.liked_by_me ?? false,
       createdAt: data.created_at,
     });
-  }, [postId, session?.accèssToken]);
+  }, [postId]);
 
   const loadComments = useCallback(async () => {
-    const res = await fetch(`${API_URL}/forum/${postId}/comments`);
+    const res = await apiFetch(`/forum/${postId}/comments`);
     if (!res.ok) throw new Error("Impossible de charger les commentaires");
     const data = (await res.json()) as Array<{
       id: string;
@@ -118,14 +116,13 @@ export default function ForumPostPage() {
   }, [loadPost, loadComments]);
 
   const toggleLike = async () => {
-    if (!session?.accèssToken) {
+    if (!session?.user) {
       router.push(`/connexion?callbackUrl=/forum/${postId}`);
       return;
     }
     try {
       const res = await apiFetch(`/forum/${postId}/like`, {
         method: "POST",
-        token: session.accèssToken,
       });
       if (!res.ok) return;
       const data = (await res.json()) as { liked: boolean; likes: number };
@@ -137,7 +134,7 @@ export default function ForumPostPage() {
 
   const submitComment = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!session?.accèssToken) {
+    if (!session?.user) {
       router.push(`/connexion?callbackUrl=/forum/${postId}`);
       return;
     }
@@ -149,7 +146,6 @@ export default function ForumPostPage() {
     try {
       const res = await apiFetch(`/forum/${postId}/comments`, {
         method: "POST",
-        token: session.accèssToken,
         body: JSON.stringify({ content: text }),
       });
       if (!res.ok) {

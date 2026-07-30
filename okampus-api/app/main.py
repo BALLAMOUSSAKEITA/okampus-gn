@@ -1,13 +1,11 @@
 from contextlib import asynccontextmanager
 import os
-from pathlib import Path
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
 from sqlalchemy import text
 
 from app.database import engine, Base
+from app.security_headers import SecurityHeadersMiddleware
 from app.routers import admin, assistant, auth, calendar, cv, entrepreneur, forum, mentor_messages, mentors, parcours, resources, scholarships, stages, stats, success_stories, users
 
 # Importer tous les modèles pour que Base.metadata les connaisse
@@ -40,7 +38,16 @@ async def lifespan(app: FastAPI):
     yield
 
 
-app = FastAPI(title="BacheliO API", version="1.0.0", lifespan=lifespan)
+_is_dev = os.getenv("ENVIRONMENT", "development").lower() in ("development", "dev", "local")
+
+app = FastAPI(
+    title="BacheliO API",
+    version="1.0.0",
+    lifespan=lifespan,
+    docs_url="/docs" if _is_dev else None,
+    redoc_url="/redoc" if _is_dev else None,
+    openapi_url="/openapi.json" if _is_dev else None,
+)
 
 # CORS — autorise le frontend Next.js (tous ports localhost en dev)
 _cors_origins = [
@@ -52,6 +59,7 @@ _extra_origins = os.getenv("CORS_ORIGINS", "")
 if _extra_origins:
     _cors_origins.extend(origin.strip() for origin in _extra_origins.split(",") if origin.strip())
 
+app.add_middleware(SecurityHeadersMiddleware)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=_cors_origins,
@@ -78,9 +86,7 @@ app.include_router(mentors.router)
 app.include_router(mentor_messages.router)
 app.include_router(stats.router)
 
-_uploads_dir = Path(__file__).resolve().parent.parent / "uploads"
-_uploads_dir.mkdir(parents=True, exist_ok=True)
-app.mount("/uploads", StaticFiles(directory=str(_uploads_dir)), name="uploads")
+# Les fichiers uploadés ne sont plus servis publiquement — voir GET /resources/{id}/download
 
 
 @app.get("/health")

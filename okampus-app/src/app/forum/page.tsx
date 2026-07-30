@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { API_URL, apiFetch } from "@/lib/api";
+import { apiFetch } from "@/lib/api";
 import EmptyState from "@/components/ui/EmptyState";
 import PageShell from "@/components/ui/PageShell";
 import PageHeader from "@/components/ui/PageHeader";
@@ -65,9 +65,7 @@ export default function ForumPage() {
     setLoading(true);
     setFetchError("");
     try {
-      const res = session?.accèssToken
-        ? await apiFetch("/forum", { token: session.accèssToken })
-        : await fetch(`${API_URL}/forum`);
+      const res = await apiFetch("/forum");
       if (!res.ok) throw new Error("Impossible de charger le forum");
       const data = (await res.json()) as Array<{
         id: string;
@@ -101,7 +99,7 @@ export default function ForumPage() {
     } finally {
       setLoading(false);
     }
-  }, [session?.accèssToken]);
+  }, []);
 
   useEffect(() => {
     loadPosts();
@@ -130,13 +128,12 @@ export default function ForumPage() {
 
   const handleCreatePost = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!session?.accèssToken || !newTitle.trim()) return;
+    if (!session?.user?.id || !newTitle.trim()) return;
     setCreating(true);
     setCreateError("");
     try {
       const res = await apiFetch("/forum", {
         method: "POST",
-        token: session.accèssToken,
         body: JSON.stringify({
           title: newTitle.trim(),
           content: newContent.trim(),
@@ -162,14 +159,13 @@ export default function ForumPage() {
   const toggleLike = async (postId: string, e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (!session?.accèssToken) {
+    if (!session?.user) {
       router.push("/connexion?callbackUrl=/forum");
       return;
     }
     try {
       const res = await apiFetch(`/forum/${postId}/like`, {
         method: "POST",
-        token: session.accèssToken,
       });
       if (!res.ok) return;
       const data = (await res.json()) as { liked: boolean; likes: number };

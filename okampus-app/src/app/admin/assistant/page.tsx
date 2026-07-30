@@ -38,7 +38,7 @@ function LimitBadge({ atLimit, label }: { atLimit: boolean; label: string }) {
 
 export default function AdminAssistantUsagePage() {
   const { data: session } = useSession();
-  const token = session?.accèssToken;
+  const isAuthenticated = !!session?.user;
   const [data, setData] = useState<AdminAssistantUsage | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -46,17 +46,17 @@ export default function AdminAssistantUsagePage() {
   const [filter, setFilter] = useState<"all" | "at_limit" | "active">("all");
 
   const load = useCallback(async () => {
-    if (!token) return;
+    if (!isAuthenticated) return;
     setLoading(true);
     setError("");
     try {
-      setData(await adminFetch<AdminAssistantUsage>("/assistant-usage", token));
+      setData(await adminFetch<AdminAssistantUsage>("/assistant-usage"));
     } catch (e) {
       setError(e instanceof Error ? e.message : "Erreur");
     } finally {
       setLoading(false);
     }
-  }, [token]);
+  }, [isAuthenticated]);
 
   useEffect(() => {
     load();

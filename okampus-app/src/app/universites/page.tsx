@@ -5,6 +5,7 @@ import Link from "next/link";
 import PageShell from "@/components/ui/PageShell";
 import PageHeader from "@/components/ui/PageHeader";
 import EmptyState from "@/components/ui/EmptyState";
+import SafeExternalLink from "@/components/SafeExternalLink";
 import {
   filterInstitutions,
   getInstitutionCities,
@@ -70,14 +71,9 @@ function InstitutionCard({ inst }: { inst: Institution }) {
 
         <div className="flex flex-wrap gap-2 shrink-0">
           {inst.website && (
-            <a
-              href={inst.website}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-secondary text-sm !py-2 !px-3"
-            >
+            <SafeExternalLink href={inst.website} className="btn-secondary text-sm !py-2 !px-3">
               Site web
-            </a>
+            </SafeExternalLink>
           )}
           <Link
             href={`/assistant?q=${encodeURIComponent(`Ou étudier ${inst.filieres[0] || inst.shortName} à ${inst.city} ?`)}`}

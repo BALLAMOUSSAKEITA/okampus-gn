@@ -5,7 +5,7 @@ class Settings(BaseSettings):
     database_url: str
     secret_key: str
     algorithm: str = "HS256"
-    accèss_token_expire_minutes: int = 60 * 24 * 90  # 90 jours — session jusqu'a deconnexion
+    accèss_token_expire_minutes: int = 60  # 1 heure — renouvellement via reconnexion NextAuth
     vapid_public_key: str = ""
     vapid_private_key: str = ""
     vapid_subject: str = "mailto:support@bachelio.gn"

@@ -4,6 +4,8 @@ from typing import Any, Optional
 from pydantic import BaseModel, EmailStr, field_validator, model_validator
 
 from app.phone import looks_like_email, normalize_phone
+from app.password_policy import validate_password_strength
+from app.url_validation import validate_optional_external_url
 
 
 BAC_OPTIONS = (
@@ -26,12 +28,21 @@ class RegisterRequest(BaseModel):
     university: Optional[str] = None
     field: Optional[str] = None
 
-    @field_validator("name", "password")
+    @field_validator("name")
     @classmethod
-    def not_empty(cls, value: str) -> str:
+    def name_not_empty(cls, value: str) -> str:
         value = value.strip()
         if not value:
             raise ValueError("Champ requis")
+        return value
+
+    @field_validator("password")
+    @classmethod
+    def password_strength(cls, value: str) -> str:
+        value = value.strip()
+        if not value:
+            raise ValueError("Champ requis")
+        validate_password_strength(value)
         return value
 
     @model_validator(mode="after")
@@ -211,6 +222,11 @@ class EntrepreneurProjectCreate(BaseModel):
     contact_info: Optional[str] = None
     author_id: str
 
+    @field_validator("website")
+    @classmethod
+    def validate_website(cls, value: Optional[str]) -> Optional[str]:
+        return validate_optional_external_url(value)
+
 
 class EntrepreneurProjectOut(BaseModel):
     id: str
@@ -316,6 +332,11 @@ class ScholarshipCreate(BaseModel):
     domain: Optional[str] = None
     location: Optional[str] = None
 
+    @field_validator("apply_link")
+    @classmethod
+    def validate_apply_link(cls, value: Optional[str]) -> Optional[str]:
+        return validate_optional_external_url(value)
+
 
 class ScholarshipOut(BaseModel):
     id: str
@@ -351,6 +372,11 @@ class StageOfferCreate(BaseModel):
     contact_email: Optional[str] = None
     contact_phone: Optional[str] = None
     external_link: Optional[str] = None
+
+    @field_validator("external_link")
+    @classmethod
+    def validate_external_link(cls, value: Optional[str]) -> Optional[str]:
+        return validate_optional_external_url(value)
 
 
 class StageOfferOut(BaseModel):
@@ -541,6 +567,11 @@ class StageOfferUpdate(BaseModel):
     external_link: Optional[str] = None
     is_active: Optional[bool] = None
 
+    @field_validator("external_link")
+    @classmethod
+    def validate_external_link(cls, value: Optional[str]) -> Optional[str]:
+        return validate_optional_external_url(value)
+
 
 class SuccessStoryUpdate(BaseModel):
     title: Optional[str] = None
@@ -568,6 +599,11 @@ class ScholarshipUpdate(BaseModel):
     domain: Optional[str] = None
     location: Optional[str] = None
     is_active: Optional[bool] = None
+
+    @field_validator("apply_link")
+    @classmethod
+    def validate_apply_link(cls, value: Optional[str]) -> Optional[str]:
+        return validate_optional_external_url(value)
 
 
 class ResourceUpdate(BaseModel):
@@ -610,6 +646,11 @@ class EntrepreneurProjectUpdate(BaseModel):
     contact_info: Optional[str] = None
     is_active: Optional[bool] = None
 
+    @field_validator("website")
+    @classmethod
+    def validate_website(cls, value: Optional[str]) -> Optional[str]:
+        return validate_optional_external_url(value)
+
 
 class ForumPostCreate(BaseModel):
     title: str
@@ -650,6 +691,22 @@ class ForumPostCreatePublic(BaseModel):
     content: str = ""
     category: str = "Autre"
 
+    @field_validator("title")
+    @classmethod
+    def title_valid(cls, value: str) -> str:
+        value = value.strip()
+        if not value or len(value) > 200:
+            raise ValueError("Titre invalide (1-200 caractères)")
+        return value
+
+    @field_validator("content")
+    @classmethod
+    def content_valid(cls, value: str) -> str:
+        value = (value or "").strip()
+        if len(value) > 10000:
+            raise ValueError("Contenu trop long (10000 caractères max)")
+        return value
+
 
 class ForumCommentOut(BaseModel):
     id: str
@@ -665,6 +722,16 @@ class ForumCommentOut(BaseModel):
 
 class ForumCommentCreate(BaseModel):
     content: str
+
+    @field_validator("content")
+    @classmethod
+    def content_valid(cls, value: str) -> str:
+        value = value.strip()
+        if not value:
+            raise ValueError("Commentaire requis")
+        if len(value) > 2000:
+            raise ValueError("Commentaire trop long (2000 caractères max)")
+        return value
 
 
 class ForumLikeOut(BaseModel):

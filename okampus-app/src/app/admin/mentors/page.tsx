@@ -7,31 +7,31 @@ import { adminFetch, type AdminMentor } from "@/lib/admin-api";
 
 export default function AdminMentorsPage() {
   const { data: session } = useSession();
-  const token = session?.accèssToken;
+  const isAuthenticated = !!session?.user;
   const [mentors, setMentors] = useState<AdminMentor[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   const load = useCallback(async () => {
-    if (!token) return;
+    if (!isAuthenticated) return;
     setLoading(true);
     try {
-      setMentors(await adminFetch<AdminMentor[]>("/mentors", token));
+      setMentors(await adminFetch<AdminMentor[]>("/mentors"));
     } catch (e) {
       setError(e instanceof Error ? e.message : "Erreur");
     } finally {
       setLoading(false);
     }
-  }, [token]);
+  }, [isAuthenticated]);
 
   useEffect(() => {
     load();
   }, [load]);
 
   const remove = async (userId: string, name: string) => {
-    if (!token || !confirm(`Retirer le statut mentor de ${name} ?`)) return;
+    if (!isAuthenticated || !confirm(`Retirer le statut mentor de ${name} ?`)) return;
     try {
-      await adminFetch(`/mentors/${userId}`, token, { method: "DELETE" });
+      await adminFetch(`/mentors/${userId}`, { method: "DELETE" });
       await load();
     } catch (e) {
       setError(e instanceof Error ? e.message : "Erreur");

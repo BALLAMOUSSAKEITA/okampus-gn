@@ -6,7 +6,7 @@ import {
   consumeAssistantQuota,
   type AssistantMode,
 } from "@/lib/assistant-quota";
-import { generateChatFallback, mapAssistantErrorMessage } from "@/lib/chat-fallback";
+import { generateChatFallback } from "@/lib/chat-fallback";
 import { createDeepSeekCompletion, getDeepSeekClient, getDeepSeekModel } from "@/lib/deepseek";
 import {
   generateOrientationAdvice,
@@ -14,6 +14,7 @@ import {
 } from "@/lib/orientation-fallback";
 import { buildProfileContext, SYSTEM_PROMPT } from "@/lib/assistant-prompt";
 import { formatAssistantReply } from "@/lib/assistant-format";
+import { checkAssistantRateLimit } from "@/lib/rate-limit";
 import { buildUniversitiesContextForAI } from "@/lib/universities";
 
 const profileSchema = z.object({
@@ -27,7 +28,7 @@ const profileSchema = z.object({
 
 const messageSchema = z.object({
   role: z.enum(["user", "assistant"]),
-  content: z.string().min(1),
+  content: z.string().min(1).max(4000),
 });
 
 const requestSchema = z.discriminatedUnion("mode", [
@@ -38,7 +39,7 @@ const requestSchema = z.discriminatedUnion("mode", [
   z.object({
     mode: z.literal("chat"),
     profile: profileSchema,
-    messages: z.array(messageSchema).min(1),
+    messages: z.array(messageSchema).min(1).max(50),
   }),
 ]);
 
@@ -51,6 +52,17 @@ function getLastUserMessage(messages: Array<{ role: string; content: string }>):
 
 export async function POST(request: Request) {
   try {
+    const clientIp =
+      request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+      request.headers.get("x-real-ip") ||
+      "unknown";
+    if (!checkAssistantRateLimit(clientIp)) {
+      return NextResponse.json(
+        { error: "Trop de requêtes. Réessaie dans quelques minutes." },
+        { status: 429 }
+      );
+    }
+
     const session = await auth();
     if (!session?.user) {
       return NextResponse.json(
@@ -72,17 +84,10 @@ export async function POST(request: Request) {
     }
 
     const mode: AssistantMode = parsed.data.mode;
-    const accèssToken = session.accèssToken;
-    if (!accèssToken) {
-      return NextResponse.json(
-        { error: "Session expirée — reconnecte-toi pour utiliser l'assistant IA" },
-        { status: 401 }
-      );
-    }
 
     let quota;
     try {
-      quota = await consumeAssistantQuota(accèssToken, mode);
+      quota = await consumeAssistantQuota(mode);
     } catch (quotaError) {
       console.error("[assistant] quota check failed", quotaError);
       return NextResponse.json(
@@ -121,7 +126,6 @@ export async function POST(request: Request) {
       return NextResponse.json({
         content: fallback,
         fallback: true,
-        error: "DEEPSEEK_API_KEY manquant sur le serveur",
       });
     }
 
@@ -187,20 +191,17 @@ Analyse ce profil. Respecte le format et la limite de 100 mots.`,
     } catch (error) {
       const message = error instanceof Error ? error.message : "Erreur DeepSeek";
       console.error("[assistant]", message, error);
-
-      const userError = mapAssistantErrorMessage(message);
       const isLowBalance =
         message.includes("Insufficient Balance") || message.includes("402");
 
       if (parsed.data.mode === "orientation") {
         const intro = isLowBalance
-          ? "Credits DeepSeek épuisés — analyse de secours :\n\n"
+          ? "Analyse de secours :\n\n"
           : "";
 
         return NextResponse.json({
           content: `${intro}${generateOrientationAdvice(profile)}`,
           fallback: true,
-          error: userError,
         });
       }
 
@@ -209,7 +210,6 @@ Analyse ce profil. Respecte le format et la limite de 100 mots.`,
       return NextResponse.json({
         content: generateChatFallback(lastUser),
         fallback: true,
-        error: userError,
       });
     }
   } catch (error) {

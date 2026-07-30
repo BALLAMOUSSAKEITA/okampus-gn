@@ -5,7 +5,7 @@ from sqlalchemy.orm import selectinload
 
 from app.auth import get_current_user
 from app.database import get_db
-from app.models import AdvisorProfile, CvProfile, User
+from app.url_validation import validate_optional_external_url
 from app.schemas import AdvisorProfileOut, CvProfileOut, UpdateUserRequest, UserOut
 
 router = APIRouter(prefix="/users", tags=["users"])
@@ -137,6 +137,8 @@ async def update_user(
                 adv_data["available_slots"] = []
             if "meet_link" in adv_data and adv_data["meet_link"] == "":
                 adv_data["meet_link"] = None
+            if adv_data.get("meet_link"):
+                adv_data["meet_link"] = validate_optional_external_url(str(adv_data["meet_link"]))
 
             if user.advisor_profile:
                 for k, v in adv_data.items():

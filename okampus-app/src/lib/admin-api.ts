@@ -2,10 +2,9 @@ import { apiFetch } from "@/lib/api";
 
 export async function adminFetch<T>(
   path: string,
-  token: string | undefined,
   options: RequestInit = {}
 ): Promise<T> {
-  const res = await apiFetch(`/admin${path}`, { ...options, token });
+  const res = await apiFetch(`/admin${path}`, options);
   if (!res.ok) {
     const data = await res.json().catch(() => ({}));
     const detail = data.detail;

@@ -1,8 +1,9 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import or_, select
 
-from app.auth import create_accèss_token, hash_password, verify_password
+from app.auth import DUMMY_BCRYPT_HASH, create_accèss_token, hash_password, verify_password
+from app.rate_limit import check_rate_limit
 from app.database import get_db
 from app.models import User
 from app.phone import looks_like_email
@@ -27,7 +28,12 @@ def _user_out(user: User) -> UserOut:
 
 
 @router.post("/register", response_model=UserOut, status_code=status.HTTP_201_CREATED)
-async def register(body: RegisterRequest, db: AsyncSession = Depends(get_db)):
+async def register(
+    body: RegisterRequest,
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+):
+    check_rate_limit(request, "auth_register", max_calls=5, window_seconds=3600)
     if body.role not in ("bachelier", "etudiant"):
         raise HTTPException(status_code=400, detail="Rôle invalide")
 
@@ -41,9 +47,7 @@ async def register(body: RegisterRequest, db: AsyncSession = Depends(get_db)):
         result = await db.execute(select(User).where(or_(*filters)))
         existing = result.scalar_one_or_none()
         if existing:
-            if body.email and existing.email == body.email:
-                raise HTTPException(status_code=400, detail="Cet email est déjà utilisé")
-            raise HTTPException(status_code=400, detail="Ce numéro est déjà utilisé")
+            raise HTTPException(status_code=400, detail="Identifiant déjà utilisé")
 
     try:
         user = User(
@@ -63,13 +67,14 @@ async def register(body: RegisterRequest, db: AsyncSession = Depends(get_db)):
     except Exception as e:
         await db.rollback()
         print(f"[REGISTER ERROR] {type(e).__name__}: {e}")
-        raise HTTPException(status_code=500, detail=f"Erreur serveur: {type(e).__name__}")
+        raise HTTPException(status_code=500, detail="Erreur serveur lors de l'inscription")
 
     return _user_out(user)
 
 
 @router.post("/login", response_model=TokenResponse)
-async def login(body: LoginRequest, db: AsyncSession = Depends(get_db)):
+async def login(body: LoginRequest, request: Request, db: AsyncSession = Depends(get_db)):
+    check_rate_limit(request, "auth_login", max_calls=10, window_seconds=900)
     identifier = body.identifier or ""
     if looks_like_email(identifier):
         result = await db.execute(select(User).where(User.email == identifier))
@@ -78,7 +83,10 @@ async def login(body: LoginRequest, db: AsyncSession = Depends(get_db)):
 
     user = result.scalar_one_or_none()
 
-    if not user or not verify_password(body.password, user.password):
+    password_hash = user.password if user else DUMMY_BCRYPT_HASH
+    if not verify_password(body.password, password_hash):
+        raise HTTPException(status_code=401, detail="Identifiant ou mot de passe incorrect")
+    if not user:
         raise HTTPException(status_code=401, detail="Identifiant ou mot de passe incorrect")
 
     token = create_accèss_token({"sub": user.id, "role": user.role})

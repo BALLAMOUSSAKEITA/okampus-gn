@@ -1,7 +1,6 @@
 import NextAuth from "next-auth"
 import Credentials from "next-auth/providers/credentials"
-
-const API_URL = process.env.API_URL ?? "http://localhost:8000"
+import { refreshTokenRole, ROLE_REFRESH_MS, SERVER_API_URL } from "@/lib/server-auth"
 
 const PUBLIC_PATHS = ["/", "/inscription", "/connexion", "/confidentialite", "/offline"]
 
@@ -24,13 +23,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         if (!identifier || !password) return null
 
         try {
-          const res = await fetch(`${API_URL}/auth/login`, {
+          const res = await fetch(`${SERVER_API_URL}/auth/login`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              identifier,
-              password,
-            }),
+            body: JSON.stringify({ identifier, password }),
           })
 
           if (!res.ok) return null
@@ -55,7 +51,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       const { pathname } = nextUrl
 
       if (pathname.startsWith("/api/auth")) return true
-      if (pathname.startsWith("/api/")) return true
+      if (pathname.startsWith("/api/backend")) return true
+      if (pathname.startsWith("/api/assistant")) return true
       if (PUBLIC_PATHS.includes(pathname)) return true
 
       if (pathname.startsWith("/admin")) {
@@ -64,20 +61,31 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
       return !!auth?.user
     },
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger }) {
       if (user) {
         token.id = user.id
         token.role = user.role
         token.accèssToken = user.accèssToken
+        token.roleCheckedAt = Date.now()
+        return token
       }
+
+      const checkedAt =
+        typeof token.roleCheckedAt === "number" ? token.roleCheckedAt : 0
+      const shouldRefresh =
+        trigger === "update" || Date.now() - checkedAt > ROLE_REFRESH_MS
+
+      if (shouldRefresh && token.accèssToken) {
+        return (await refreshTokenRole(token as Record<string, unknown>)) as typeof token
+      }
+
       return token
     },
     async session({ session, token }) {
       if (session.user) {
-        session.user.id = token.id
-        session.user.role = token.role
+        session.user.id = token.id as string
+        session.user.role = token.role as string
       }
-      session.accèssToken = token.accèssToken
       return session
     },
   },
@@ -86,10 +94,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   },
   session: {
     strategy: "jwt",
-    maxAge: 90 * 24 * 60 * 60,
-    updateAge: 24 * 60 * 60,
+    maxAge: 60 * 60,
+    updateAge: 15 * 60,
   },
   jwt: {
-    maxAge: 90 * 24 * 60 * 60,
+    maxAge: 60 * 60,
   },
 })

@@ -13,6 +13,9 @@ from app.database import get_db
 
 security = HTTPBearer()
 
+# Hash factice pour uniformiser le temps de réponse au login (anti-énumération)
+DUMMY_BCRYPT_HASH = bcrypt.hashpw(b"__timing_dummy__", bcrypt.gensalt()).decode("utf-8")
+
 
 def hash_password(password: str) -> str:
     pwd = password.encode("utf-8")[:72]

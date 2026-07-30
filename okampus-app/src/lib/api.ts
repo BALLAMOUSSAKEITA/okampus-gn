@@ -1,63 +1,67 @@
 /**
  * Helper pour appeler l'API FastAPI depuis le frontend Next.js.
- * - Côté client : utilise NEXT_PUBLIC_API_URL
- * - Côté serveur (Server Components / API routes) : utilise API_URL
+ * - Côté client : passe par /api/backend (token JWT jamais exposé au navigateur)
+ * - Côté serveur : appelle directement l'API avec le token serveur si besoin
  */
 
-const API_URL =
-  typeof window === "undefined"
-    ? process.env.API_URL ?? process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000"
-    : process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
+const SERVER_API_URL =
+  process.env.API_URL ?? process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
-export { API_URL };
+const isBrowser = typeof window !== "undefined";
 
-export async function apiUpload(
-  path: string,
-  formData: FormData,
-  token?: string
-): Promise<Response> {
-  const headers = new Headers();
-  if (token) {
-    headers.set("Authorization", `Bearer ${token}`);
+function resolveUrl(path: string): string {
+  const normalized = path.startsWith("/") ? path : `/${path}`;
+  if (isBrowser) {
+    return `/api/backend${normalized}`;
   }
-  const url = `${API_URL}${path}`;
+  return `${SERVER_API_URL}${normalized}`;
+}
+
+export const API_URL = isBrowser ? "/api/backend" : SERVER_API_URL;
+
+export async function apiUpload(path: string, formData: FormData): Promise<Response> {
+  const url = resolveUrl(path);
   try {
-    return await fetch(url, { method: "POST", headers, body: formData });
+    return await fetch(url, { method: "POST", body: formData });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Erreur réseau";
-    throw new Error(
-      `Impossible de joindre l'API (${url}). Vérifie que le serveur FastAPI tourne sur le port 8000. ${message}`
-    );
+    throw new Error(`Impossible de joindre l'API (${url}). ${message}`);
   }
 }
 
-export function resolveFileUrl(fileUrl: string): string {
+export function resolveDownloadUrl(resourceId: string): string {
+  return `/api/backend/resources/${resourceId}/download`;
+}
+
+/** @deprecated Utiliser resolveDownloadUrl — conservé pour compatibilité interne */
+export function resolveFileUrl(fileUrl: string, resourceId?: string): string {
+  if (resourceId) return resolveDownloadUrl(resourceId);
   if (!fileUrl) return "";
   if (fileUrl.startsWith("http://") || fileUrl.startsWith("https://")) return fileUrl;
-  return `${API_URL}${fileUrl.startsWith("/") ? fileUrl : `/${fileUrl}`}`;
+  return resolveUrl(fileUrl);
 }
 
 export async function apiFetch(
   path: string,
-  options: RequestInit & { token?: string } = {}
+  options: RequestInit & { serverToken?: string } = {}
 ): Promise<Response> {
-  const { token, ...rest } = options;
+  const { serverToken, ...rest } = options;
   const headers = new Headers(rest.headers ?? {});
 
-  headers.set("Content-Type", "application/json");
-  if (token) {
-    headers.set("Authorization", `Bearer ${token}`);
+  if (!(rest.body instanceof FormData) && !headers.has("Content-Type")) {
+    headers.set("Content-Type", "application/json");
   }
 
-  const url = `${API_URL}${path}`;
+  if (!isBrowser && serverToken) {
+    headers.set("Authorization", `Bearer ${serverToken}`);
+  }
+
+  const url = resolveUrl(path);
 
   try {
     return await fetch(url, { ...rest, headers });
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "Erreur réseau";
-    throw new Error(
-      `Impossible de joindre l'API (${url}). Vérifie que le serveur FastAPI tourne sur le port 8000. ${message}`
-    );
+    const message = error instanceof Error ? error.message : "Erreur réseau";
+    throw new Error(`Impossible de joindre l'API (${url}). ${message}`);
   }
 }

@@ -10,6 +10,8 @@ import { BAC_OPTIONS } from "@/lib/bac-options";
 import { signInWithRedirect } from "@/lib/auth-client";
 import { resolveCallbackUrl } from "@/lib/auth-redirect";
 import { parseContactIdentifier } from "@/lib/contact";
+import { apiFetch } from "@/lib/api";
+import { validatePassword } from "@/lib/password-policy";
 
 const fieldClass = `${inputClass} !py-3 !text-base !rounded-lg !border-[#dddfe2] focus:!border-[#14b887] focus:!ring-[#14b887]/20`;
 const primaryBtn =
@@ -93,8 +95,9 @@ function InscriptionForm() {
       return;
     }
 
-    if (formData.password.length < 6) {
-      setError("Le mot de passe doit contenir au moins 6 caractères");
+    const passwordError = validatePassword(formData.password);
+    if (passwordError) {
+      setError(passwordError);
       return;
     }
 
@@ -106,7 +109,6 @@ function InscriptionForm() {
     setLoading(true);
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
       const payload: Record<string, string> = {
         name: formData.name.trim(),
         password: formData.password,
@@ -126,9 +128,8 @@ function InscriptionForm() {
         payload.field = formData.field.trim();
       }
 
-      const res = await fetch(`${apiUrl}/auth/register`, {
+      const res = await apiFetch("/auth/register", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
@@ -326,7 +327,7 @@ function InscriptionForm() {
 
             <PasswordField
               id="password"
-              label="Mot de passe (6 caractères min.)"
+              label="Mot de passe (8 caractères min., lettre + chiffre)"
               value={formData.password}
               onChange={(value) => update("password", value)}
               autoComplete="new-password"

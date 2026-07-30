@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import SafeExternalLink from "@/components/SafeExternalLink";
 import { API_URL } from "@/lib/api";
 import EmptyState from "@/components/ui/EmptyState";
 import PageShell from "@/components/ui/PageShell";
@@ -407,14 +408,12 @@ export default function StagesPage() {
                     </a>
                   )}
                   {selectedOffer.externalLink && (
-                    <a
+                    <SafeExternalLink
                       href={selectedOffer.externalLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
                       className="flex items-center gap-3 text-[#121117] hover:text-[#4d4c5c] transition-colors p-2.5 rounded-lg hover:bg-[#f4f4f8]"
                     >
                       Postuler en ligne
-                    </a>
+                    </SafeExternalLink>
                   )}
                   {!selectedOffer.contactEmail &&
                     !selectedOffer.contactPhone &&

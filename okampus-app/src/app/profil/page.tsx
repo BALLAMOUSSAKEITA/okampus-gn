@@ -7,7 +7,9 @@ import { signOut } from "next-auth/react";
 import { useAuth } from "@/context/AuthContext";
 import PageShell from "@/components/ui/PageShell";
 import PageHeader from "@/components/ui/PageHeader";
+import SafeExternalLink from "@/components/SafeExternalLink";
 import UserAvatar from "@/components/UserAvatar";
+import { sanitizeExternalHref } from "@/lib/safe-url";
 import MentorInbox from "@/components/MentorInbox";
 import PushNotificationSetup from "@/components/PushNotificationSetup";
 
@@ -69,6 +71,14 @@ export default function ProfilPage() {
     if (!advisorForm.field.trim() || !advisorForm.university.trim() || !advisorForm.year.trim()) {
       setAdvisorError("Filière, université et année sont requises");
       return;
+    }
+
+    if (advisorForm.meetLink.trim()) {
+      const safeMeet = sanitizeExternalHref(advisorForm.meetLink.trim());
+      if (!safeMeet) {
+        setAdvisorError("Lien Meet invalide — utilise une URL https://");
+        return;
+      }
     }
 
     const availableSlots = advisorForm.availableSlotsText
@@ -193,14 +203,12 @@ export default function ProfilPage() {
                   {user.advisorProfile.meetLink && (
                     <p className="text-sm text-[#4d4c5c] mt-1">
                       Meet :{" "}
-                      <a
+                      <SafeExternalLink
                         href={user.advisorProfile.meetLink}
-                        target="_blank"
-                        rel="noreferrer"
                         className="underline hover:text-[#121117]"
                       >
                         {user.advisorProfile.meetLink}
-                      </a>
+                      </SafeExternalLink>
                     </p>
                   )}
                   <button

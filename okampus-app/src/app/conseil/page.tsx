@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import SafeExternalLink from "@/components/SafeExternalLink";
 import { API_URL, apiFetch } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import EmptyState from "@/components/ui/EmptyState";
@@ -113,7 +114,7 @@ export default function ConseilPage() {
   };
 
   const sendMessage = async () => {
-    if (!selectedAdvisor || !session?.accèssToken) return;
+    if (!selectedAdvisor || !session?.user) return;
     const content = messageText.trim();
     if (!content) {
       setMessageError("Écris un message");
@@ -125,7 +126,6 @@ export default function ConseilPage() {
     try {
       const res = await apiFetch("/mentor-messages", {
         method: "POST",
-        token: session.accèssToken,
         body: JSON.stringify({
           advisor_id: selectedAdvisor.id,
           content,
@@ -197,14 +197,12 @@ export default function ConseilPage() {
       {selectedAdvisor.meetLink && (
         <p className="mt-4 text-sm text-[#4d4c5c]">
           Lien Meet :{" "}
-          <a
+          <SafeExternalLink
             href={selectedAdvisor.meetLink}
-            target="_blank"
-            rel="noopener noreferrer"
             className="text-[#121117] underline"
           >
             {selectedAdvisor.meetLink}
-          </a>
+          </SafeExternalLink>
         </p>
       )}
 
@@ -217,14 +215,9 @@ export default function ConseilPage() {
               <>
                 {" "}
                 •{" "}
-                <a
-                  href={selectedAdvisor.meetLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline"
-                >
+                <SafeExternalLink href={selectedAdvisor.meetLink} className="underline">
                   Rejoindre l&apos;appel
-                </a>
+                </SafeExternalLink>
               </>
             )}
           </p>

@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -8,6 +8,7 @@ from app.auth import get_current_user
 from app.config import settings
 from app.database import get_db
 from app.models import AssistantUsage, User
+from app.rate_limit import check_rate_limit
 from app.schemas import AssistantConsumeOut, AssistantModeRequest, AssistantQuotaOut
 
 router = APIRouter(prefix="/assistant", tags=["assistant"])
@@ -40,11 +41,13 @@ async def _get_or_create_usage(
     db: AsyncSession, user_id: str, mode: str, period_key: str
 ) -> AssistantUsage:
     result = await db.execute(
-        select(AssistantUsage).where(
+        select(AssistantUsage)
+        .where(
             AssistantUsage.user_id == user_id,
             AssistantUsage.mode == mode,
             AssistantUsage.period_key == period_key,
         )
+        .with_for_update()
     )
     usage = result.scalar_one_or_none()
     if usage is None:
@@ -95,9 +98,11 @@ async def get_quota(
 @router.post("/consume", response_model=AssistantConsumeOut)
 async def consume_quota(
     body: AssistantModeRequest,
+    request: Request,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
+    check_rate_limit(request, "assistant_consume", max_calls=30, window_seconds=3600)
     mode = body.mode
     period_key = _period_key(mode)
     usage = await _get_or_create_usage(db, current_user.id, mode, period_key)

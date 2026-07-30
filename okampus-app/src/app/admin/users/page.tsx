@@ -7,31 +7,31 @@ import { adminFetch, selectClass, type AdminUser } from "@/lib/admin-api";
 
 export default function AdminUsersPage() {
   const { data: session } = useSession();
-  const token = session?.accèssToken;
+  const isAuthenticated = !!session?.user;
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   const load = useCallback(async () => {
-    if (!token) return;
+    if (!isAuthenticated) return;
     setLoading(true);
     try {
-      setUsers(await adminFetch<AdminUser[]>("/users", token));
+      setUsers(await adminFetch<AdminUser[]>("/users"));
     } catch (e) {
       setError(e instanceof Error ? e.message : "Erreur");
     } finally {
       setLoading(false);
     }
-  }, [token]);
+  }, [isAuthenticated]);
 
   useEffect(() => {
     load();
   }, [load]);
 
   const updateRole = async (userId: string, role: string) => {
-    if (!token) return;
+    if (!isAuthenticated) return;
     try {
-      await adminFetch(`/users/${userId}`, token, {
+      await adminFetch(`/users/${userId}`, {
         method: "PATCH",
         body: JSON.stringify({ role }),
       });
@@ -42,9 +42,9 @@ export default function AdminUsersPage() {
   };
 
   const deleteUser = async (userId: string, name: string) => {
-    if (!token || !confirm(`Supprimer ${name} ?`)) return;
+    if (!isAuthenticated || !confirm(`Supprimer ${name} ?`)) return;
     try {
-      await adminFetch(`/users/${userId}`, token, { method: "DELETE" });
+      await adminFetch(`/users/${userId}`, { method: "DELETE" });
       await load();
     } catch (e) {
       setError(e instanceof Error ? e.message : "Erreur");

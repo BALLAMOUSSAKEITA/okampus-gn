@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
-import { API_URL } from "@/lib/api";
+import { apiFetch } from "@/lib/api";
 import EmptyState from "@/components/ui/EmptyState";
 import PageShell from "@/components/ui/PageShell";
 import PageHeader from "@/components/ui/PageHeader";
@@ -48,7 +48,7 @@ export default function ParcoursPage() {
     const load = async () => {
       setLoadingParcours(true);
       try {
-        const res = await fetch(`${API_URL}/parcours/${user.id}`);
+        const res = await apiFetch(`/parcours/${user.id}`);
         if (res.status === 404) {
           setUniversity(user.university ?? "Non renseignée");
           setFilière(user.field ?? "Non renseignée");

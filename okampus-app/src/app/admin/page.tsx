@@ -24,11 +24,11 @@ export default function AdminDashboardPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (!session?.accèssToken) return;
-    adminFetch<AdminStats>("/stats", session.accèssToken)
+    if (!session?.user) return;
+    adminFetch<AdminStats>("/stats")
       .then(setStats)
       .catch((e) => setError(e instanceof Error ? e.message : "Erreur"));
-  }, [session?.accèssToken]);
+  }, [session?.user]);
 
   return (
     <div>

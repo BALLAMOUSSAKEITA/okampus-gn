@@ -135,9 +135,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       try {
-        const res = await apiFetch(`/users/${session.user.id}`, {
-          token: session.accèssToken,
-        });
+        const res = await apiFetch(`/users/${session.user.id}`);
         if (res.ok) {
           const data = await res.json();
           setUser(mapUser(data));
@@ -191,7 +189,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const res = await apiFetch(`/users/${user.id}`, {
         method: "PATCH",
-        token: session?.accèssToken,
         body: JSON.stringify(payload),
       });
 

@@ -3,6 +3,7 @@ import OpenAI from "openai";
 const VALID_MODELS = new Set(["deepseek-chat", "deepseek-reasoner"]);
 
 function shouldSkipSslVerify() {
+  if (process.env.NODE_ENV === "production") return false;
   return (
     process.env.DEEPSEEK_INSECURE_SSL === "true" ||
     (process.env.NODE_ENV === "development" && process.platform === "win32")
@@ -31,7 +32,8 @@ export function getDeepSeekClient(forceInsecureSsl = false) {
     return null;
   }
 
-  const useInsecure = forceInsecureSsl || shouldSkipSslVerify();
+  const allowInsecure = process.env.NODE_ENV !== "production";
+  const useInsecure = allowInsecure && (forceInsecureSsl || shouldSkipSslVerify());
 
   return new OpenAI({
     apiKey,
@@ -61,14 +63,18 @@ export async function createDeepSeekCompletion(
 ) {
   const client = getDeepSeekClient();
   if (!client) {
-    throw new Error("DEEPSEEK_API_KEY manquant");
+    throw new Error("DEEPSEEK_UNAVAILABLE");
   }
 
   try {
     return await client.chat.completions.create(params);
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    if (!shouldSkipSslVerify() && isSslOrNetworkError(message)) {
+    if (
+      process.env.NODE_ENV !== "production" &&
+      !shouldSkipSslVerify() &&
+      isSslOrNetworkError(message)
+    ) {
       const insecureClient = getDeepSeekClient(true);
       if (insecureClient) {
         return await insecureClient.chat.completions.create(params);

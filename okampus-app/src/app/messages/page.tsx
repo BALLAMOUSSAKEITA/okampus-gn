@@ -63,12 +63,10 @@ function MessagesContent() {
     (user?.isAdvisor ? "Conversation" : "Mentor");
 
   const loadConversations = useCallback(async () => {
-    if (!session?.accèssToken) return;
+    if (!session?.user) return;
     setLoadingList(true);
     try {
-      const res = await apiFetch("/mentor-messages/conversations", {
-        token: session.accèssToken,
-      });
+      const res = await apiFetch("/mentor-messages/conversations");
       if (!res.ok) throw new Error("Impossible de charger les conversations");
       const data = (await res.json()) as Conversation[];
       setConversations(data);
@@ -77,10 +75,10 @@ function MessagesContent() {
     } finally {
       setLoadingList(false);
     }
-  }, [session?.accèssToken]);
+  }, [session?.user]);
 
   const loadThread = useCallback(async () => {
-    if (!session?.accèssToken || !activeAdvisorId) return;
+    if (!session?.user || !activeAdvisorId) return;
 
     const studentId = user?.isAdvisor ? studentParam : user?.id;
     if (!studentId) return;
@@ -92,9 +90,7 @@ function MessagesContent() {
         advisor_id: activeAdvisorId,
         student_id: studentId,
       });
-      const res = await apiFetch(`/mentor-messages/thread?${params}`, {
-        token: session.accèssToken,
-      });
+      const res = await apiFetch(`/mentor-messages/thread?${params}`);
       if (!res.ok) throw new Error("Impossible de charger la conversation");
       const data = (await res.json()) as ThreadMessage[];
       setMessages(data);
@@ -105,7 +101,7 @@ function MessagesContent() {
     } finally {
       setLoadingThread(false);
     }
-  }, [session?.accèssToken, activeAdvisorId, studentParam, user, loadConversations]);
+  }, [session?.user, activeAdvisorId, studentParam, user, loadConversations]);
 
   useEffect(() => {
     if (isLoaded && !user) {
@@ -114,10 +110,10 @@ function MessagesContent() {
   }, [isLoaded, user, router]);
 
   useEffect(() => {
-    if (session?.accèssToken && user) {
+    if (session?.user && user) {
       void loadConversations();
     }
-  }, [session?.accèssToken, user, loadConversations]);
+  }, [session?.user, user, loadConversations]);
 
   useEffect(() => {
     if (activeAdvisorId && (user?.isAdvisor ? studentParam : user?.id)) {
@@ -142,7 +138,7 @@ function MessagesContent() {
   const sendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     const content = draft.trim();
-    if (!content || !session?.accèssToken || !activeAdvisorId) return;
+    if (!content || !session?.user || !activeAdvisorId) return;
 
     const studentId = user?.isAdvisor ? studentParam : user?.id;
     if (!studentId) return;
@@ -160,7 +156,6 @@ function MessagesContent() {
 
       const res = await apiFetch("/mentor-messages", {
         method: "POST",
-        token: session.accèssToken,
         body: JSON.stringify(payload),
       });
       if (!res.ok) {

@@ -70,8 +70,8 @@ function AssistantChat() {
   }, [messages, isLoading]);
 
   useEffect(() => {
-    if (!session?.accèssToken) return;
-    fetchAssistantQuota(session.accèssToken, "chat")
+    if (!session?.user) return;
+    fetchAssistantQuota("chat")
       .then((quota) => {
         if (quota.unlimited) {
           setRemainingMessages(null);
@@ -84,7 +84,7 @@ function AssistantChat() {
       .catch(() => {
         // Quota indisponible : l'assistant reste utilisable, le serveur bloquera si besoin.
       });
-  }, [session?.accèssToken]);
+  }, [session?.user]);
 
   const callAssistant = async (
     chatMessages: ChatMessage[]

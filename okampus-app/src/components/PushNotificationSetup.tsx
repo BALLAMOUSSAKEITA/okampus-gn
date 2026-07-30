@@ -13,7 +13,7 @@ export default function PushNotificationSetup({ enabled }: PushNotificationSetup
   const [status, setStatus] = useState<"idle" | "prompting" | "done" | "unsupported">("idle");
 
   useEffect(() => {
-    if (!enabled || !session?.accèssToken) return;
+    if (!enabled || !session?.user) return;
     if (typeof window === "undefined") return;
     if (!("Notification" in window) || !("serviceWorker" in navigator)) {
       setStatus("unsupported");
@@ -22,7 +22,7 @@ export default function PushNotificationSetup({ enabled }: PushNotificationSetup
     if (!process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY) return;
 
     if (Notification.permission === "granted") {
-      void subscribeToPushNotifications(session.accèssToken).then((ok) => {
+      void subscribeToPushNotifications().then((ok) => {
         setStatus(ok ? "done" : "idle");
       });
       return;
@@ -31,12 +31,12 @@ export default function PushNotificationSetup({ enabled }: PushNotificationSetup
     if (Notification.permission === "default") {
       setStatus("prompting");
     }
-  }, [enabled, session?.accèssToken]);
+  }, [enabled, session?.user]);
 
   const handleEnable = async () => {
-    if (!session?.accèssToken) return;
+    if (!session?.user) return;
     setStatus("prompting");
-    const ok = await subscribeToPushNotifications(session.accèssToken);
+    const ok = await subscribeToPushNotifications();
     setStatus(ok ? "done" : "idle");
   };
 
