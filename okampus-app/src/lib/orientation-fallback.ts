@@ -52,7 +52,7 @@ export function generateOrientationAdvice(data: OrientationProfile): string {
 
   if (data.projectEtudes) {
     const projet = data.projectEtudes.toLowerCase();
-    if (projet.includes("médecin") || projet.includes("medecin") || projet.includes("sante") || projet.includes("santé")) {
+    if (projet.includes("médecin") || projet.includes("medecin") || projet.includes("santé") || projet.includes("santé")) {
       if (serie === "se" || serie === "sm") {
         recommandations = [
           "Médecine",
@@ -62,7 +62,7 @@ export function generateOrientationAdvice(data: OrientationProfile): string {
         ];
       } else {
         conseils.push(
-          "La médecine est surtout accessible depuis Sciences Expérimentales ou Mathématiques — vérifie les conditions d'accès."
+          "La médecine est surtout accèssible depuis Sciences Expérimentales ou Mathématiques — vérifie les conditions d'accès."
         );
         recommandations = ["Sciences Infirmières", "Santé publique", ...recommandations];
       }

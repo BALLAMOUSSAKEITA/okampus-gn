@@ -10,7 +10,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
     Credentials({
       credentials: {
-        identifier: { label: "Email ou telephone", type: "text" },
+        identifier: { label: "Email ou téléphone", type: "text" },
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
@@ -42,7 +42,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             email: data.user.email || data.user.phone || identifier,
             name: data.user.name,
             role: data.user.role,
-            accessToken: data.access_token,
+            accèssToken: data.accèss_token,
           }
         } catch {
           return null
@@ -68,7 +68,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (user) {
         token.id = user.id
         token.role = user.role
-        token.accessToken = user.accessToken
+        token.accèssToken = user.accèssToken
       }
       return token
     },
@@ -77,7 +77,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         session.user.id = token.id
         session.user.role = token.role
       }
-      session.accessToken = token.accessToken
+      session.accèssToken = token.accèssToken
       return session
     },
   },

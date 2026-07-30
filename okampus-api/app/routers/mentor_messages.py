@@ -54,7 +54,7 @@ async def send_mentor_message(
         if body.advisor_id != current_user.id:
             raise HTTPException(status_code=400, detail="Identifiant conseiller invalide")
         if not body.student_id:
-            raise HTTPException(status_code=400, detail="Identifiant etudiant requis pour repondre")
+            raise HTTPException(status_code=400, detail="Identifiant étudiant requis pour répondre")
         student_id = body.student_id
         advisor_id = current_user.id
         notify_user_id = student_id
@@ -69,10 +69,10 @@ async def send_mentor_message(
             ).limit(1)
         )
         if not prior.scalar_one_or_none():
-            raise HTTPException(status_code=403, detail="Aucune conversation avec cet etudiant")
+            raise HTTPException(status_code=403, detail="Aucune conversation avec cet étudiant")
     else:
         if body.advisor_id == current_user.id:
-            raise HTTPException(status_code=400, detail="Tu ne peux pas t'envoyer un message")
+            raise HTTPException(status_code=400, detail="Tu ne peux pas t'envoyér un message")
         advisor_result = await db.execute(
             select(AdvisorProfile).where(AdvisorProfile.user_id == body.advisor_id)
         )
@@ -192,9 +192,9 @@ async def get_thread(
 
     if is_advisor:
         if current_user.id != advisor_id:
-            raise HTTPException(status_code=403, detail="Acces refuse")
+            raise HTTPException(status_code=403, detail="Accès refusé")
         if not student_id:
-            raise HTTPException(status_code=400, detail="Identifiant etudiant requis")
+            raise HTTPException(status_code=400, detail="Identifiant étudiant requis")
     else:
         student_id = current_user.id
         if current_user.id == advisor_id:

@@ -9,12 +9,12 @@ export default function AdminEntrepreneuriatPage() {
   return (
     <AdminContentManager
       title="Entrepreneuriat"
-      description="Projets et initiatives etudiantes"
+      description="Projets et initiatives étudiantes"
       endpoint="/entrepreneur"
       pillVariant="blue"
       fields={[
         { key: "title", label: "Titre", required: true },
-        { key: "category", label: "Categorie", required: true },
+        { key: "category", label: "Catégorie", required: true },
         { key: "status", label: "Statut", required: true, options: ["Ideation", "En cours", "Lance", "Recherche cofondateur"] },
         { key: "team_size", label: "Taille equipe", type: "number" },
         { key: "seeking", label: "Recherche" },
@@ -25,7 +25,7 @@ export default function AdminEntrepreneuriatPage() {
       ]}
       columns={[
         { key: "title", label: "Titre" },
-        { key: "category", label: "Categorie" },
+        { key: "category", label: "Catégorie" },
         { key: "status", label: "Statut" },
         { key: "team_size", label: "Equipe" },
       ]}

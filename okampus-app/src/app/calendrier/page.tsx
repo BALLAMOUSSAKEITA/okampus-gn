@@ -5,7 +5,7 @@ export default function CalendrierPage() {
     <ComingSoon
       eyebrow="Calendrier"
       title="Calendrier universitaire"
-      description="Tous les evenements importants : rentrees, examens, jours feries"
+      description="Tous les evenements importants : rentrées, examens, jours fériés"
     />
   );
 }

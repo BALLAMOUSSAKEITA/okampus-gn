@@ -64,7 +64,7 @@ async def _get_or_404(db: AsyncSession, model: Type, item_id: str):
     result = await db.execute(select(model).where(model.id == item_id))
     item = result.scalar_one_or_none()
     if not item:
-        raise HTTPException(status_code=404, detail="Element introuvable")
+        raise HTTPException(status_code=404, detail="Élément introuvable")
     return item
 
 
@@ -245,7 +245,7 @@ async def update_user_admin(
     db: AsyncSession = Depends(get_db),
 ):
     if body.role and body.role not in ("bachelier", "etudiant", "admin"):
-        raise HTTPException(status_code=400, detail="Role invalide")
+        raise HTTPException(status_code=400, detail="Rôle invalide")
 
     result = await db.execute(
         select(User)

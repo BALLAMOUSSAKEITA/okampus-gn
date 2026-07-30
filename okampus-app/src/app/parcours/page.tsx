@@ -32,8 +32,8 @@ export default function ParcoursPage() {
   const [objectifs, setObjectifs] = useState<Objectif[]>([]);
   const [notes, setNotes] = useState<Note[]>([]);
   const [university, setUniversity] = useState("");
-  const [filiere, setFiliere] = useState("");
-  const [annee, setAnnee] = useState("");
+  const [filière, setFilière] = useState("");
+  const [année, setAnnée] = useState("");
   const [loadingParcours, setLoadingParcours] = useState(true);
   const [hasParcours, setHasParcours] = useState(false);
 
@@ -50,9 +50,9 @@ export default function ParcoursPage() {
       try {
         const res = await fetch(`${API_URL}/parcours/${user.id}`);
         if (res.status === 404) {
-          setUniversity(user.university ?? "Non renseignee");
-          setFiliere(user.field ?? "Non renseignee");
-          setAnnee("Non renseignee");
+          setUniversity(user.university ?? "Non renseignée");
+          setFilière(user.field ?? "Non renseignée");
+          setAnnée("Non renseignée");
           setObjectifs([]);
           setNotes([]);
           setHasParcours(false);
@@ -60,16 +60,16 @@ export default function ParcoursPage() {
         }
         if (!res.ok) throw new Error("Impossible de charger le parcours");
         const data = await res.json();
-        setUniversity(data.university ?? user.university ?? "Non renseignee");
-        setFiliere(data.filiere ?? user.field ?? "Non renseignee");
-        setAnnee(data.annee_en_cours ?? "Non renseignee");
+        setUniversity(data.university ?? user.university ?? "Non renseignée");
+        setFilière(data.filière ?? user.field ?? "Non renseignée");
+        setAnnée(data.année_en_cours ?? "Non renseignée");
         setObjectifs(Array.isArray(data.objectifs) ? data.objectifs : data.objectifs ? Object.values(data.objectifs) : []);
         setNotes(Array.isArray(data.notes) ? data.notes : data.notes ? Object.values(data.notes) : []);
         setHasParcours(true);
       } catch {
-        setUniversity(user.university ?? "Non renseignee");
-        setFiliere(user.field ?? "Non renseignee");
-        setAnnee("Non renseignee");
+        setUniversity(user.university ?? "Non renseignée");
+        setFilière(user.field ?? "Non renseignée");
+        setAnnée("Non renseignée");
         setObjectifs([]);
         setNotes([]);
         setHasParcours(false);
@@ -101,7 +101,7 @@ export default function ParcoursPage() {
   return (
     <PageShell>
       <PageHeader
-        eyebrow="Parcours academique"
+        eyebrow="Parcours académique"
         title="Mon parcours"
         description="Suis ta progression, tes notes et tes objectifs"
       />
@@ -110,7 +110,7 @@ export default function ParcoursPage() {
           <div className="mb-8">
             <EmptyState
               title="Parcours non configure"
-              description="Complete ton profil et ajoute tes notes et objectifs depuis ton espace (bientot disponible)."
+              description="Complète ton profil et ajoute tes notes et objectifs depuis ton espace (bientôt disponible)."
             />
           </div>
         )}
@@ -145,7 +145,7 @@ export default function ParcoursPage() {
                 { label: "Moyenne generale", value: moyenne, bgClass: "bg-[#f4f4f8]", textClass: "text-[#121117]", borderClass: "border-[#dcdce5]" },
                 { label: "Objectifs en cours", value: objectifsEnCours, bgClass: "bg-amber-50", textClass: "text-amber-600", borderClass: "border-amber-100" },
                 { label: "Objectifs termines", value: objectifsTermines, bgClass: "bg-emerald-50", textClass: "text-emerald-600", borderClass: "border-emerald-100" },
-                { label: "Semestre", value: annee, bgClass: "bg-violet-50", textClass: "text-[#4d4c5c]", borderClass: "border-violet-100" },
+                { label: "Semestre", value: année, bgClass: "bg-violet-50", textClass: "text-[#4d4c5c]", borderClass: "border-violet-100" },
               ].map((stat, i) => (
                 <div key={i} className={`card ${stat.bgClass} border ${stat.borderClass} p-5 transition-all`}>
                   <div className={`text-3xl md:text-4xl font-bold ${stat.textClass}`}>{stat.value}</div>
@@ -163,7 +163,7 @@ export default function ParcoursPage() {
                     <svg className="w-4.5 h-4.5 text-[#121117]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
                   </div>
                   <div>
-                    <span className="text-[#6a697c] text-xs">Universite</span>
+                    <span className="text-[#6a697c] text-xs">Université</span>
                     <p className="font-semibold text-[#121117]">{university}</p>
                   </div>
                 </div>
@@ -172,8 +172,8 @@ export default function ParcoursPage() {
                     <svg className="w-4.5 h-4.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
                   </div>
                   <div>
-                    <span className="text-[#6a697c] text-xs">Filiere</span>
-                    <p className="font-semibold text-[#121117]">{filiere}</p>
+                    <span className="text-[#6a697c] text-xs">Filière</span>
+                    <p className="font-semibold text-[#121117]">{filière}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
@@ -181,8 +181,8 @@ export default function ParcoursPage() {
                     <svg className="w-4.5 h-4.5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                   </div>
                   <div>
-                    <span className="text-[#6a697c] text-xs">Annee</span>
-                    <p className="font-semibold text-[#121117]">{annee}</p>
+                    <span className="text-[#6a697c] text-xs">Année</span>
+                    <p className="font-semibold text-[#121117]">{année}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
@@ -235,7 +235,7 @@ export default function ParcoursPage() {
             <div className="overflow-x-auto">
               {notes.length === 0 ? (
                 <div className="p-8">
-                  <EmptyState title="Aucune note enregistree" description="Tes notes apparaitront ici une fois ajoutees." />
+                  <EmptyState title="Aucune note enregistrée" description="Tes notes apparaîtront ici une fois ajoutées." />
                 </div>
               ) : (
               <table className="w-full text-sm">
@@ -279,7 +279,7 @@ export default function ParcoursPage() {
         {activeTab === "objectifs" && (
           <div className="space-y-4">
             {objectifs.length === 0 ? (
-              <EmptyState title="Aucun objectif enregistre" description="Tes objectifs apparaitront ici une fois ajoutes." />
+              <EmptyState title="Aucun objectif enregistré" description="Tes objectifs apparaîtront ici une fois ajoutés." />
             ) : (
             objectifs.map((obj) => (
               <div key={obj.id} className="card p-5 md:p-7  transition-all">

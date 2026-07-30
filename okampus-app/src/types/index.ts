@@ -30,7 +30,7 @@ export interface CvProfile {
     endYear?: string;
     details?: string;
   }>;
-  experiences: Array<{
+  expériences: Array<{
     title: string;
     company: string;
     location?: string;

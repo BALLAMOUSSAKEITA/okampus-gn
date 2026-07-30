@@ -27,7 +27,7 @@ const figtree = Figtree({
 });
 
 export const metadata: Metadata = {
-  title: "BacheliO - La plateforme etudiante",
+  title: "BacheliO - La plateforme étudiante",
   description:
     "BacheliO t'accompagne : orientation IA, mentorat, forum, CV, stages, bourses et insertion professionnelle.",
   applicationName: "BacheliO",

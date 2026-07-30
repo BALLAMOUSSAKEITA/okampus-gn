@@ -35,7 +35,7 @@ const categoryColors: Record<string, string> = {
   Orientation: "bg-[#ffdf3d]/40 text-[#121117] border-[#dcdce5]",
   Etudes: "bg-emerald-50 text-emerald-700 border-emerald-200",
   Stages: "bg-amber-50 text-amber-700 border-[#dcdce5]",
-  "Vie etudiante": "bg-violet-50 text-violet-700 border-violet-200",
+  "Vie étudiante": "bg-violet-50 text-violet-700 border-violet-200",
   Autre: "bg-[#f4f4f8] text-[#4d4c5c] border-[#dcdce5]",
 };
 
@@ -64,8 +64,8 @@ export default function ForumPostPage() {
   const [commentError, setCommentError] = useState("");
 
   const loadPost = useCallback(async () => {
-    const res = session?.accessToken
-      ? await apiFetch(`/forum/${postId}`, { token: session.accessToken })
+    const res = session?.accèssToken
+      ? await apiFetch(`/forum/${postId}`, { token: session.accèssToken })
       : await fetch(`${API_URL}/forum/${postId}`);
     if (!res.ok) throw new Error("Discussion introuvable");
     const data = await res.json();
@@ -81,7 +81,7 @@ export default function ForumPostPage() {
       likedByMe: data.liked_by_me ?? false,
       createdAt: data.created_at,
     });
-  }, [postId, session?.accessToken]);
+  }, [postId, session?.accèssToken]);
 
   const loadComments = useCallback(async () => {
     const res = await fetch(`${API_URL}/forum/${postId}/comments`);
@@ -118,14 +118,14 @@ export default function ForumPostPage() {
   }, [loadPost, loadComments]);
 
   const toggleLike = async () => {
-    if (!session?.accessToken) {
+    if (!session?.accèssToken) {
       router.push(`/connexion?callbackUrl=/forum/${postId}`);
       return;
     }
     try {
       const res = await apiFetch(`/forum/${postId}/like`, {
         method: "POST",
-        token: session.accessToken,
+        token: session.accèssToken,
       });
       if (!res.ok) return;
       const data = (await res.json()) as { liked: boolean; likes: number };
@@ -137,7 +137,7 @@ export default function ForumPostPage() {
 
   const submitComment = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!session?.accessToken) {
+    if (!session?.accèssToken) {
       router.push(`/connexion?callbackUrl=/forum/${postId}`);
       return;
     }
@@ -149,7 +149,7 @@ export default function ForumPostPage() {
     try {
       const res = await apiFetch(`/forum/${postId}/comments`, {
         method: "POST",
-        token: session.accessToken,
+        token: session.accèssToken,
         body: JSON.stringify({ content: text }),
       });
       if (!res.ok) {
@@ -222,7 +222,7 @@ export default function ForumPostPage() {
           >
             ♥ {post.likes} J&apos;aime
           </button>
-          <span className="text-sm text-[#6a697c]">{post.replies} reponse{post.replies > 1 ? "s" : ""}</span>
+          <span className="text-sm text-[#6a697c]">{post.replies} réponse{post.replies > 1 ? "s" : ""}</span>
           <span className="text-sm text-[#6a697c]">{post.views} vue{post.views > 1 ? "s" : ""}</span>
         </div>
       </article>
@@ -241,7 +241,7 @@ export default function ForumPostPage() {
               rows={3}
               value={commentText}
               onChange={(e) => setCommentText(e.target.value)}
-              placeholder="Ecris ta reponse..."
+              placeholder="Écris ta réponse..."
               className={`${inputClass} resize-none mb-3`}
             />
             <button type="submit" disabled={submitting || !commentText.trim()} className="btn-primary">
@@ -258,7 +258,7 @@ export default function ForumPostPage() {
         )}
 
         {comments.length === 0 ? (
-          <p className="text-sm text-[#6a697c]">Aucun commentaire pour le moment. Sois le premier a repondre.</p>
+          <p className="text-sm text-[#6a697c]">Aucun commentaire pour le moment. Sois le premier à répondre.</p>
         ) : (
           <div className="space-y-4">
             {comments.map((comment) => (

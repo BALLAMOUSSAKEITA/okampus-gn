@@ -1,5 +1,5 @@
-export type InstitutionSector = "public" | "prive";
-export type InstitutionKind = "universite" | "institut";
+export type InstitutionSector = "public" | "privé";
+export type InstitutionKind = "université" | "institut";
 
 export interface Institution {
   id: string;
@@ -16,24 +16,24 @@ export interface Institution {
 export const INSTITUTIONS: Institution[] = [
   {
     id: "uganc",
-    name: "Universite Gamal Abdel Nasser de Conakry",
+    name: "Université Gamal Abdel Nasser de Conakry",
     shortName: "UGANC",
     sector: "public",
-    kind: "universite",
+    kind: "université",
     city: "Conakry",
     description:
-      "Universite publique guineenne specialisee dans les sciences, les technologies et les professions de sante. Fondee en 1962, c'est la plus ancienne institution d'enseignement superieur du pays.",
+      "Université publique guinéenne spécialisée dans les sciences, les technologies et les professions de santé. Fondée en 1962, c'est la plus ancienne institution d'enseignement supérieur du pays.",
     filieres: [
-      "Genie Informatique",
-      "Genie civil",
-      "Genie Chimique",
-      "Genie electrique",
-      "Genie Industriel et Maintenance",
-      "Genie Mecanique",
+      "Génie Informatique",
+      "Génie civil",
+      "Génie Chimique",
+      "Génie électrique",
+      "Génie Industriel et Maintenance",
+      "Génie Mécanique",
       "Telecommunications",
-      "Mathematiques",
+      "Mathématiques",
       "Physique",
-      "Medecine",
+      "Médecine",
       "Odontostomatologie",
       "Pharmacie",
       "Biologie",
@@ -43,25 +43,25 @@ export const INSTITUTIONS: Institution[] = [
   },
   {
     id: "uglcs",
-    name: "Universite General Lansana Conte de Sonfonia",
+    name: "Université General Lansana Conte de Sonfonia",
     shortName: "UGLC-SC",
     sector: "public",
-    kind: "universite",
+    kind: "université",
     city: "Conakry",
     description:
-      "Universite publique creee en 2005, l'un des principaux etablissements du pays dans les sciences humaines, sciences sociales, droit, economie et lettres.",
+      "Université publique créée en 2005, l'un des principaux établissements du pays dans les sciences humaines, sciences sociales, droit, économie et lettres.",
     filieres: [
-      "Droit prive",
+      "Droit privé",
       "Droit public",
       "Sciences politiques",
-      "Sciences economiques",
+      "Sciences économiques",
       "Administration des affaires",
       "Sciences comptables",
       "Banques et Finances",
       "Gestion logistique et Transport",
       "Sociologie",
       "Histoire",
-      "Geographie",
+      "Géographie",
       "Philosophie",
       "Lettres Modernes",
       "Sciences de Langage",
@@ -72,114 +72,114 @@ export const INSTITUTIONS: Institution[] = [
   },
   {
     id: "ujnk",
-    name: "Universite Julius Nyerere de Kankan",
+    name: "Université Julius Nyerere de Kankan",
     shortName: "UJNK",
     sector: "public",
-    kind: "universite",
+    kind: "université",
     city: "Kankan",
     description:
-      "Universite publique de Kankan, deuxieme plus grande ville de Guinee. Role important dans la formation universitaire et la recherche en Haute-Guinee.",
+      "Université publique de Kankan, deuxième plus grande ville de Guinée. Rôle important dans la formation universitaire et la recherche en Haute-Guinée.",
     filieres: [
       "Sciences de la nature",
       "Sciences sociales",
-      "Sciences economiques et de gestion",
+      "Sciences économiques et de gestion",
       "Lettres et langue",
     ],
   },
   {
     id: "univ-kindia",
-    name: "Universite de Kindia",
+    name: "Université de Kindia",
     shortName: "Univ. Kindia",
     sector: "public",
-    kind: "universite",
+    kind: "université",
     city: "Kindia",
     description:
-      "Universite publique situee a Foulayah, prefecture de Kindia. Renforce l'enseignement superieur dans l'ouest de la Guinee.",
+      "Université publique située à Foulayah, préfecture de Kindia. Renforce l'enseignement supérieur dans l'ouest de la Guinée.",
     filieres: [
       "Langues et Lettres",
       "Sciences",
-      "Sciences economiques et de Gestion",
+      "Sciences économiques et de Gestion",
       "Sciences Sociales",
     ],
     website: "https://univ-kindia.com/",
   },
   {
     id: "univ-labe",
-    name: "Universite de Labe",
+    name: "Université de Labe",
     shortName: "Univ. Labe",
     sector: "public",
-    kind: "universite",
+    kind: "université",
     city: "Labe",
     description:
-      "Universite publique fondee en 2001, autonome depuis 2016. Positionnement marque dans les sciences, la recherche et les technologies innovantes.",
+      "Université publique fondée en 2001, autonome depuis 2016. Positionnement marqué dans les sciences, la recherche et les technologies innovantes.",
     filieres: [
       "Informatique",
       "Biologie",
       "MIAGE",
-      "Mathematiques",
+      "Mathématiques",
       "Photovoltaique",
       "Langue Arabe",
       "Administration publique",
       "Gestion",
-      "Economie",
-      "Economie sociale et solidaire",
+      "Économie",
+      "Économie sociale et solidaire",
     ],
     website: "https://univ-labe.edu.gn/",
   },
   {
     id: "univ-nzerekore",
-    name: "Universite de N'Zerekore",
+    name: "Université de N'Zerekore",
     shortName: "UZ",
     sector: "public",
-    kind: "universite",
+    kind: "université",
     city: "N'Zerekore",
     description:
-      "Universite publique creee en 2001, formation des etudiants de la region forestiere. Enseignement principalement en francais.",
+      "Université publique créée en 2001, formation des étudiants de la région forestière. Enseignement principalement en français.",
     filieres: [
-      "Genie de l'environnement",
+      "Génie de l'environnement",
       "Gestion des ressources naturelles",
       "Hydrologie",
       "Meteorologie",
       "Biologie",
       "Chimie",
-      "Mathematiques",
+      "Mathématiques",
       "Physique",
     ],
     website: "https://ent.univ-nzerekore.net/",
   },
   {
     id: "isav-faranah",
-    name: "Institut Superieur Agronomique et Veterinaire de Faranah",
+    name: "Institut Supérieur Agronomique et Vétérinaire de Faranah",
     shortName: "ISAV Faranah",
     sector: "public",
     kind: "institut",
     city: "Faranah",
     description:
-      "Etablissement public fonde en 1978, specialise dans les sciences agronomiques, l'elevage et les disciplines veterinaires.",
+      "Établissement public fonde en 1978, spécialisé dans les sciences agronomiques, l'elevage et les disciplines veterinaires.",
     filieres: [
       "Agriculture",
       "Agroforesterie",
       "Eaux et forets environnement",
       "Sciences animales",
-      "Genie rural",
+      "Génie rural",
       "Gestion des entreprises",
-      "Economie Agricole",
-      "Economie Rurale",
+      "Économie Agricole",
+      "Économie Rurale",
       "Vulgarisation agricole",
     ],
   },
   {
     id: "ismgb-boke",
-    name: "Institut Superieur des Mines et Geologie de Boke",
+    name: "Institut Supérieur des Mines et Géologie de Boke",
     shortName: "ISMGB",
     sector: "public",
     kind: "institut",
     city: "Boke",
     description:
-      "Etablissement public specialise dans les sciences de la Terre, les mines et l'ingenierie, en lien avec le secteur minier guineen.",
+      "Établissement public spécialisé dans les sciences de la Terre, les mines et l'ingenierie, en lien avec le secteur minier guinéen.",
     filieres: [
-      "Environnement et Securite industrielle",
-      "Services Geologiques",
+      "Environnement et Sécurité industrielle",
+      "Services Géologiques",
       "Services Miniers",
       "Traitement et Metallurgie",
     ],
@@ -187,16 +187,16 @@ export const INSTITUTIONS: Institution[] = [
   },
   {
     id: "ist-mamou",
-    name: "Institut Superieur de Technologie de Mamou",
+    name: "Institut Supérieur de Technologie de Mamou",
     shortName: "IST-Mamou",
     sector: "public",
     kind: "institut",
     city: "Mamou",
     description:
-      "Etablissement public cree en 2004, specialise dans les formations techniques et technologiques. Pôle de formation d'ingenieurs.",
+      "Établissement public cree en 2004, spécialisé dans les formations techniques et technologiques. Pôle de formation d'ingenieurs.",
     filieres: [
-      "Genie Informatique",
-      "Energetique",
+      "Génie Informatique",
+      "Énergétique",
       "Instrumentation et Mesures Physiques",
       "Techniques de Laboratoire",
     ],
@@ -204,13 +204,13 @@ export const INSTITUTIONS: Institution[] = [
   },
   {
     id: "ukag",
-    name: "Universite Kofi Annan de Guinee",
+    name: "Université Kofi Annan de Guinée",
     shortName: "UKAG",
-    sector: "prive",
-    kind: "universite",
+    sector: "privé",
+    kind: "université",
     city: "Conakry",
     description:
-      "Universite privee pluridisciplinaire fondee en 1999. Formations du BTS au doctorat dans plusieurs disciplines.",
+      "Université privée pluridisciplinaire fondée en 1999. Formations du BTS au doctorat dans plusieurs disciplines.",
     filieres: [
       "Comptabilite et Gestion Financiere",
       "Gestion des Ressources humaines",
@@ -223,16 +223,16 @@ export const INSTITUTIONS: Institution[] = [
       "Journalisme",
       "Communication",
       "Sociologie",
-      "Genie logiciel",
-      "Reseaux et Systemes",
-      "Medecine",
+      "Génie logiciel",
+      "Réseaux et Systemes",
+      "Médecine",
       "Pharmacie",
       "Odontologie",
-      "Genie Civil",
-      "Genie Minier",
+      "Génie Civil",
+      "Génie Minier",
       "Architecture",
-      "Genie Electrique",
-      "Genie Informatique",
+      "Génie Electrique",
+      "Génie Informatique",
       "Logistique et Transport",
       "Tourisme et Hotellerie",
     ],
@@ -240,20 +240,20 @@ export const INSTITUTIONS: Institution[] = [
   },
   {
     id: "unc",
-    name: "Universite de Nongo Conakry",
+    name: "Université de Nongo Conakry",
     shortName: "UNC",
-    sector: "prive",
-    kind: "universite",
+    sector: "privé",
+    kind: "université",
     city: "Conakry",
     description:
-      "Universite privee de Conakry proposant des formations en genie, sciences economiques, juridiques et sociales.",
+      "Université privée de Conakry proposant des formations en génie, sciences économiques, juridiques et sociales.",
     filieres: [
-      "Genie Informatique et telecommunications",
+      "Génie Informatique et telecommunications",
       "MIAGE",
-      "Genie Electronique",
-      "Genie civil",
-      "Genie mineral",
-      "Economie",
+      "Génie Electronique",
+      "Génie civil",
+      "Génie mineral",
+      "Économie",
       "Sciences comptables",
       "Administration des affaires",
       "Banques et assurances",
@@ -268,17 +268,17 @@ export const INSTITUTIONS: Institution[] = [
   },
   {
     id: "umi",
-    name: "Universite Mercure International",
+    name: "Université Mercure International",
     shortName: "UMI",
-    sector: "prive",
-    kind: "universite",
+    sector: "privé",
+    kind: "université",
     city: "Conakry",
     description:
-      "Universite privee a Conakry, approche professionnalisante et partenariats academiques.",
+      "Université privée à Conakry, approche professionnalisante et partenariats académiques.",
     filieres: [
-      "Genie informatique",
-      "Genie Reseaux",
-      "Genie logiciels",
+      "Génie informatique",
+      "Génie Réseaux",
+      "Génie logiciels",
       "Journalisme",
       "Communication",
       "Transport logistique",
@@ -332,8 +332,8 @@ export function findInstitutionsForTopic(message: string, limit = 3): Institutio
   const lower = normalizeText(message);
   const scored = INSTITUTIONS.map((inst) => {
     let score = 0;
-    for (const filiere of inst.filieres) {
-      const norm = normalizeText(filiere);
+    for (const filière of inst.filieres) {
+      const norm = normalizeText(filière);
       const words = norm.split(/\s+/).filter((w) => w.length > 3);
       for (const word of words) {
         if (lower.includes(word)) score += 2;
@@ -342,10 +342,10 @@ export function findInstitutionsForTopic(message: string, limit = 3): Institutio
     if (lower.includes(normalizeText(inst.city))) score += 3;
     if (lower.includes(normalizeText(inst.shortName))) score += 5;
     if (lower.includes("medecin") || lower.includes("pharmacie")) {
-      if (inst.filieres.some((f) => /medecine|pharmacie|odontologie/i.test(f))) score += 4;
+      if (inst.filieres.some((f) => /médecine|pharmacie|odontologie/i.test(f))) score += 4;
     }
     if (lower.includes("informatique") || lower.includes("info")) {
-      if (inst.filieres.some((f) => /informatique|logiciel|miage|reseau/i.test(f))) score += 4;
+      if (inst.filieres.some((f) => /informatique|logiciel|miage|réseau/i.test(f))) score += 4;
     }
     if (lower.includes("droit")) {
       if (inst.filieres.some((f) => /droit|juridique|politique/i.test(f))) score += 4;
@@ -374,20 +374,20 @@ export function buildUniversitiesContextForAI(userMessage?: string): string {
     const filieresPreview = inst.filieres.slice(0, 8).join(", ");
     const extra = inst.filieres.length > 8 ? ` (+${inst.filieres.length - 8} autres)` : "";
     const web = inst.website ? ` | ${inst.website}` : "";
-    return `- **${inst.shortName}** (${inst.city}, ${inst.sector === "public" ? "public" : "prive"}) : ${filieresPreview}${extra}${web}`;
+    return `- **${inst.shortName}** (${inst.city}, ${inst.sector === "public" ? "public" : "privé"}) : ${filieresPreview}${extra}${web}`;
   });
 
-  return `## Referentiel etablissements Guinee (source BacheliO — cite uniquement si pertinent)
+  return `## Référentiel établissements Guinée (source BacheliO — cite uniquement si pertinent)
 ${list.join("\n")}
 
 Regles :
-- Recommande 1 a 2 etablissements maximum quand l'etudiant demande ou etudier.
-- Precise la ville et si l'etablissement est public ou prive.
-- Pour la liste complete : [Universites & Ecoles](/universites)
-- Ne cite pas d'etablissement hors de ce referentiel sauf si l'etudiant en parle deja.`;
+- Recommande 1 à 2 établissements maximum quand l'étudiant demande ou étudier.
+- Précise la ville et si l'établissement est public ou privé.
+- Pour la liste complète : [Universités & Écoles](/universites)
+- Ne cite pas d'établissement hors de ce référentiel sauf si l'étudiant en parle déjà.`;
 }
 
-export function formatInstitutionFilieres(inst: Institution, max = 6): string {
+export function formatInstitutionFilières(inst: Institution, max = 6): string {
   const shown = inst.filieres.slice(0, max);
   const rest = inst.filieres.length - shown.length;
   return rest > 0 ? `${shown.join(", ")} (+${rest})` : shown.join(", ");

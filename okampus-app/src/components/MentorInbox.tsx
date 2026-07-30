@@ -23,11 +23,11 @@ export default function MentorInbox({ isAdvisor = false }: MentorInboxProps) {
   const [loading, setLoading] = useState(false);
 
   const loadConversations = useCallback(async () => {
-    if (!session?.accessToken) return;
+    if (!session?.accèssToken) return;
     setLoading(true);
     try {
       const res = await apiFetch("/mentor-messages/conversations", {
-        token: session.accessToken,
+        token: session.accèssToken,
       });
       if (res.ok) {
         setConversations((await res.json()) as Conversation[]);
@@ -35,7 +35,7 @@ export default function MentorInbox({ isAdvisor = false }: MentorInboxProps) {
     } finally {
       setLoading(false);
     }
-  }, [session?.accessToken]);
+  }, [session?.accèssToken]);
 
   useEffect(() => {
     void loadConversations();
@@ -94,7 +94,7 @@ export default function MentorInbox({ isAdvisor = false }: MentorInboxProps) {
       </ul>
 
       <Link href="/messages" className="btn-secondary w-full text-center text-sm">
-        Repondre dans Messenger
+        Répondre dans Messenger
       </Link>
     </div>
   );

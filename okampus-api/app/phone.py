@@ -1,4 +1,4 @@
-"""Normalisation des numeros de telephone guineens (+224)."""
+"""Normalisation des numéros de téléphone guinéens (+224)."""
 
 from __future__ import annotations
 
@@ -10,7 +10,7 @@ def looks_like_email(value: str) -> bool:
 
 
 def normalize_phone(value: str) -> str:
-    """Retourne un numero au format +224XXXXXXXXX ou leve ValueError."""
+    """Retourne un numéro au format +224XXXXXXXXX ou leve ValueError."""
     raw = value.strip()
     digits = re.sub(r"\D", "", raw)
 
@@ -22,7 +22,7 @@ def normalize_phone(value: str) -> str:
         digits = digits[1:]
 
     if len(digits) != 9 or not digits.startswith(("6", "7")):
-        raise ValueError("Numero de telephone guineen invalide")
+        raise ValueError("Numéro de téléphone guinéen invalide")
 
     return f"+224{digits}"
 

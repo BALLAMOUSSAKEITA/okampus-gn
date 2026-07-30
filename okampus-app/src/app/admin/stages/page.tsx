@@ -7,7 +7,7 @@ export default function AdminStagesPage() {
   return (
     <AdminContentManager
       title="Stages & Jobs"
-      description="Publier et gerer les offres de stage"
+      description="Publier et gèrer les offres de stage"
       endpoint="/stages"
       pillVariant="orange"
       fields={[
@@ -16,13 +16,13 @@ export default function AdminStagesPage() {
         { key: "location", label: "Lieu", required: true },
         { key: "type", label: "Type", required: true, options: ["Stage", "Job", "Alternance"] },
         { key: "domain", label: "Domaine", required: true },
-        { key: "duration", label: "Duree" },
+        { key: "duration", label: "Durée" },
         { key: "remuneration", label: "Remuneration" },
         { key: "contact_email", label: "Email contact" },
-        { key: "contact_phone", label: "Telephone" },
+        { key: "contact_phone", label: "Téléphone" },
         { key: "external_link", label: "Lien externe" },
         { key: "description", label: "Description", type: "textarea", required: true, rows: 4 },
-        { key: "requirements", label: "Prerequis", type: "textarea", rows: 2 },
+        { key: "requirements", label: "Prérequis", type: "textarea", rows: 2 },
         { key: "is_active", label: "Actif", type: "checkbox" },
       ]}
       columns={[

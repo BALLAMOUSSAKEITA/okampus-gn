@@ -17,7 +17,7 @@ async def get_parcours(
     current_user: User = Depends(get_current_user),
 ):
     if current_user.id != user_id and current_user.role != "admin":
-        raise HTTPException(status_code=403, detail="Acces refuse")
+        raise HTTPException(status_code=403, detail="Accès refusé")
     result = await db.execute(select(Parcours).where(Parcours.user_id == user_id))
     parcours = result.scalar_one_or_none()
     if not parcours:

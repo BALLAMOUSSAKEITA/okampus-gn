@@ -4,8 +4,8 @@ export default function CvPage() {
   return (
     <ComingSoon
       eyebrow="CV"
-      title="Generateur de CV"
-      description="Cree un CV professionnel avec l'aide de l'IA"
+      title="Générateur de CV"
+      description="Crée un CV professionnel avec l'aide de l'IA"
     />
   );
 }

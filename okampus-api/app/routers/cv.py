@@ -24,7 +24,7 @@ def _build_prompt(body: GenerateCvRequest) -> str:
         education_lines.append(line)
 
     exp_lines = []
-    for x in cv.get("experiences", []):
+    for x in cv.get("expériences", []):
         end = x.get("end", "").strip() or "Présent"
         line = f"- {x.get('title')} — {x.get('company')} ({safe(x.get('start'))} - {end})"
         bullets = "\n".join(f"  - {b}" for b in x.get("bullets", []) if b)

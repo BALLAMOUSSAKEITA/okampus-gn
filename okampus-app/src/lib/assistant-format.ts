@@ -1,4 +1,4 @@
-/** Nettoie et raccourcit le texte renvoye par le LLM. */
+/** Nettoie et raccourcit le texte renvoyé par le LLM. */
 export function formatAssistantReply(raw: string): string {
   let text = raw.trim();
 
@@ -25,7 +25,7 @@ function autoLinkInternalPaths(text: string): string {
   if (!text.includes("](/universites)")) {
     text = text.replace(
       /\B\/universites\b/g,
-      "[Universites & Ecoles](/universites)"
+      "[Universités & Écoles](/universites)"
     );
   }
   return text;

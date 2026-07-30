@@ -120,7 +120,7 @@ async def add_comment(
 ):
     content = body.content.strip()
     if not content:
-        raise HTTPException(status_code=400, detail="Le commentaire ne peut pas etre vide")
+        raise HTTPException(status_code=400, detail="Le commentaire ne peut pas être vide")
 
     post = await _get_post_or_404(db, post_id)
     comment = ForumComment(

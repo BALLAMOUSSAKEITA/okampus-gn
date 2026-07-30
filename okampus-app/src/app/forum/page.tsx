@@ -25,14 +25,14 @@ interface ForumPost {
   likedByMe: boolean;
 }
 
-const categories = ["Toutes", "Orientation", "Etudes", "Stages", "Vie etudiante", "Autre"];
+const categories = ["Toutes", "Orientation", "Etudes", "Stages", "Vie étudiante", "Autre"];
 const postCategories = categories.filter((c) => c !== "Toutes");
 
 const categoryColors: Record<string, string> = {
   Orientation: "bg-[#ffdf3d]/40 text-[#121117] border-[#dcdce5]",
   Etudes: "bg-emerald-50 text-emerald-700 border-emerald-200",
   Stages: "bg-amber-50 text-amber-700 border-[#dcdce5]",
-  "Vie etudiante": "bg-violet-50 text-violet-700 border-violet-200",
+  "Vie étudiante": "bg-violet-50 text-violet-700 border-violet-200",
   Autre: "bg-[#f4f4f8] text-[#4d4c5c] border-[#dcdce5]",
 };
 
@@ -65,8 +65,8 @@ export default function ForumPage() {
     setLoading(true);
     setFetchError("");
     try {
-      const res = session?.accessToken
-        ? await apiFetch("/forum", { token: session.accessToken })
+      const res = session?.accèssToken
+        ? await apiFetch("/forum", { token: session.accèssToken })
         : await fetch(`${API_URL}/forum`);
       if (!res.ok) throw new Error("Impossible de charger le forum");
       const data = (await res.json()) as Array<{
@@ -101,7 +101,7 @@ export default function ForumPage() {
     } finally {
       setLoading(false);
     }
-  }, [session?.accessToken]);
+  }, [session?.accèssToken]);
 
   useEffect(() => {
     loadPosts();
@@ -130,13 +130,13 @@ export default function ForumPage() {
 
   const handleCreatePost = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!session?.accessToken || !newTitle.trim()) return;
+    if (!session?.accèssToken || !newTitle.trim()) return;
     setCreating(true);
     setCreateError("");
     try {
       const res = await apiFetch("/forum", {
         method: "POST",
-        token: session.accessToken,
+        token: session.accèssToken,
         body: JSON.stringify({
           title: newTitle.trim(),
           content: newContent.trim(),
@@ -145,7 +145,7 @@ export default function ForumPage() {
       });
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
-        throw new Error((err as { detail?: string }).detail ?? "Impossible de publier");
+        throw new Error((err as { detail?: string }).detail ?? "Impossible de publiér");
       }
       const created = await res.json();
       setShowNewPost(false);
@@ -162,14 +162,14 @@ export default function ForumPage() {
   const toggleLike = async (postId: string, e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (!session?.accessToken) {
+    if (!session?.accèssToken) {
       router.push("/connexion?callbackUrl=/forum");
       return;
     }
     try {
       const res = await apiFetch(`/forum/${postId}/like`, {
         method: "POST",
-        token: session.accessToken,
+        token: session.accèssToken,
       });
       if (!res.ok) return;
       const data = (await res.json()) as { liked: boolean; likes: number };
@@ -187,9 +187,9 @@ export default function ForumPage() {
     <>
       <PageShell narrow>
         <PageHeader
-          eyebrow="Communaute"
+          eyebrow="Communauté"
           title="Forum"
-          description="Pose tes questions, partage ton experience et echange avec la communaute"
+          description="Pose tes questions, partage ton expérience et echange avec la communauté"
           action={
             <button onClick={openNewPost} className="btn-primary inline-flex items-center gap-2">
               + Nouvelle discussion
@@ -199,7 +199,7 @@ export default function ForumPage() {
 
         <div className="inline-flex items-center gap-3 px-5 py-3 bg-[#f4f4f8] border border-[#dcdce5] rounded-lg mb-8">
           <span className="text-sm text-[#4d4c5c]">
-            Ouvre une discussion, reponds aux autres et like les sujets utiles.
+            Ouvre une discussion, réponds aux autres et like les sujets utiles.
           </span>
         </div>
 
@@ -242,7 +242,7 @@ export default function ForumPage() {
         ) : posts.length === 0 ? (
           <EmptyState
             title="Aucune discussion pour le moment"
-            description="Sois le premier a lancer une conversation."
+            description="Sois le premier à lancer une conversation."
             action={
               <button onClick={openNewPost} className="btn-primary">
                 Ouvrir une discussion
@@ -285,7 +285,7 @@ export default function ForumPage() {
                           ♥ {post.likes}
                         </button>
                         <Link href={`/forum/${post.id}`} className="hidden sm:inline">
-                          {post.replies} reponses
+                          {post.replies} réponses
                         </Link>
                         <Link href={`/forum/${post.id}`} className="hidden sm:inline">
                           {post.views} vues
@@ -300,7 +300,7 @@ export default function ForumPage() {
             {filteredPosts.length === 0 && (
               <EmptyState
                 title="Aucune discussion avec ces criteres"
-                description="Essaie de modifier ta recherche ou la categorie."
+                description="Essaie de modifier ta recherche ou la catégorie."
               />
             )}
           </>
@@ -331,7 +331,7 @@ export default function ForumPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-[#4d4c5c] mb-2">Categorie</label>
+                <label className="block text-sm font-medium text-[#4d4c5c] mb-2">Catégorie</label>
                 <select
                   value={newCategory}
                   onChange={(e) => setNewCategory(e.target.value)}
@@ -350,7 +350,7 @@ export default function ForumPage() {
                   rows={5}
                   value={newContent}
                   onChange={(e) => setNewContent(e.target.value)}
-                  placeholder="Decris ta question en detail..."
+                  placeholder="Décris ta question en détail..."
                   className={`${inputClass} resize-none`}
                 />
               </div>

@@ -117,9 +117,9 @@ export default function StagesPage() {
     <>
       <PageShell>
         <PageHeader
-          eyebrow="Opportunites"
+          eyebrow="Opportunités"
           title="Offres de stage & emploi"
-          description="Trouve ton stage, job etudiant ou alternance pres de chez toi"
+          description="Trouve ton stage, job étudiant ou alternance près de chez toi"
         />
 
         {fetchError && (
@@ -131,10 +131,10 @@ export default function StagesPage() {
         {!loading && offers.length === 0 && !fetchError ? (
           <EmptyState
             title="Aucune offre pour le moment"
-            description="Les offres de stage et d'emploi seront bientot publiees ici. Reviens regulierement ou consulte les autres sections de la plateforme."
+            description="Les offres de stage et d'emploi seront bientôt publiées ici. Reviens régulièrement ou consulte les autres sections de la plateforme."
             action={
               <Link href="/" className="btn-primary">
-                Retour a l&apos;accueil
+                Retour à l&apos;accueil
               </Link>
             }
           />
@@ -227,7 +227,7 @@ export default function StagesPage() {
                     ) : (
                       <>
                         <span className="font-bold text-[#121117]">{filteredOffers.length}</span>{" "}
-                        offre{filteredOffers.length > 1 ? "s" : ""} trouvee
+                        offre{filteredOffers.length > 1 ? "s" : ""} trouvée
                         {filteredOffers.length > 1 ? "s" : ""}
                       </>
                     )}
@@ -292,7 +292,7 @@ export default function StagesPage() {
                 {filteredOffers.length === 0 && offers.length > 0 && (
                   <EmptyState
                     title="Aucune offre avec ces criteres"
-                    description="Essaie de modifier ta recherche ou tes filtres pour voir plus de resultats."
+                    description="Essaie de modifier ta recherche ou tes filtres pour voir plus de résultats."
                   />
                 )}
               </>
@@ -363,7 +363,7 @@ export default function StagesPage() {
 
               {selectedOffer.requirements && (
                 <div>
-                  <h4 className="font-bold text-[#121117] mb-2">Prerequis</h4>
+                  <h4 className="font-bold text-[#121117] mb-2">Prérequis</h4>
                   <p className="text-sm text-[#4d4c5c] leading-relaxed">{selectedOffer.requirements}</p>
                 </div>
               )}
@@ -371,7 +371,7 @@ export default function StagesPage() {
               <div className="grid sm:grid-cols-2 gap-4 text-sm">
                 {selectedOffer.duration && (
                   <div className="p-3 bg-[#f4f4f8] rounded-lg">
-                    <span className="text-[#6a697c] text-xs">Duree</span>
+                    <span className="text-[#6a697c] text-xs">Durée</span>
                     <p className="font-semibold text-[#121117] mt-0.5">{selectedOffer.duration}</p>
                   </div>
                 )}

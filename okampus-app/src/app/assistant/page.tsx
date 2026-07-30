@@ -24,14 +24,14 @@ const emptyProfile: OrientationProfile = {
 
 const WELCOME_MESSAGE = `Bonjour ! Je suis **Kampus**, l'assistant IA de BacheliO.
 
-Je t'accompagne pour choisir ta filiere en Guinee (Sciences Mathematiques, Experimentales ou Sociales), clarifier ton projet d'etudes et trouver les bonnes pistes ([universites & ecoles](/universites), mentors, stages).
+Je t'accompagne pour choisir ta filière en Guinée (Sciences Mathématiques, Expérimentales ou Sociales), clarifier ton projet d'études et trouver les bonnes pistes ([universités & écoles](/universites), mentors, stages).
 
 **Comment puis-je t'aider dans ton orientation ?**`;
 
 const SUGGESTIONS = [
-  { short: "Bac SE, quoi choisir ?", full: "Je viens d'avoir le bac en Sciences Experimentales, je ne sais pas quoi choisir" },
-  { short: "Medecine apres SM ?", full: "Je suis en Sciences Mathematiques et je veux faire medecine, c'est realiste ?" },
-  { short: "Ou etudier le droit ?", full: "Quelle universite en Guinee pour etudier le droit apres Sciences Sociales ?" },
+  { short: "Bac SE, quoi choisir ?", full: "Je viens d'avoir le bac en Sciences Expérimentales, je ne sais pas quoi choisir" },
+  { short: "Médecine après SM ?", full: "Je suis en Sciences Mathématiques et je veux faire médecine, c'est réaliste ?" },
+  { short: "Ou étudier le droit ?", full: "Quelle université en Guinée pour étudier le droit après Sciences Sociales ?" },
 ];
 
 const initialMessages: ChatMessage[] = [
@@ -70,8 +70,8 @@ function AssistantChat() {
   }, [messages, isLoading]);
 
   useEffect(() => {
-    if (!session?.accessToken) return;
-    fetchAssistantQuota(session.accessToken, "chat")
+    if (!session?.accèssToken) return;
+    fetchAssistantQuota(session.accèssToken, "chat")
       .then((quota) => {
         if (quota.unlimited) {
           setRemainingMessages(null);
@@ -84,7 +84,7 @@ function AssistantChat() {
       .catch(() => {
         // Quota indisponible : l'assistant reste utilisable, le serveur bloquera si besoin.
       });
-  }, [session?.accessToken]);
+  }, [session?.accèssToken]);
 
   const callAssistant = async (
     chatMessages: ChatMessage[]
@@ -119,10 +119,10 @@ function AssistantChat() {
       if (res.status === 401) {
         throw new Error("Connecte-toi pour utiliser l'assistant IA");
       }
-      throw new Error(data.error || "Erreur lors de l'appel a l'assistant");
+      throw new Error(data.error || "Erreur lors de l'appel à l'assistant");
     }
     if (!data.content) {
-      throw new Error("Reponse vide de l'assistant");
+      throw new Error("Réponse vide de l'assistant");
     }
     if (data.fallback && data.error) {
       setError(data.error);
@@ -273,7 +273,7 @@ function AssistantChat() {
               type="text"
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
-              placeholder="Ecris ton message..."
+              placeholder="Écris ton message..."
               className="flex-1 min-h-12 px-4 py-3 text-base md:text-sm rounded-lg border border-[#dcdce5] bg-white focus:border-[#121117] outline-none placeholder:text-[#6a697c]"
               disabled={isLoading}
             />

@@ -32,7 +32,7 @@ export async function fetchAssistantQuota(
 ): Promise<AssistantQuotaInfo> {
   const res = await apiFetch(`/assistant/quota?mode=${mode}`, { token });
   if (!res.ok) {
-    throw new Error("Impossible de recuperer le quota assistant");
+    throw new Error("Impossible de récupérer le quota assistant");
   }
   const data = (await res.json()) as Record<string, unknown>;
   return mapQuota(data);
@@ -49,7 +49,7 @@ export async function consumeAssistantQuota(
   });
 
   if (!res.ok) {
-    throw new Error("Impossible de verifier le quota assistant");
+    throw new Error("Impossible de vérifier le quota assistant");
   }
 
   const data = (await res.json()) as Record<string, unknown>;
@@ -65,7 +65,7 @@ export function buildQuotaExceededMessage(mode: AssistantMode, limit: number): s
 
   return `Tu as bien avance avec Kampus ${period} ! Tu as atteint ta limite de **${limit} ${unit}**.
 
-Pour aller plus loin sur ton cas personnel, un [mentor etudiant](/conseil) peut t'accompagner gratuitement sur BacheliO — c'est un retour d'experience reel de quelqu'un qui a vecu les memes choix que toi.
+Pour aller plus loin sur ton cas personnel, un [mentor étudiant](/conseil) peut t'accompagner gratuitement sur BacheliO — c'est un retour d'expérience réel de quelqu'un qui a vécu les mêmes choix que toi.
 
 → [Contacter un mentor](/conseil)`;
 }

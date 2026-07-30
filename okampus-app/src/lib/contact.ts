@@ -1,4 +1,4 @@
-/** Detecte et normalise email ou telephone guineen. */
+/** Detecte et normalise email ou téléphone guinéen. */
 
 export function looksLikeEmail(value: string): boolean {
   return value.trim().includes("@");
@@ -21,7 +21,7 @@ export function parseContactIdentifier(raw: string): {
   error?: string;
 } {
   const value = raw.trim();
-  if (!value) return { error: "Email ou telephone requis" };
+  if (!value) return { error: "Email ou téléphone requis" };
 
   if (looksLikeEmail(value)) {
     const email = value.toLowerCase();
@@ -33,7 +33,7 @@ export function parseContactIdentifier(raw: string): {
 
   const phone = normalizePhone(value);
   if (!phone) {
-    return { error: "Numero invalide (ex: 620123456 ou +224620123456)" };
+    return { error: "Numéro invalide (ex: 620123456 ou +224620123456)" };
   }
   return { phone };
 }

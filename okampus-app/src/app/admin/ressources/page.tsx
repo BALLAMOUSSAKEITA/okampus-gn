@@ -14,11 +14,11 @@ export default function AdminRessourcesPage() {
       pillVariant="green"
       fields={[
         { key: "title", label: "Titre", required: true },
-        { key: "category", label: "Categorie", required: true },
+        { key: "category", label: "Catégorie", required: true },
         { key: "subject", label: "Matiere", required: true },
-        { key: "filiere", label: "Filiere" },
-        { key: "university", label: "Universite" },
-        { key: "year", label: "Annee" },
+        { key: "filière", label: "Filière" },
+        { key: "university", label: "Université" },
+        { key: "year", label: "Année" },
         { key: "file_url", label: "URL fichier", required: true },
         { key: "file_type", label: "Type fichier", required: true, placeholder: "pdf" },
         { key: "file_size", label: "Taille (octets)", type: "number" },
@@ -30,7 +30,7 @@ export default function AdminRessourcesPage() {
       columns={[
         { key: "title", label: "Titre" },
         { key: "subject", label: "Matiere" },
-        { key: "category", label: "Categorie" },
+        { key: "category", label: "Catégorie" },
         { key: "price", label: "Prix" },
       ]}
       createDefaults={{

@@ -79,7 +79,7 @@ export default function SuccessStoriesPage() {
   const categoryLabels: Record<string, string> = {
     Orientation: "Orientation",
     Etudes: "Etudes",
-    Carriere: "Carriere",
+    Carrière: "Carrière",
     Entrepreneuriat: "Entrepreneuriat",
     Autre: "Autre",
   };
@@ -100,7 +100,7 @@ export default function SuccessStoriesPage() {
   if (loading) {
     return (
       <PageShell>
-        <PageHeader eyebrow="Success Stories" title="Parcours inspirants" description="Inspire-toi des parcours exceptionnels d'anciens etudiants" centered />
+        <PageHeader eyebrow="Success Stories" title="Parcours inspirants" description="Inspire-toi des parcours exceptionnels d'anciens étudiants" centered />
         <div className="card p-10 text-center text-[#6a697c]">Chargement...</div>
       </PageShell>
     );
@@ -118,10 +118,10 @@ export default function SuccessStoriesPage() {
   if (stories.length === 0) {
     return (
       <PageShell>
-        <PageHeader eyebrow="Success Stories" title="Parcours inspirants" description="Inspire-toi des parcours exceptionnels d'anciens etudiants" centered />
+        <PageHeader eyebrow="Success Stories" title="Parcours inspirants" description="Inspire-toi des parcours exceptionnels d'anciens étudiants" centered />
         <EmptyState
           title="Aucune success story pour le moment"
-          description="Les temoignages seront publies ici des qu'ils seront disponibles."
+          description="Les témoignages seront publiés ici dès qu'ils seront disponibles."
         />
       </PageShell>
     );
@@ -132,7 +132,7 @@ export default function SuccessStoriesPage() {
       <PageHeader
         eyebrow="Success Stories"
         title="Parcours inspirants"
-        description="Inspire-toi des parcours exceptionnels d'anciens etudiants"
+        description="Inspire-toi des parcours exceptionnels d'anciens étudiants"
         centered
       />
 
@@ -331,8 +331,8 @@ export default function SuccessStoriesPage() {
 
         {filteredStories.length === 0 && (
           <EmptyState
-            title="Aucune story avec cette categorie"
-            description="Essaie une autre categorie."
+            title="Aucune story avec cette catégorie"
+            description="Essaie une autre catégorie."
           />
         )}
 
@@ -347,7 +347,7 @@ export default function SuccessStoriesPage() {
               Tu as une belle histoire à raconter ?
             </h3>
             <p className="text-white/80 mb-6 max-w-lg mx-auto">
-              Partage ton parcours et inspire la prochaine generation d&apos;etudiants
+              Partage ton parcours et inspire la prochaine génération d&apos;étudiants
             </p>
             <button className="btn-secondary bg-white text-[#121117] border-white">
               Partager mon histoire

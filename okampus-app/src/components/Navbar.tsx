@@ -28,14 +28,14 @@ const mobilePrimaryLinks = [
 ];
 
 const moreLinks = [
-  { href: "/universites", label: "Universites & Ecoles" },
+  { href: "/universites", label: "Universités & Écoles" },
   { href: "/parcours", label: "Mon parcours" },
   { href: "/ressources", label: "Ressources" },
   { href: "/calendrier", label: "Calendrier" },
   { href: "/bourses", label: "Bourses" },
   { href: "/entrepreneuriat", label: "Entrepreneuriat" },
   { href: "/success-stories", label: "Success Stories" },
-  { href: "/cv", label: "Generateur CV" },
+  { href: "/cv", label: "Générateur CV" },
 ];
 
 const mobileMoreLinks = moreLinks.filter((link) => link.href !== "/bourses");
@@ -272,7 +272,7 @@ export default function Navbar() {
                         }}
                         className="min-h-11 text-sm font-medium text-red-600 hover:text-red-700 px-3 text-left"
                       >
-                        Se deconnecter
+                        Se déconnecter
                       </button>
                     </div>
                   ) : (

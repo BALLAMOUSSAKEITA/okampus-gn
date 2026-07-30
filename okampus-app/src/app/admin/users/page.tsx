@@ -7,7 +7,7 @@ import { adminFetch, selectClass, type AdminUser } from "@/lib/admin-api";
 
 export default function AdminUsersPage() {
   const { data: session } = useSession();
-  const token = session?.accessToken;
+  const token = session?.accèssToken;
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -56,7 +56,7 @@ export default function AdminUsersPage() {
       <AdminPageHeader
         pill={{ label: "Comptes", variant: "violet" }}
         title="Utilisateurs"
-        description="Gerer les comptes, les roles et les profils inscrits."
+        description="Gèrer les comptes, les roles et les profils inscrits."
       />
 
       {error && <div className="admin-alert-error">{error}</div>}
@@ -86,7 +86,7 @@ export default function AdminUsersPage() {
                         className={`${selectClass} !w-auto !py-1.5`}
                       >
                         <option value="bachelier">Bachelier</option>
-                        <option value="etudiant">Etudiant</option>
+                        <option value="etudiant">Étudiant</option>
                         <option value="admin">Admin</option>
                       </select>
                     </td>

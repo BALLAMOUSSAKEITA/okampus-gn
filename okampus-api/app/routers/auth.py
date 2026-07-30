@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import or_, select
 
-from app.auth import create_access_token, hash_password, verify_password
+from app.auth import create_accèss_token, hash_password, verify_password
 from app.database import get_db
 from app.models import User
 from app.phone import looks_like_email
@@ -81,9 +81,9 @@ async def login(body: LoginRequest, db: AsyncSession = Depends(get_db)):
     if not user or not verify_password(body.password, user.password):
         raise HTTPException(status_code=401, detail="Identifiant ou mot de passe incorrect")
 
-    token = create_access_token({"sub": user.id, "role": user.role})
+    token = create_accèss_token({"sub": user.id, "role": user.role})
 
     return TokenResponse(
-        access_token=token,
+        accèss_token=token,
         user=_user_out(user),
     )

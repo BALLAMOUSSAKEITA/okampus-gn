@@ -14,11 +14,11 @@ interface AuthShellProps {
 const brandCopy = {
   login: {
     headline: "Bon retour sur BacheliO",
-    support: "Reprends ton orientation, ton mentorat et ton parcours la ou tu t'es arrete.",
+    support: "Reprends ton orientation, ton mentorat et ton parcours la ou tu t'es arrêté.",
   },
   register: {
     headline: "Rejoins BacheliO",
-    support: "Orientation IA, mentors etudiants et opportunites — tout pour avancer apres le bac.",
+    support: "Orientation IA, mentors étudiants et opportunités — tout pour avancer après le bac.",
   },
 } as const;
 
@@ -46,7 +46,7 @@ export default function AuthShell({
 
         <div className="relative z-10 max-w-md animate-fadeInUp">
           <span className="sticker-label rotate-[-2deg] mb-6 inline-block">
-            Plateforme etudiante
+            Plateforme étudiante
           </span>
           <h1 className="font-display text-[42px] xl:text-[48px] font-bold leading-[1.08] tracking-[-0.02em] text-[#121117]">
             {brand.headline}
@@ -75,7 +75,7 @@ export default function AuthShell({
             <div className="relative w-full h-full landing-photo shadow-[0_8px_24px_rgba(18,17,23,0.15)]">
               <Image
                 src="/images/jeune-fille.png"
-                alt="Etudiante BacheliO"
+                alt="Étudiante BacheliO"
                 fill
                 sizes="192px"
                 className="object-cover object-center"
@@ -127,7 +127,7 @@ export default function AuthShell({
 
           <p className={`text-center text-sm text-[#6a697c] ${compact ? "mt-5" : "mt-8"}`}>
             <Link href="/" className="hover:text-[#121117] transition-colors">
-              ← Retour a l&apos;accueil
+              ← Retour à l&apos;accueil
             </Link>
           </p>
         </div>

@@ -7,15 +7,15 @@ import OrientationDemo from "@/components/OrientationDemo";
 import { LandingFeaturedMentors } from "@/components/landing/LandingDynamicSections";
 
 const subjects = [
-  { id: "universites", title: "Universites & Ecoles", count: "12 etablissements", link: "/universites" },
-  { id: "assistant", title: "Assistant IA", count: "Orientation personnalisee", link: "/assistant" },
-  { id: "conseil", title: "Mentorat", count: "Conseillers etudiants", link: "/conseil" },
-  { id: "forum", title: "Forum", count: "Communaute active", link: "/forum" },
-  { id: "stages", title: "Stages & Jobs", count: "Opportunites locales", link: "/stages" },
+  { id: "universites", title: "Universités & Écoles", count: "12 établissements", link: "/universites" },
+  { id: "assistant", title: "Assistant IA", count: "Orientation personnalisée", link: "/assistant" },
+  { id: "conseil", title: "Mentorat", count: "Conseillers étudiants", link: "/conseil" },
+  { id: "forum", title: "Forum", count: "Communauté active", link: "/forum" },
+  { id: "stages", title: "Stages & Jobs", count: "Opportunités locales", link: "/stages" },
   { id: "bourses", title: "Bourses", count: "Concours et aides", link: "/bourses" },
-  { id: "cv", title: "Generateur CV", count: "CV pro avec IA", link: "/cv" },
+  { id: "cv", title: "Générateur CV", count: "CV pro avec IA", link: "/cv" },
   { id: "ressources", title: "Ressources", count: "TD et cours", link: "/ressources" },
-  { id: "parcours", title: "Parcours", count: "Suivi academique", link: "/parcours" },
+  { id: "parcours", title: "Parcours", count: "Suivi académique", link: "/parcours" },
   { id: "calendrier", title: "Calendrier", count: "Dates universitaires", link: "/calendrier" },
 ];
 
@@ -23,12 +23,12 @@ const howItWorks = [
   {
     step: "1",
     title: "Trouve ton mentor",
-    desc: "Des etudiants deja en filiere te guident, t'encouragent et repondent a tes questions.",
+    desc: "Des étudiants déjà en filière te guident, t'encouragent et répondent à tes questions.",
   },
   {
     step: "2",
-    title: "Commence a explorer",
-    desc: "L'assistant IA analyse ton profil et te recommande les filieres les plus adaptees.",
+    title: "Commence à explorer",
+    desc: "L'assistant IA analyse ton profil et te recommande les filières les plus adaptées.",
   },
   {
     step: "3",
@@ -39,14 +39,14 @@ const howItWorks = [
 
 const heroStudentPhoto = {
   src: "/images/jeune-fille.png",
-  alt: "Jeune etudiante en bibliotheque",
+  alt: "Jeune étudiante en bibliothèque",
   name: "Fatoumata S.",
-  role: "Etudiante",
+  role: "Étudiante",
 };
 
 const heroMentorPhoto = {
   src: "/images/jeune-homme.png",
-  alt: "Jeune etudiant en bibliotheque",
+  alt: "Jeune étudiant en bibliothèque",
   name: "Mamadou D.",
   role: "Mentor",
   rotate: "rotate-[4deg]",
@@ -63,13 +63,13 @@ export default function Home() {
               BacheliO
             </p>
             <span className="sticker-label rotate-[-2deg] mb-4 sm:mb-6 inline-block">
-              Plateforme etudiante
+              Plateforme étudiante
             </span>
             <h1 className="font-display text-[34px] sm:text-[56px] lg:text-[64px] font-bold leading-[1.06] tracking-[-0.02em] text-[#121117] max-w-[560px]">
-              Reussis plus vite avec la bonne orientation
+              Réussis plus vite avec la bonne orientation
             </h1>
             <p className="mt-4 sm:mt-6 text-base sm:text-xl text-[#121117]/90 leading-[1.5] max-w-md">
-              IA, mentorat, forum et stages — tout ce qu&apos;il faut pour choisir ta filiere et
+              IA, mentorat, forum et stages — tout ce qu&apos;il faut pour choisir ta filière et
               construire ton avenir.
             </p>
             <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row gap-3">
@@ -142,7 +142,7 @@ export default function Home() {
             </div>
 
             <div className="absolute top-[38%] left-[42%] -translate-x-1/2 -translate-y-1/2 sticker-label rotate-[-5deg] text-base px-4 py-2 z-40 pointer-events-none">
-              La reussite, a deux
+              La réussite, à deux
             </div>
           </div>
         </div>
@@ -158,7 +158,7 @@ export default function Home() {
               Explore la plateforme
             </h2>
             <p className="mt-4 text-[#4d4c5c] text-lg">
-              Chaque outil t&apos;accompagne a une etape de ton parcours
+              Chaque outil t&apos;accompagne à une étape de ton parcours
             </p>
           </div>
 
@@ -224,10 +224,10 @@ export default function Home() {
               Deviens mentor
             </h2>
             <p className="mt-4 text-[#4d4c5c] leading-relaxed">
-              Partage ton experience avec les nouveaux bacheliers et aide-les a choisir la bonne filiere.
+              Partage ton expérience avec les nouveaux bacheliers et aide-les à choisir la bonne filière.
             </p>
             <ul className="mt-6 space-y-3">
-              {["Accompagne de nouveaux etudiants", "Developpe ton reseau", "Contribue a ta communaute"].map((item) => (
+              {["Accompagne de nouveaux étudiants", "Développe ton réseau", "Contribue à ta communauté"].map((item) => (
                 <li key={item} className="flex items-center gap-3 text-[#4d4c5c]">
                   <span className="w-5 h-5 rounded-full bg-[#14b887] text-white flex items-center justify-center text-xs">✓</span>
                   {item}
@@ -267,13 +267,13 @@ export default function Home() {
                   { href: "/assistant", label: "Assistant IA" },
                   { href: "/conseil", label: "Mentorat" },
                   { href: "/forum", label: "Forum" },
-                  { href: "/cv", label: "Generateur CV" },
+                  { href: "/cv", label: "Générateur CV" },
                 ],
               },
               {
                 title: "Ressources",
                 links: [
-                  { href: "/universites", label: "Universites & Ecoles" },
+                  { href: "/universites", label: "Universités & Écoles" },
                   { href: "/stages", label: "Stages & Jobs" },
                   { href: "/bourses", label: "Bourses" },
                   { href: "/ressources", label: "Cours & TD" },
@@ -281,7 +281,7 @@ export default function Home() {
                 ],
               },
               {
-                title: "Communaute",
+                title: "Communauté",
                 links: [
                   { href: "/entrepreneuriat", label: "Entrepreneuriat" },
                   { href: "/success-stories", label: "Success Stories" },
@@ -311,7 +311,7 @@ export default function Home() {
               href="/confidentialite"
               className="text-sm text-[#dcdce5] hover:text-white transition-colors"
             >
-              Politique de confidentialite
+              Politique de confidentialité
             </Link>
           </div>
         </div>

@@ -57,7 +57,7 @@ export default function AdminSidebar() {
           onClick={() => signOut({ callbackUrl: "/" })}
           className="admin-nav-item admin-btn-danger !justify-start w-full text-left"
         >
-          Deconnexion
+          Déconnexion
         </button>
       </div>
     </aside>

@@ -8,7 +8,7 @@ type SignInResult = {
 /**
  * Connexion credentials puis redirection pleine page
  * (evite de rester sur /connexion quand le middleware
- * ne voit pas encore la session apres un router.push).
+ * ne voit pas encore la session après un router.push).
  */
 export async function signInWithRedirect(
   identifier: string,

@@ -113,9 +113,9 @@ export default function BoursesPage() {
   return (
     <PageShell>
       <PageHeader
-        eyebrow="Opportunites"
+        eyebrow="Opportunités"
         title="Bourses & Concours"
-        description="Toutes les opportunites de bourses d'etudes et concours disponibles"
+        description="Toutes les opportunités de bourses d'études et concours disponibles"
       />
 
         {/* Filtres */}
@@ -192,7 +192,7 @@ export default function BoursesPage() {
         ) : scholarships.length === 0 ? (
           <EmptyState
             title="Aucune bourse pour le moment"
-            description="Les opportunites seront publiees ici des qu'elles seront disponibles."
+            description="Les opportunités seront publiées ici dès qu'elles seront disponibles."
           />
         ) : (
         <>

@@ -18,7 +18,7 @@ interface Resource {
   description: string;
   category: string;
   subject: string;
-  filiere?: string;
+  filière?: string;
   university?: string;
   year?: string;
   fileType: string;
@@ -33,7 +33,7 @@ const defaultUploadForm = {
   description: "",
   category: "TD",
   subject: "",
-  filiere: "",
+  filière: "",
   university: "",
   year: "",
 };
@@ -66,7 +66,7 @@ export default function ResourcesPage() {
         description: string;
         category: string;
         subject: string;
-        filiere?: string | null;
+        filière?: string | null;
         university?: string | null;
         year?: string | null;
         file_type: string;
@@ -82,7 +82,7 @@ export default function ResourcesPage() {
           description: r.description,
           category: r.category,
           subject: r.subject,
-          filiere: r.filiere ?? undefined,
+          filière: r.filière ?? undefined,
           university: r.university ?? undefined,
           year: r.year ?? undefined,
           fileType: r.file_type,
@@ -147,12 +147,12 @@ export default function ResourcesPage() {
       if (uploadForm.description.trim()) formData.append("description", uploadForm.description.trim());
       if (uploadForm.category) formData.append("category", uploadForm.category);
       if (uploadForm.subject.trim()) formData.append("subject", uploadForm.subject.trim());
-      if (uploadForm.filiere.trim()) formData.append("filiere", uploadForm.filiere.trim());
+      if (uploadForm.filière.trim()) formData.append("filière", uploadForm.filière.trim());
       if (uploadForm.university.trim()) formData.append("university", uploadForm.university.trim());
       if (uploadForm.year.trim()) formData.append("year", uploadForm.year.trim());
       if (selectedFile) formData.append("file", selectedFile);
 
-      const res = await apiUpload("/resources/upload", formData, session.accessToken);
+      const res = await apiUpload("/resources/upload", formData, session.accèssToken);
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
         const detail = (err as { detail?: string | Array<{ msg?: string }> }).detail;
@@ -161,7 +161,7 @@ export default function ResourcesPage() {
             ? detail
             : Array.isArray(detail)
             ? detail.map((d) => d.msg).filter(Boolean).join(", ")
-            : "Impossible de publier la ressource";
+            : "Impossible de publiér la ressource";
         throw new Error(message);
       }
       setShowUploadModal(false);
@@ -179,9 +179,9 @@ export default function ResourcesPage() {
     <>
       <PageShell>
         <PageHeader
-          eyebrow="Bibliotheque"
-          title="Bibliotheque de ressources"
-          description="Partage et accede gratuitement a des TD, cours et sujets d'examens"
+          eyebrow="Bibliothèque"
+          title="Bibliothèque de ressources"
+          description="Partage et accède gratuitement à des TD, cours et sujets d'examens"
           action={
             <button onClick={openUploadModal} className="btn-primary">
               + Partager une ressource
@@ -196,7 +196,7 @@ export default function ResourcesPage() {
             </svg>
           </div>
           <span className="text-sm font-medium text-[#4d4c5c]">
-            Toutes les ressources sont gratuites — partage tes notes, TD et cours avec la communaute etudiante.
+            Toutes les ressources sont gratuites — partage tes notes, TD et cours avec la communauté étudiante.
           </span>
         </div>
 
@@ -276,7 +276,7 @@ export default function ResourcesPage() {
         ) : resources.length === 0 ? (
           <EmptyState
             title="Aucune ressource pour le moment"
-            description="Sois le premier a partager un TD, un cours ou un sujet d'examen."
+            description="Sois le premier à partager un TD, un cours ou un sujet d'examen."
             action={
               <button onClick={openUploadModal} className="btn-primary">
                 Partager une ressource
@@ -321,7 +321,7 @@ export default function ResourcesPage() {
                   </div>
 
                   <div className="pt-4 border-t border-[#dcdce5] flex items-center justify-between">
-                    <span className="text-xs text-[#6a697c]">{resource.downloads} telechargement{resource.downloads > 1 ? "s" : ""}</span>
+                    <span className="text-xs text-[#6a697c]">{resource.downloads} téléchargement{resource.downloads > 1 ? "s" : ""}</span>
                     {resource.fileUrl ? (
                       <a
                         href={resolveFileUrl(resource.fileUrl)}
@@ -350,7 +350,7 @@ export default function ResourcesPage() {
 
         <div className="mt-10 text-sm">
           <Link href="/" className="text-[#6a697c] hover:text-[#121117] font-medium transition-colors">
-            ← Retour a l&apos;accueil
+            ← Retour à l&apos;accueil
           </Link>
         </div>
       </PageShell>
@@ -368,7 +368,7 @@ export default function ResourcesPage() {
             <div className="p-6 md:p-8 border-b border-[#dcdce5] flex items-center justify-between">
               <div>
                 <h3 className="text-xl font-bold text-[#121117]">Partager une ressource</h3>
-                <p className="text-sm text-[#4d4c5c] mt-1">Publication gratuite pour toute la communaute</p>
+                <p className="text-sm text-[#4d4c5c] mt-1">Publication gratuite pour toute la communauté</p>
               </div>
               <button
                 type="button"
@@ -403,7 +403,7 @@ export default function ResourcesPage() {
                   rows={3}
                   value={uploadForm.description}
                   onChange={(e) => setUploadForm({ ...uploadForm, description: e.target.value })}
-                  placeholder="Decris brievement le contenu de la ressource"
+                  placeholder="Décris brièvement le contenu de la ressource"
                   className={`${inputClass} resize-none`}
                 />
               </div>
@@ -429,7 +429,7 @@ export default function ResourcesPage() {
                     type="text"
                     value={uploadForm.subject}
                     onChange={(e) => setUploadForm({ ...uploadForm, subject: e.target.value })}
-                    placeholder="Ex: Mathematiques"
+                    placeholder="Ex: Mathématiques"
                     className={inputClass}
                   />
                 </div>
@@ -437,17 +437,17 @@ export default function ResourcesPage() {
 
               <div className="grid sm:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-sm font-semibold text-[#4d4c5c] mb-2">Filiere</label>
+                  <label className="block text-sm font-semibold text-[#4d4c5c] mb-2">Filière</label>
                   <input
                     type="text"
-                    value={uploadForm.filiere}
-                    onChange={(e) => setUploadForm({ ...uploadForm, filiere: e.target.value })}
+                    value={uploadForm.filière}
+                    onChange={(e) => setUploadForm({ ...uploadForm, filière: e.target.value })}
                     placeholder="Ex: Sciences"
                     className={inputClass}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-[#4d4c5c] mb-2">Universite</label>
+                  <label className="block text-sm font-semibold text-[#4d4c5c] mb-2">Université</label>
                   <input
                     type="text"
                     value={uploadForm.university}
@@ -457,7 +457,7 @@ export default function ResourcesPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-[#4d4c5c] mb-2">Annee</label>
+                  <label className="block text-sm font-semibold text-[#4d4c5c] mb-2">Année</label>
                   <input
                     type="text"
                     value={uploadForm.year}
@@ -486,7 +486,7 @@ export default function ResourcesPage() {
                     <p className="text-sm font-medium text-[#121117]">{selectedFile.name}</p>
                   ) : (
                     <>
-                      <p className="text-sm text-[#4d4c5c] font-medium">Clique pour selectionner un fichier</p>
+                      <p className="text-sm text-[#4d4c5c] font-medium">Clique pour sélectionner un fichier</p>
                       <p className="text-xs text-[#6a697c] mt-1.5">PDF, DOCX, PPTX, images (max 20 Mo)</p>
                     </>
                   )}

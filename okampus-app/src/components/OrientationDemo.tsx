@@ -151,8 +151,8 @@ export default function OrientationDemo() {
               Une orientation qui debouche sur une vraie decision
             </h2>
             <p className="mt-4 text-[#4d4c5c] text-lg leading-relaxed max-w-xl">
-              Voici comment Fatoumata, bacheliere de Conakry, a clarifie son choix en quelques
-              echanges — d&apos;abord avec l&apos;assistant, puis avec une mentorante en medecine.
+              Voici comment Fatoumata, bachelière de Conakry, a clarifié son choix en quelques
+              echanges — d&apos;abord avec l&apos;assistant, puis avec une mentorante en médecine.
             </p>
 
             <div className="mt-8 card p-4 sm:p-5 bg-white shadow-[0_8px_32px_rgba(18,17,23,0.06)]">
@@ -161,7 +161,7 @@ export default function OrientationDemo() {
                   <div className="w-2.5 h-2.5 rounded-full bg-[#14b887]" />
                   <p className="text-sm font-semibold text-[#121117]">Conversation simulee</p>
                 </div>
-                <span className="text-[11px] text-[#6a697c] font-medium">Scenario reel Guinee</span>
+                <span className="text-[11px] text-[#6a697c] font-medium">Scénario réel Guinée</span>
               </div>
 
               <div className="space-y-4 max-h-[420px] sm:max-h-none overflow-y-auto pr-1">
@@ -179,8 +179,8 @@ export default function OrientationDemo() {
               </p>
               <ul className="mt-4 space-y-3">
                 {[
-                  "Des filieres comparees selon ton profil",
-                  "Un mentor qui connait le terrain",
+                  "Des filières comparées selon ton profil",
+                  "Un mentor qui connaît le terrain",
                   "Une decision plus rapide et rassurante",
                 ].map((item) => (
                   <li key={item} className="flex items-start gap-2.5 text-sm text-[#4d4c5c]">
@@ -195,10 +195,10 @@ export default function OrientationDemo() {
 
             <div className="card p-5 bg-[#ffdf3d] border-[#ffdf3d]">
               <p className="font-display text-lg font-bold text-[#121117]">
-                Et toi, tu hesites sur quoi ?
+                Et toi, tu hésites sur quoi ?
               </p>
               <p className="mt-2 text-sm text-[#121117]/80">
-                Cree ton compte gratuitement et lance ta propre conversation d&apos;orientation.
+                Crée ton compte gratuitement et lance ta propre conversation d&apos;orientation.
               </p>
               <div className="mt-4 flex flex-col gap-2">
                 <Link href="/inscription?callbackUrl=/assistant" className="btn-primary !text-sm !py-3">
@@ -206,7 +206,7 @@ export default function OrientationDemo() {
                   <span aria-hidden="true">→</span>
                 </Link>
                 <Link href="/inscription?callbackUrl=/conseil" className="btn-secondary bg-white/60 !text-sm !py-2.5">
-                  Parler a un mentor
+                  Parler à un mentor
                 </Link>
               </div>
             </div>

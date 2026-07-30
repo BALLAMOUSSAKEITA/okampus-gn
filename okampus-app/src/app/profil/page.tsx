@@ -62,12 +62,12 @@ export default function ProfilPage() {
     setAdvisorSuccess("");
 
     if (user.role !== "etudiant" && user.role !== "admin") {
-      setAdvisorError("Seuls les etudiants peuvent devenir conseillers");
+      setAdvisorError("Seuls les étudiants peuvent devenir conseillers");
       return;
     }
 
     if (!advisorForm.field.trim() || !advisorForm.university.trim() || !advisorForm.year.trim()) {
-      setAdvisorError("Filiere, universite et annee sont requises");
+      setAdvisorError("Filière, université et année sont requises");
       return;
     }
 
@@ -91,7 +91,7 @@ export default function ProfilPage() {
       });
 
       if (!ok) {
-        setAdvisorError("Impossible d'enregistrer le profil conseiller. Reessaie.");
+        setAdvisorError("Impossible d'enregistrér le profil conseiller. Réessaie.");
         return;
       }
 
@@ -111,7 +111,7 @@ export default function ProfilPage() {
     try {
       const ok = await updateUser({ isAdvisor: false, advisorProfile: null });
       if (!ok) {
-        setAdvisorError("Impossible de retirer le statut conseiller. Reessaie.");
+        setAdvisorError("Impossible de retirer le statut conseiller. Réessaie.");
         return;
       }
       setAdvisorSuccess("Statut conseiller retire.");
@@ -129,7 +129,7 @@ export default function ProfilPage() {
       <PageShell narrow>
         <PageHeader
           title="Mon profil"
-          description="Gere ton compte et ton statut conseiller"
+          description="Gère ton compte et ton statut conseiller"
         />
 
         {advisorSuccess && (
@@ -162,7 +162,7 @@ export default function ProfilPage() {
                     : "bg-emerald-50 text-emerald-700"
                 }`}
               >
-                {user.role === "bachelier" ? "Nouveau bachelier" : "Etudiant"}
+                {user.role === "bachelier" ? "Nouveau bachelier" : "Étudiant"}
               </span>
             </div>
           </div>
@@ -187,7 +187,7 @@ export default function ProfilPage() {
                   )}
                   {user.advisorProfile.availableSlots?.length > 0 && (
                     <p className="text-sm text-[#4d4c5c] mt-2">
-                      Creneaux : {user.advisorProfile.availableSlots.join(" · ")}
+                      Créneaux : {user.advisorProfile.availableSlots.join(" · ")}
                     </p>
                   )}
                   {user.advisorProfile.meetLink && (
@@ -209,13 +209,13 @@ export default function ProfilPage() {
                     disabled={advisorLoading}
                     className="mt-4 text-sm text-red-500 hover:text-red-600 hover:underline transition-colors disabled:opacity-50"
                   >
-                    {advisorLoading ? "Chargement..." : "Ne plus etre conseiller"}
+                    {advisorLoading ? "Chargement..." : "Ne plus être conseiller"}
                   </button>
                 </div>
               ) : (
                 <>
                   <p className="text-[#4d4c5c] text-sm mb-5 leading-relaxed">
-                    En tant qu&apos;etudiant, tu peux aider les bacheliers en devenant conseiller.
+                    En tant qu&apos;étudiant, tu peux aider les bacheliers en devenant conseiller.
                     Tu pourras discuter avec eux et prendre des rendez-vous pour des appels Meet.
                   </p>
                   <button
@@ -238,7 +238,7 @@ export default function ProfilPage() {
               onClick={() => window.dispatchEvent(new Event("bachelio-show-onboarding"))}
               className="text-sm font-medium text-[#14b887] hover:underline"
             >
-              Revoir le guide de demarrage
+              Revoir le guide de démarrage
             </button>
             <button
               type="button"
@@ -248,7 +248,7 @@ export default function ProfilPage() {
               }}
               className="text-[#6a697c] hover:text-red-500 text-sm font-medium transition-colors"
             >
-              Se deconnecter
+              Se déconnecter
             </button>
           </div>
         </div>
@@ -287,7 +287,7 @@ export default function ProfilPage() {
           >
             <span className="text-2xl block mb-2">CV</span>
             <span className="font-semibold text-[#4d4c5c] group-hover:text-[#121117] transition-colors">
-              Generateur CV
+              Générateur CV
             </span>
           </Link>
         </div>
@@ -302,7 +302,7 @@ export default function ProfilPage() {
               <p className="text-sm text-[#4d4c5c] mt-1">
                 Ces infos seront visibles par les bacheliers sur la page Mentorat.
                 {(user.field || user.university) && (
-                  <> Filiere et universite pre-remplies depuis ton inscription.</>
+                  <> Filière et université pré-remplies depuis ton inscription.</>
                 )}
               </p>
             </div>
@@ -318,20 +318,20 @@ export default function ProfilPage() {
 
               <div>
                 <label className="block text-sm font-medium text-[#4d4c5c] mb-1.5">
-                  Filiere <span className="text-red-500">*</span>
+                  Filière <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
                   value={advisorForm.field}
                   onChange={(e) => setAdvisorForm({ ...advisorForm, field: e.target.value })}
-                  placeholder="Ex: Medecine, Droit, Informatique"
+                  placeholder="Ex: Médecine, Droit, Informatique"
                   required
                   className={inputClass}
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-[#4d4c5c] mb-1.5">
-                  Universite <span className="text-red-500">*</span>
+                  Université <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -344,13 +344,13 @@ export default function ProfilPage() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-[#4d4c5c] mb-1.5">
-                  Annee <span className="text-red-500">*</span>
+                  Année <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
                   value={advisorForm.year}
                   onChange={(e) => setAdvisorForm({ ...advisorForm, year: e.target.value })}
-                  placeholder="Ex: 4eme annee"
+                  placeholder="Ex: 4e année"
                   required
                   className={inputClass}
                 />
@@ -362,14 +362,14 @@ export default function ProfilPage() {
                 <textarea
                   value={advisorForm.description}
                   onChange={(e) => setAdvisorForm({ ...advisorForm, description: e.target.value })}
-                  placeholder="Ex: Passionne par la medecine, j'aime partager mon experience..."
+                  placeholder="Ex: Passionné par la médecine, j'aime partager mon expérience..."
                   rows={3}
                   className={`${inputClass} resize-none`}
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-[#4d4c5c] mb-1.5">
-                  Creneaux disponibles (un par ligne)
+                  Créneaux disponibles (un par ligne)
                 </label>
                 <textarea
                   value={advisorForm.availableSlotsText}

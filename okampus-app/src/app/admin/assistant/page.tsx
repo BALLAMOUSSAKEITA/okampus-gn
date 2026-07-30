@@ -11,7 +11,7 @@ import {
 
 function UsageBar({ used, limit }: { used: number; limit: number | null }) {
   if (limit == null) {
-    return <span className="text-xs text-[#737373]">Illimite</span>;
+    return <span className="text-xs text-[#737373]">Illimité</span>;
   }
 
   const ratio = limit > 0 ? Math.min(100, Math.round((used / limit) * 100)) : 0;
@@ -38,7 +38,7 @@ function LimitBadge({ atLimit, label }: { atLimit: boolean; label: string }) {
 
 export default function AdminAssistantUsagePage() {
   const { data: session } = useSession();
-  const token = session?.accessToken;
+  const token = session?.accèssToken;
   const [data, setData] = useState<AdminAssistantUsage | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -92,7 +92,7 @@ export default function AdminAssistantUsagePage() {
       <AdminPageHeader
         pill={{ label: "Assistant IA", variant: "blue" }}
         title="Consommation Kampus"
-        description="Suivi de l'utilisation DeepSeek par compte — periode chat du jour et orientation du mois en cours."
+        description="Suivi de l'utilisation DeepSeek par compte — période chat du jour et orientation du mois en cours."
         action={
           <button type="button" onClick={load} className="admin-btn-secondary">
             Actualiser
@@ -162,7 +162,7 @@ export default function AdminAssistantUsagePage() {
 
           <div className="admin-card !p-0 overflow-hidden">
             {filteredUsers.length === 0 ? (
-              <p className="admin-empty">Aucune consommation enregistree pour la periode en cours.</p>
+              <p className="admin-empty">Aucune consommation enregistrée pour la période en cours.</p>
             ) : (
               <div className="admin-table-wrap">
                 <table className="admin-table">
@@ -173,7 +173,7 @@ export default function AdminAssistantUsagePage() {
                         "Role",
                         "Chat (jour)",
                         "Orientation (mois)",
-                        "Derniere activite",
+                        "Dernière activité",
                       ].map((h) => (
                         <th key={h}>{h}</th>
                       ))}

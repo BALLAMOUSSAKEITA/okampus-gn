@@ -4,15 +4,15 @@ import type { ReactNode } from "react";
 const messages = [
   <>
     <span className="text-[#ffdf3d] font-semibold">BacheliO</span>
-    {" "}— du bac a l&apos;emploi, on t&apos;accompagne a chaque etape
+    {" "}— du bac a l&apos;emploi, on t&apos;accompagne à chaque étape
   </>,
-  <>Orientation IA, mentorat et stages reunis au meme endroit</>,
-  <>Des etudiants mentors disponibles pour te guider filiere par filiere</>,
+  <>Orientation IA, mentorat et stages réunis au même endroit</>,
+  <>Des étudiants mentors disponibles pour te guider filière par filière</>,
   <>
     <Link href="/inscription" className="underline underline-offset-2 hover:text-[#ffdf3d] transition-colors font-semibold">
-      Cree ton compte
+      Crée ton compte
     </Link>
-    {" "}— ca prend moins de 2 minutes
+    {" "}— ça prend moins de 2 minutes
   </>,
 ];
 

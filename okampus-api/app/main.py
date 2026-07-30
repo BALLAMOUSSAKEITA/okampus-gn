@@ -15,7 +15,7 @@ import app.models  # noqa: F401
 
 
 async def _ensure_schema(conn) -> None:
-    """Patches schema pour bases deja deployees (create_all n'ajoute pas les colonnes)."""
+    """Patches schema pour bases déjà deployees (create_all n'ajoute pas les colonnes)."""
     try:
         await conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS phone VARCHAR"))
         await conn.execute(text("ALTER TABLE users ALTER COLUMN email DROP NOT NULL"))

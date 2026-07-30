@@ -13,7 +13,7 @@ export default function PushNotificationSetup({ enabled }: PushNotificationSetup
   const [status, setStatus] = useState<"idle" | "prompting" | "done" | "unsupported">("idle");
 
   useEffect(() => {
-    if (!enabled || !session?.accessToken) return;
+    if (!enabled || !session?.accèssToken) return;
     if (typeof window === "undefined") return;
     if (!("Notification" in window) || !("serviceWorker" in navigator)) {
       setStatus("unsupported");
@@ -22,7 +22,7 @@ export default function PushNotificationSetup({ enabled }: PushNotificationSetup
     if (!process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY) return;
 
     if (Notification.permission === "granted") {
-      void subscribeToPushNotifications(session.accessToken).then((ok) => {
+      void subscribeToPushNotifications(session.accèssToken).then((ok) => {
         setStatus(ok ? "done" : "idle");
       });
       return;
@@ -31,12 +31,12 @@ export default function PushNotificationSetup({ enabled }: PushNotificationSetup
     if (Notification.permission === "default") {
       setStatus("prompting");
     }
-  }, [enabled, session?.accessToken]);
+  }, [enabled, session?.accèssToken]);
 
   const handleEnable = async () => {
-    if (!session?.accessToken) return;
+    if (!session?.accèssToken) return;
     setStatus("prompting");
-    const ok = await subscribeToPushNotifications(session.accessToken);
+    const ok = await subscribeToPushNotifications(session.accèssToken);
     setStatus(ok ? "done" : "idle");
   };
 
@@ -46,7 +46,7 @@ export default function PushNotificationSetup({ enabled }: PushNotificationSetup
   return (
     <div className="mb-4 rounded-lg border border-[#99c5ff] bg-[#eef5ff] px-4 py-3">
       <p className="text-sm font-medium text-[#121117]">
-        Recois une notification sur ton telephone quand un bachelier t&apos;ecrit.
+        Recois une notification sur ton téléphone quand un bachelier t&apos;écrit.
       </p>
       <button
         type="button"

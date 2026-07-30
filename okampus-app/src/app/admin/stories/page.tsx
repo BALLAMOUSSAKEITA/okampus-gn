@@ -14,11 +14,11 @@ export default function AdminStoriesPage() {
       pillVariant="blue"
       fields={[
         { key: "title", label: "Titre", required: true },
-        { key: "category", label: "Categorie", required: true, options: ["Orientation", "Etudes", "Carriere", "Entrepreneuriat"] },
+        { key: "category", label: "Catégorie", required: true, options: ["Orientation", "Etudes", "Carrière", "Entrepreneuriat"] },
         { key: "author_name", label: "Nom auteur", required: true },
-        { key: "author_role", label: "Role / filiere" },
-        { key: "university", label: "Universite" },
-        { key: "graduation_year", label: "Annee diplome" },
+        { key: "author_role", label: "Rôle / filière" },
+        { key: "university", label: "Université" },
+        { key: "graduation_year", label: "Année diplôme" },
         { key: "image_url", label: "URL image" },
         { key: "content", label: "Contenu", type: "textarea", required: true, rows: 6 },
         { key: "is_featured", label: "Mis en avant", type: "checkbox" },
@@ -27,7 +27,7 @@ export default function AdminStoriesPage() {
       columns={[
         { key: "title", label: "Titre" },
         { key: "author_name", label: "Auteur" },
-        { key: "category", label: "Categorie" },
+        { key: "category", label: "Catégorie" },
         {
           key: "is_featured",
           label: "Featured",

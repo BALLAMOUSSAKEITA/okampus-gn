@@ -1,4 +1,4 @@
-import { findInstitutionsForTopic, formatInstitutionFilieres } from "@/lib/universities";
+import { findInstitutionsForTopic, formatInstitutionFilières } from "@/lib/universities";
 
 function detectSerie(text: string): "sm" | "se" | "ss" | null {
   const lower = text.toLowerCase();
@@ -31,8 +31,8 @@ function detectSerie(text: string): "sm" | "se" | "ss" | null {
 
 function detectTopic(text: string): string | null {
   const lower = text.toLowerCase();
-  if (lower.includes("medecin") || lower.includes("pharmacie") || lower.includes("sante")) {
-    return "sante";
+  if (lower.includes("medecin") || lower.includes("pharmacie") || lower.includes("santé")) {
+    return "santé";
   }
   if (lower.includes("informatique") || lower.includes("info") || lower.includes("tech")) {
     return "info";
@@ -62,37 +62,37 @@ export function generateChatFallback(userMessage: string): string {
 
   if (!serie) {
     lines.push(
-      "Pour te orienter correctement, dis-moi d'abord **ta serie au bac** en Guinee :",
-      "- Sciences Mathematiques (SM)",
-      "- Sciences Experimentales (SE)",
+      "Pour te orienter correctement, dis-moi d'abord **ta serie au bac** en Guinée :",
+      "- Sciences Mathématiques (SM)",
+      "- Sciences Expérimentales (SE)",
       "- Sciences Sociales (SS)",
       ""
     );
   }
 
-  if (topic === "sante") {
+  if (topic === "santé") {
     if (serie === "se" || serie === "sm") {
       lines.push(
-        "## Filieres",
-        "- Medecine, Pharmacie, Sciences infirmieres (tres selectif — prepare-toi tot)",
+        "## Filières",
+        "- Médecine, Pharmacie, Sciences infirmières (très sélectif — prépare-toi tot)",
         "",
         "## Conseils",
-        "- Verifie les conditions d'admission a l'UGANC ou l'Universite Kofi Annan",
-        "- Parle a un etudiant en medecine pour un retour concret"
+        "- Vérifie les conditions d'admission à l'UGANC ou l'Université Kofi Annan",
+        "- Parle à un étudiant en médecine pour un retour concret"
       );
     } else {
       lines.push(
-        "## Filieres",
-        "- Sciences infirmieres, Sante publique, ou passerelle vers SE/SM selon ton parcours",
+        "## Filières",
+        "- Sciences infirmières, Sante publique, ou passerelle vers SE/SM selon ton parcours",
         "",
         "## Conseils",
-        "- La medecine classique demande surtout SE ou SM — un mentor peut t'expliquer les options"
+        "- La médecine classique demande surtout SE ou SM — un mentor peut t'expliquer les options"
       );
     }
   } else if (topic === "info") {
     lines.push(
-      "## Filieres",
-      "- Informatique, Genie logiciel, Reseaux (SM ideal, possible depuis SE avec bon niveau maths)",
+      "## Filières",
+      "- Informatique, Génie logiciel, Réseaux (SM ideal, possible depuis SE avec bon niveau maths)",
       "",
       "## Conseils",
       "- Renforce les maths et pratique la logique (Python, sites web)",
@@ -100,66 +100,66 @@ export function generateChatFallback(userMessage: string): string {
     );
   } else if (topic === "droit") {
     lines.push(
-      "## Filieres",
-      "- Droit, Sciences politiques, Journalisme (SS ou SM selon l'universite)",
+      "## Filières",
+      "- Droit, Sciences politiques, Journalisme (SS ou SM selon l'université)",
       "",
       "## Conseils",
-      "- Travaille l'expression ecrite et la culture generale",
-      "- Visite le forum pour les retours sur les filieres juridiques"
+      "- Travaille l'expression écrite et la culture generale",
+      "- Visite le forum pour les retours sur les filières juridiques"
     );
   } else if (serie === "sm") {
     lines.push(
-      "## Filieres",
-      "- Informatique, Genie civil, Sciences economiques, Architecture",
+      "## Filières",
+      "- Informatique, Génie civil, Sciences économiques, Architecture",
       "",
       "## Conseils",
-      "- Precise ton projet (metier visé) pour affiner",
-      "- Compare 2 filieres avec un mentor etudiant"
+      "- Précise ton projet (métier visé) pour affiner",
+      "- Compare 2 filières avec un mentor étudiant"
     );
   } else if (serie === "se") {
     lines.push(
-      "## Filieres",
-      "- Medecine, Pharmacie, Agronomie, Sciences de la Vie",
+      "## Filières",
+      "- Médecine, Pharmacie, Agronomie, Sciences de la Vie",
       "",
       "## Conseils",
-      "- Les filieres sante sont tres demandees — anticipe la preparation",
+      "- Les filières santé sont très demandées — anticipe la préparation",
       "- Discute avec un mentor de ta serie"
     );
   } else if (serie === "ss") {
     lines.push(
-      "## Filieres",
+      "## Filières",
       "- Droit, Gestion, Journalisme, Sciences politiques",
       "",
       "## Conseils",
       "- Valorise tes points forts en langues et redaction",
-      "- Explore le forum pour les temoignages"
+      "- Explore le forum pour les témoignages"
     );
   } else {
     lines.push(
       "## Pour avancer",
-      "- Dis-moi ta **serie au bac** et ton **projet d'etudes**",
-      "- Je te proposerai 2 filieres realistes en Guinee",
+      "- Dis-moi ta **serie au bac** et ton **projet d'études**",
+      "- Je te proposerai 2 filières réalistes en Guinée",
       "",
       "## En attendant",
-      "- Un mentor etudiant peut repondre plus precisement a ta situation"
+      "- Un mentor étudiant peut répondre plus précisément à ta situation"
     );
   }
 
   lines.push(
     "",
-    "## Etablissements en Guinee"
+    "## Établissements en Guinée"
   );
 
   const institutions = findInstitutionsForTopic(userMessage, 3);
   if (institutions.length > 0) {
     for (const inst of institutions) {
       lines.push(
-        `- **${inst.shortName}** (${inst.city}, ${inst.sector === "public" ? "public" : "prive"}) : ${formatInstitutionFilieres(inst, 4)}`
+        `- **${inst.shortName}** (${inst.city}, ${inst.sector === "public" ? "public" : "privé"}) : ${formatInstitutionFilières(inst, 4)}`
       );
     }
-    lines.push("- [Voir toutes les universites et ecoles](/universites)");
+    lines.push("- [Voir toutes les universités et écoles](/universites)");
   } else {
-    lines.push("- Consulte le [referentiel complet](/universites) pour comparer les etablissements.");
+    lines.push("- Consulte le [référentiel complet](/universites) pour comparer les établissements.");
   }
 
   lines.push(
@@ -174,20 +174,20 @@ export function generateChatFallback(userMessage: string): string {
 
 export function mapAssistantErrorMessage(error: string): string {
   if (error.includes("Insufficient Balance") || error.includes("402")) {
-    return "Credits DeepSeek epuises — ajoute des credits sur platform.deepseek.com ou reessaie plus tard.";
+    return "Credits DeepSeek épuisés — ajoute des credits sur platform.deepseek.com ou réessaie plus tard.";
   }
   if (
     error.includes("UNABLE_TO_VERIFY") ||
     error.includes("certificate") ||
     error.includes("SSL")
   ) {
-    return "Erreur de connexion au service IA — reessaie dans un instant.";
+    return "Erreur de connexion au service IA — réessaie dans un instant.";
   }
   if (error.includes("401") || error.includes("Authentication") || error.includes("invalid")) {
-    return "Cle API DeepSeek invalide — verifie DEEPSEEK_API_KEY sur le serveur.";
+    return "Cle API DeepSeek invalide — vérifie DEEPSEEK_API_KEY sur le serveur.";
   }
   if (error.includes("timeout") || error.includes("ETIMEDOUT") || error.includes("fetch failed")) {
-    return "Delai depasse — verifie ta connexion et reessaie.";
+    return "Délai dépassé — vérifie ta connexion et réessaie.";
   }
   return "Service IA temporairement indisponible.";
 }

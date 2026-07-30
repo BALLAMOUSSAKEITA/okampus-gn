@@ -26,7 +26,7 @@ function ConnexionForm() {
     setError(
       authError === "CredentialsSignin"
         ? "Identifiant ou mot de passe incorrect"
-        : "Session expiree ou connexion refusee. Reessaie."
+        : "Session expirée ou connexion refusée. Réessaie."
     );
   }, [searchParams]);
 
@@ -60,7 +60,7 @@ function ConnexionForm() {
         setLoading(false);
       }
     } catch {
-      setError("Une erreur est survenue. Verifie ta connexion et reessaie.");
+      setError("Une erreur est survenue. Vérifie ta connexion et réessaie.");
       setLoading(false);
     }
   };
@@ -68,9 +68,9 @@ function ConnexionForm() {
   return (
     <AuthCardShell
       mode="login"
-      title="Se connecter a BacheliO"
+      title="Se connecter à BacheliO"
       footerHref={registerHref}
-      footerLabel="Creer un compte"
+      footerLabel="Créer un compte"
     >
       <form onSubmit={handleSubmit} className="space-y-3" noValidate>
         {error && (
@@ -84,7 +84,7 @@ function ConnexionForm() {
 
         <div>
           <label htmlFor="contact" className="sr-only">
-            Email ou telephone
+            Email ou téléphone
           </label>
           <input
             id="contact"
@@ -92,7 +92,7 @@ function ConnexionForm() {
             inputMode="email"
             value={contact}
             onChange={(e) => setContact(e.target.value)}
-            placeholder="Email ou numero de telephone"
+            placeholder="Email ou numéro de téléphone"
             autoComplete="username"
             required
             className={loginInputClass}
@@ -123,7 +123,7 @@ function ConnexionForm() {
             href={registerHref}
             className="text-sm text-[#14b887] font-medium hover:underline underline-offset-2"
           >
-            Mot de passe oublie ? Contacte le support
+            Mot de passe oublié ? Contacte le support
           </Link>
         </div>
       </form>

@@ -51,17 +51,17 @@ function InscriptionForm() {
         return false;
       }
       if (!formData.bacOption) {
-        setError("Selectionne ton option au bac");
+        setError("Sélectionne ton option au bac");
         return false;
       }
     }
     if (role === "etudiant") {
       if (!formData.university.trim()) {
-        setError("Indique ton universite");
+        setError("Indique ton université");
         return false;
       }
       if (!formData.field.trim()) {
-        setError("Indique ta filiere");
+        setError("Indique ta filière");
         return false;
       }
     }
@@ -94,12 +94,12 @@ function InscriptionForm() {
     }
 
     if (formData.password.length < 6) {
-      setError("Le mot de passe doit contenir au moins 6 caracteres");
+      setError("Le mot de passe doit contenir au moins 6 caractères");
       return;
     }
 
     if (!acceptedPrivacy) {
-      setError("Accepte la politique de confidentialite pour continuer");
+      setError("Accepte la politique de confidentialité pour continuer");
       return;
     }
 
@@ -155,11 +155,11 @@ function InscriptionForm() {
       const identifier = contact.email || contact.phone || formData.contact.trim();
       const signInRes = await signInWithRedirect(identifier, formData.password, callbackUrl);
       if (!signInRes.ok) {
-        setError("Inscription reussie mais connexion echouee. Essaie de te connecter.");
+        setError("Inscription réussie mais connexion échouée. Essaie de te connecter.");
         setLoading(false);
       }
     } catch {
-      setError("Une erreur est survenue. Verifie ta connexion et reessaie.");
+      setError("Une erreur est survenue. Vérifie ta connexion et réessaie.");
       setLoading(false);
     }
   };
@@ -173,16 +173,16 @@ function InscriptionForm() {
     <AuthCardShell
       mode="register"
       wide
-      title={step === 1 ? "Creer un compte" : "Securise ton compte"}
+      title={step === 1 ? "Créer un compte" : "Sécurise ton compte"}
       subtitle={
         step === 1
-          ? "Etape 1 sur 2 — dis-nous qui tu es"
-          : "Etape 2 sur 2 — email ou telephone et mot de passe"
+          ? "Étape 1 sur 2 — dis-nous qui tu es"
+          : "Étape 2 sur 2 — email ou téléphone et mot de passe"
       }
       footerHref={loginHref}
       footerLabel="Se connecter"
     >
-      <div className="mb-4 flex items-center gap-2" aria-label={`Etape ${step} sur 2`}>
+      <div className="mb-4 flex items-center gap-2" aria-label={`Étape ${step} sur 2`}>
         <span
           className={`h-1 flex-1 rounded-full transition-colors ${
             step >= 1 ? "bg-[#14b887]" : "bg-[#dddfe2]"
@@ -202,7 +202,7 @@ function InscriptionForm() {
               {(
                 [
                   { id: "bachelier" as const, label: "Bachelier" },
-                  { id: "etudiant" as const, label: "Etudiant" },
+                  { id: "etudiant" as const, label: "Étudiant" },
                 ] as const
               ).map((option) => {
                 const active = role === option.id;
@@ -276,27 +276,27 @@ function InscriptionForm() {
               <>
                 <div>
                   <label htmlFor="university" className="sr-only">
-                    Universite
+                    Université
                   </label>
                   <input
                     id="university"
                     type="text"
                     value={formData.university}
                     onChange={(e) => update("university", e.target.value)}
-                    placeholder="Universite (UGANC, Gamal...)"
+                    placeholder="Université (UGANC, Gamal...)"
                     className={fieldClass}
                   />
                 </div>
                 <div>
                   <label htmlFor="field" className="sr-only">
-                    Filiere
+                    Filière
                   </label>
                   <input
                     id="field"
                     type="text"
                     value={formData.field}
                     onChange={(e) => update("field", e.target.value)}
-                    placeholder="Filiere (Informatique, Medecine...)"
+                    placeholder="Filière (Informatique, Médecine...)"
                     className={fieldClass}
                   />
                 </div>
@@ -309,7 +309,7 @@ function InscriptionForm() {
           <>
             <div>
               <label htmlFor="contact" className="sr-only">
-                Email ou telephone
+                Email ou téléphone
               </label>
               <input
                 id="contact"
@@ -317,7 +317,7 @@ function InscriptionForm() {
                 inputMode="email"
                 value={formData.contact}
                 onChange={(e) => update("contact", e.target.value)}
-                placeholder="Email ou numero de telephone"
+                placeholder="Email ou numéro de téléphone"
                 autoComplete="username"
                 required
                 className={fieldClass}
@@ -326,7 +326,7 @@ function InscriptionForm() {
 
             <PasswordField
               id="password"
-              label="Mot de passe (6 caracteres min.)"
+              label="Mot de passe (6 caractères min.)"
               value={formData.password}
               onChange={(value) => update("password", value)}
               autoComplete="new-password"
@@ -349,7 +349,7 @@ function InscriptionForm() {
                   target="_blank"
                   className="font-semibold text-[#14b887] underline underline-offset-2"
                 >
-                  politique de confidentialite
+                  politique de confidentialité
                 </Link>
               </span>
             </label>
@@ -382,14 +382,14 @@ function InscriptionForm() {
               Retour
             </button>
             <button type="submit" disabled={loading} className={`${primaryBtn} flex-[1.4]`}>
-              {loading ? "Creation..." : "S'inscrire"}
+              {loading ? "Création..." : "S'inscrire"}
             </button>
           </div>
         )}
       </form>
 
       <div className="hidden sm:block mt-4 pt-4 border-t border-[#dddfe2] text-center text-sm text-[#4d4c5c]">
-        Deja un compte ?{" "}
+        Déjà un compte ?{" "}
         <Link href={loginHref} className="font-semibold text-[#14b887] hover:underline">
           Se connecter
         </Link>

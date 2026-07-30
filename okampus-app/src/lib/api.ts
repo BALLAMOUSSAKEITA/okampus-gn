@@ -24,9 +24,9 @@ export async function apiUpload(
   try {
     return await fetch(url, { method: "POST", headers, body: formData });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Erreur reseau";
+    const message = error instanceof Error ? error.message : "Erreur réseau";
     throw new Error(
-      `Impossible de joindre l'API (${url}). Verifie que le serveur FastAPI tourne sur le port 8000. ${message}`
+      `Impossible de joindre l'API (${url}). Vérifie que le serveur FastAPI tourne sur le port 8000. ${message}`
     );
   }
 }
@@ -55,9 +55,9 @@ export async function apiFetch(
     return await fetch(url, { ...rest, headers });
   } catch (error) {
     const message =
-      error instanceof Error ? error.message : "Erreur reseau";
+      error instanceof Error ? error.message : "Erreur réseau";
     throw new Error(
-      `Impossible de joindre l'API (${url}). Verifie que le serveur FastAPI tourne sur le port 8000. ${message}`
+      `Impossible de joindre l'API (${url}). Vérifie que le serveur FastAPI tourne sur le port 8000. ${message}`
     );
   }
 }

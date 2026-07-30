@@ -68,25 +68,25 @@ export async function POST(request: Request) {
 
     const parsed = requestSchema.safeParse(body);
     if (!parsed.success) {
-      return NextResponse.json({ error: "Donnees invalides" }, { status: 400 });
+      return NextResponse.json({ error: "Données invalides" }, { status: 400 });
     }
 
     const mode: AssistantMode = parsed.data.mode;
-    const accessToken = session.accessToken;
-    if (!accessToken) {
+    const accèssToken = session.accèssToken;
+    if (!accèssToken) {
       return NextResponse.json(
-        { error: "Session expiree — reconnecte-toi pour utiliser l'assistant IA" },
+        { error: "Session expirée — reconnecte-toi pour utiliser l'assistant IA" },
         { status: 401 }
       );
     }
 
     let quota;
     try {
-      quota = await consumeAssistantQuota(accessToken, mode);
+      quota = await consumeAssistantQuota(accèssToken, mode);
     } catch (quotaError) {
       console.error("[assistant] quota check failed", quotaError);
       return NextResponse.json(
-        { error: "Impossible de verifier ton quota d'utilisation" },
+        { error: "Impossible de vérifier ton quota d'utilisation" },
         { status: 503 }
       );
     }
@@ -145,7 +145,7 @@ Analyse ce profil. Respecte le format et la limite de 100 mots.`,
         const content = formatAssistantReply(
           completion.choices[0]?.message?.content?.trim() || ""
         );
-        if (!content) throw new Error("Reponse vide");
+        if (!content) throw new Error("Réponse vide");
 
         return NextResponse.json({
           content,
@@ -176,7 +176,7 @@ Analyse ce profil. Respecte le format et la limite de 100 mots.`,
       const content = formatAssistantReply(
         completion.choices[0]?.message?.content?.trim() || ""
       );
-      if (!content) throw new Error("Reponse vide");
+      if (!content) throw new Error("Réponse vide");
 
       return NextResponse.json({
         content,
@@ -194,7 +194,7 @@ Analyse ce profil. Respecte le format et la limite de 100 mots.`,
 
       if (parsed.data.mode === "orientation") {
         const intro = isLowBalance
-          ? "Credits DeepSeek epuises — analyse de secours :\n\n"
+          ? "Credits DeepSeek épuisés — analyse de secours :\n\n"
           : "";
 
         return NextResponse.json({

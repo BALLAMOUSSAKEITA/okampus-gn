@@ -11,49 +11,49 @@ const steps = [
     emoji: "👋",
     title: "Bienvenue sur BacheliO !",
     description:
-      "La plateforme qui t'accompagne apres le bac : orientation, mentors, forum et opportunites en Guinee.",
+      "La plateforme qui t'accompagne après le bac : orientation, mentors, forum et opportunités en Guinée.",
     cta: null,
   },
   {
     emoji: "🤖",
     title: "Assistant IA",
     description:
-      "Pose tes questions sur les filieres, les universites et ton orientation. L'assistant te guide selon ton profil.",
+      "Pose tes questions sur les filières, les universités et ton orientation. L'assistant te guide selon ton profil.",
     cta: { href: "/assistant", label: "Essayer l'assistant" },
   },
   {
     emoji: "🎓",
     title: "Mentorat",
     description:
-      "Trouve des etudiants deja en filiere qui peuvent te conseiller, repondre a tes questions et partager leur experience.",
+      "Trouve des étudiants déjà en filière qui peuvent te conseiller, répondre à tes questions et partager leur expérience.",
     cta: { href: "/conseil", label: "Voir les mentors" },
   },
   {
     emoji: "💬",
     title: "Messages",
     description:
-      "Discute avec tes mentors comme sur Messenger. Envoie un message, recois des reponses et suis tes conversations.",
+      "Discute avec tes mentors comme sur Messenger. Envoie un message, recois des réponses et suis tes conversations.",
     cta: { href: "/messages", label: "Mes messages" },
   },
   {
     emoji: "📣",
     title: "Forum",
     description:
-      "Echange avec la communaute : questions sur les filieres, temoignages et entraide entre bacheliers et etudiants.",
+      "Échange avec la communauté : questions sur les filières, témoignages et entraide entre bacheliers et étudiants.",
     cta: { href: "/forum", label: "Explorer le forum" },
   },
   {
     emoji: "💼",
     title: "Stages, bourses & plus",
     description:
-      "Consulte les offres de stages, les bourses, les ressources de cours, le generateur CV et ton parcours academique.",
+      "Consulte les offres de stages, les bourses, les ressources de cours, le générateur CV et ton parcours académique.",
     cta: { href: "/stages", label: "Voir les stages" },
   },
   {
     emoji: "✅",
-    title: "Tu es pret !",
+    title: "Tu es prêt !",
     description:
-      "Explore la plateforme a ton rythme. Tu retrouveras ton profil en haut a droite pour gerer ton compte et devenir mentor.",
+      "Explore la plateforme à ton rythme. Tu retrouveras ton profil en haut à droite pour gérer ton compte et devenir mentor.",
     cta: { href: "/profil", label: "Mon profil" },
   },
 ] as const;

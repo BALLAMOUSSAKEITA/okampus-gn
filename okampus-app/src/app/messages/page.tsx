@@ -63,11 +63,11 @@ function MessagesContent() {
     (user?.isAdvisor ? "Conversation" : "Mentor");
 
   const loadConversations = useCallback(async () => {
-    if (!session?.accessToken) return;
+    if (!session?.accèssToken) return;
     setLoadingList(true);
     try {
       const res = await apiFetch("/mentor-messages/conversations", {
-        token: session.accessToken,
+        token: session.accèssToken,
       });
       if (!res.ok) throw new Error("Impossible de charger les conversations");
       const data = (await res.json()) as Conversation[];
@@ -77,10 +77,10 @@ function MessagesContent() {
     } finally {
       setLoadingList(false);
     }
-  }, [session?.accessToken]);
+  }, [session?.accèssToken]);
 
   const loadThread = useCallback(async () => {
-    if (!session?.accessToken || !activeAdvisorId) return;
+    if (!session?.accèssToken || !activeAdvisorId) return;
 
     const studentId = user?.isAdvisor ? studentParam : user?.id;
     if (!studentId) return;
@@ -93,7 +93,7 @@ function MessagesContent() {
         student_id: studentId,
       });
       const res = await apiFetch(`/mentor-messages/thread?${params}`, {
-        token: session.accessToken,
+        token: session.accèssToken,
       });
       if (!res.ok) throw new Error("Impossible de charger la conversation");
       const data = (await res.json()) as ThreadMessage[];
@@ -105,7 +105,7 @@ function MessagesContent() {
     } finally {
       setLoadingThread(false);
     }
-  }, [session?.accessToken, activeAdvisorId, studentParam, user, loadConversations]);
+  }, [session?.accèssToken, activeAdvisorId, studentParam, user, loadConversations]);
 
   useEffect(() => {
     if (isLoaded && !user) {
@@ -114,10 +114,10 @@ function MessagesContent() {
   }, [isLoaded, user, router]);
 
   useEffect(() => {
-    if (session?.accessToken && user) {
+    if (session?.accèssToken && user) {
       void loadConversations();
     }
-  }, [session?.accessToken, user, loadConversations]);
+  }, [session?.accèssToken, user, loadConversations]);
 
   useEffect(() => {
     if (activeAdvisorId && (user?.isAdvisor ? studentParam : user?.id)) {
@@ -142,7 +142,7 @@ function MessagesContent() {
   const sendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     const content = draft.trim();
-    if (!content || !session?.accessToken || !activeAdvisorId) return;
+    if (!content || !session?.accèssToken || !activeAdvisorId) return;
 
     const studentId = user?.isAdvisor ? studentParam : user?.id;
     if (!studentId) return;
@@ -160,7 +160,7 @@ function MessagesContent() {
 
       const res = await apiFetch("/mentor-messages", {
         method: "POST",
-        token: session.accessToken,
+        token: session.accèssToken,
         body: JSON.stringify(payload),
       });
       if (!res.ok) {
@@ -343,7 +343,7 @@ function MessagesContent() {
                 <textarea
                   value={draft}
                   onChange={(e) => setDraft(e.target.value)}
-                  placeholder="Ecris un message..."
+                  placeholder="Écris un message..."
                   rows={1}
                   className="flex-1 resize-none rounded-full border border-[#dddfe2] px-4 py-2.5 text-base sm:text-sm focus:border-[#14b887] outline-none max-h-28"
                   onKeyDown={(e) => {
@@ -367,7 +367,7 @@ function MessagesContent() {
             <div className="flex-1 flex items-center justify-center p-8 text-center">
               <div>
                 <p className="text-[#4d4c5c] font-medium">
-                  Selectionne une conversation ou contacte un mentor
+                  Sélectionne une conversation ou contacte un mentor
                 </p>
                 <Link href="/conseil" className="btn-primary mt-4 inline-flex">
                   Voir les mentors

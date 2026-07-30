@@ -6,7 +6,7 @@ export default function AdminBoursesPage() {
   return (
     <AdminContentManager
       title="Bourses"
-      description="Concours, aides et opportunites de financement"
+      description="Concours, aides et opportunités de financement"
       endpoint="/scholarships"
       pillVariant="violet"
       fields={[

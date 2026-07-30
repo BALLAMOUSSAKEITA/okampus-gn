@@ -45,7 +45,7 @@ export interface CvProfile {
     endYear?: string;
     details?: string;
   }>;
-  experiences: Array<{
+  expériences: Array<{
     title: string;
     company: string;
     location?: string;
@@ -93,7 +93,7 @@ function mapCvProfile(raw: unknown): CvProfile | null {
     skills: (data.skills as string[]) ?? [],
     languages: (data.languages as string[]) ?? [],
     education: (data.education as CvProfile["education"]) ?? [],
-    experiences: (data.experiences as CvProfile["experiences"]) ?? [],
+    expériences: (data.expériences as CvProfile["expériences"]) ?? [],
     projects: (data.projects as CvProfile["projects"]) ?? [],
   };
 }
@@ -136,7 +136,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       try {
         const res = await apiFetch(`/users/${session.user.id}`, {
-          token: session.accessToken,
+          token: session.accèssToken,
         });
         if (res.ok) {
           const data = await res.json();
@@ -147,7 +147,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       } catch (error) {
         if (process.env.NODE_ENV === "development") {
           console.warn(
-            "Impossible de charger le profil utilisateur. Verifie que l'API FastAPI est demarree (port 8000).",
+            "Impossible de charger le profil utilisateur. Vérifie que l'API FastAPI est démarrée (port 8000).",
             error
           );
         }
@@ -191,7 +191,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const res = await apiFetch(`/users/${user.id}`, {
         method: "PATCH",
-        token: session?.accessToken,
+        token: session?.accèssToken,
         body: JSON.stringify(payload),
       });
 

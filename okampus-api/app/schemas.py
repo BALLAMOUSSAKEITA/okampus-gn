@@ -41,7 +41,7 @@ class RegisterRequest(BaseModel):
         if self.phone:
             self.phone = normalize_phone(self.phone)
         if not self.email and not self.phone:
-            raise ValueError("Email ou telephone requis")
+            raise ValueError("Email ou téléphone requis")
 
         if self.role == "bachelier":
             if not self.city or not self.city.strip():
@@ -53,9 +53,9 @@ class RegisterRequest(BaseModel):
             self.field = None
         elif self.role == "etudiant":
             if not self.university or not self.university.strip():
-                raise ValueError("L'universite est requise pour un etudiant")
+                raise ValueError("L'université est requise pour un étudiant")
             if not self.field or not self.field.strip():
-                raise ValueError("La filiere est requise pour un etudiant")
+                raise ValueError("La filière est requise pour un étudiant")
             self.university = self.university.strip()
             self.field = self.field.strip()
             self.city = None
@@ -73,7 +73,7 @@ class LoginRequest(BaseModel):
     def resolve_identifier(self):
         raw = (self.identifier or self.email or self.phone or "").strip()
         if not raw:
-            raise ValueError("Email ou telephone requis")
+            raise ValueError("Email ou téléphone requis")
         if looks_like_email(raw):
             self.identifier = raw.lower()
         else:
@@ -82,7 +82,7 @@ class LoginRequest(BaseModel):
 
 
 class TokenResponse(BaseModel):
-    access_token: str
+    accèss_token: str
     token_type: str = "bearer"
     user: "UserOut"
 
@@ -98,7 +98,7 @@ class CvProfileOut(BaseModel):
     skills: list[str] = []
     languages: list[str] = []
     education: Any = []
-    experiences: Any = []
+    expériences: Any = []
     projects: Any = []
 
     class Config:
@@ -235,8 +235,8 @@ class EntrepreneurProjectOut(BaseModel):
 
 class ParcoursUpsert(BaseModel):
     university: Optional[str] = None
-    filiere: Optional[str] = None
-    annee_en_cours: Optional[str] = None
+    filière: Optional[str] = None
+    année_en_cours: Optional[str] = None
     objectifs: Any = None
     notes: Any = None
 
@@ -245,8 +245,8 @@ class ParcoursOut(BaseModel):
     id: str
     user_id: str
     university: Optional[str] = None
-    filiere: Optional[str] = None
-    annee_en_cours: Optional[str] = None
+    filière: Optional[str] = None
+    année_en_cours: Optional[str] = None
     objectifs: Any = None
     notes: Any = None
     created_at: datetime
@@ -263,7 +263,7 @@ class ResourceCreate(BaseModel):
     description: str
     category: str
     subject: str
-    filiere: Optional[str] = None
+    filière: Optional[str] = None
     university: Optional[str] = None
     year: Optional[str] = None
     file_url: str
@@ -280,7 +280,7 @@ class ResourceOut(BaseModel):
     description: str
     category: str
     subject: str
-    filiere: Optional[str] = None
+    filière: Optional[str] = None
     university: Optional[str] = None
     year: Optional[str] = None
     file_url: str
@@ -575,7 +575,7 @@ class ResourceUpdate(BaseModel):
     description: Optional[str] = None
     category: Optional[str] = None
     subject: Optional[str] = None
-    filiere: Optional[str] = None
+    filière: Optional[str] = None
     university: Optional[str] = None
     year: Optional[str] = None
     file_url: Optional[str] = None
@@ -684,7 +684,7 @@ class MentorMessageCreate(BaseModel):
         if not value:
             raise ValueError("Message requis")
         if len(value) > 2000:
-            raise ValueError("Message trop long (2000 caracteres max)")
+            raise ValueError("Message trop long (2000 caractères max)")
         return value
 
 
@@ -716,7 +716,7 @@ class PushSubscriptionCreate(BaseModel):
     @model_validator(mode="after")
     def validate_keys(self):
         if not self.keys.get("p256dh") or not self.keys.get("auth"):
-            raise ValueError("Cles push invalides")
+            raise ValueError("Clés push invalides")
         return self
 
 

@@ -101,8 +101,8 @@ export default function EntrepreneuriatPage() {
     <PageShell>
       <PageHeader
         eyebrow="Innovation"
-        title="Entrepreneuriat etudiant"
-        description="Decouvre les projets innovants portes par des etudiants"
+        title="Entrepreneuriat étudiant"
+        description="Découvre les projets innovants portés par des étudiants"
       />
 
           <div className="card p-5 mb-8">
@@ -170,7 +170,7 @@ export default function EntrepreneuriatPage() {
         ) : projects.length === 0 ? (
           <EmptyState
             title="Aucun projet pour le moment"
-            description="Les projets etudiants seront publies ici des qu'ils seront disponibles."
+            description="Les projets étudiants seront publiés ici dès qu'ils seront disponibles."
           />
         ) : (
         <>

@@ -32,7 +32,7 @@ def _build_user_out(user: User) -> UserOut:
             skills=user.cv_profile.skills or [],
             languages=user.cv_profile.languages or [],
             education=user.cv_profile.education or [],
-            experiences=user.cv_profile.experiences or [],
+            expériences=user.cv_profile.expériences or [],
             projects=user.cv_profile.projects or [],
         )
 
@@ -72,7 +72,7 @@ async def get_user(
     current_user: User = Depends(get_current_user),
 ):
     if current_user.id != user_id and current_user.role != "admin":
-        raise HTTPException(status_code=403, detail="Acces refuse")
+        raise HTTPException(status_code=403, detail="Accès refusé")
     result = await db.execute(
         select(User)
         .where(User.id == user_id)
@@ -109,7 +109,7 @@ async def update_user(
             if user.role not in ("etudiant", "admin"):
                 raise HTTPException(
                     status_code=400,
-                    detail="Seuls les etudiants peuvent devenir conseillers",
+                    detail="Seuls les étudiants peuvent devenir conseillers",
                 )
             if not body.advisor_profile:
                 raise HTTPException(

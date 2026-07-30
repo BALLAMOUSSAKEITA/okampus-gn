@@ -55,7 +55,7 @@ async def upload_resource(
     description: str = Form(""),
     category: str = Form("Autre"),
     subject: str = Form("Autre"),
-    filiere: str | None = Form(None),
+    filière: str | None = Form(None),
     university: str | None = Form(None),
     year: str | None = Form(None),
     author_id: str | None = Form(None),
@@ -72,7 +72,7 @@ async def upload_resource(
         if ext not in ALLOWED_EXTENSIONS:
             raise HTTPException(
                 status_code=400,
-                detail=f"Type de fichier non autorise. Extensions acceptees : {', '.join(sorted(ALLOWED_EXTENSIONS))}",
+                detail=f"Type de fichier non autorisé. Extensions acceptées : {', '.join(sorted(ALLOWED_EXTENSIONS))}",
             )
         content = await file.read()
         if len(content) > MAX_FILE_SIZE:
@@ -89,7 +89,7 @@ async def upload_resource(
         description=(description or title).strip(),
         category=(category or "Autre").strip(),
         subject=(subject or "Autre").strip(),
-        filiere=filiere.strip() if filiere else None,
+        filière=filière.strip() if filière else None,
         university=university.strip() if university else None,
         year=year.strip() if year else None,
         file_url=file_url,

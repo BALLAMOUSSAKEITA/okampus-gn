@@ -3,9 +3,9 @@ import { ReactNode } from "react";
 import Logo from "@/components/Logo";
 
 const brandCopy = {
-  login: "BacheliO t'accompagne apres le bac : orientation, mentors etudiants et opportunites en Guinee.",
+  login: "BacheliO t'accompagne après le bac : orientation, mentors étudiants et opportunités en Guinée.",
   register:
-    "Rejoins BacheliO gratuitement : orientation IA, mentors etudiants, forum et opportunites en Guinee.",
+    "Rejoins BacheliO gratuitement : orientation IA, mentors étudiants, forum et opportunités en Guinée.",
 } as const;
 
 interface AuthCardShellProps {
@@ -71,7 +71,7 @@ export default function AuthCardShell({
 
           <p className="text-center text-xs text-[#6a697c] mt-4">
             <Link href="/" className="hover:text-[#121117]">
-              Retour a l&apos;accueil
+              Retour à l&apos;accueil
             </Link>
             {" · "}
             <Link href="/confidentialite" className="hover:text-[#121117]">

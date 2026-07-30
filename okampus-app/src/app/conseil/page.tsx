@@ -113,10 +113,10 @@ export default function ConseilPage() {
   };
 
   const sendMessage = async () => {
-    if (!selectedAdvisor || !session?.accessToken) return;
+    if (!selectedAdvisor || !session?.accèssToken) return;
     const content = messageText.trim();
     if (!content) {
-      setMessageError("Ecris un message");
+      setMessageError("Écris un message");
       return;
     }
 
@@ -125,7 +125,7 @@ export default function ConseilPage() {
     try {
       const res = await apiFetch("/mentor-messages", {
         method: "POST",
-        token: session.accessToken,
+        token: session.accèssToken,
         body: JSON.stringify({
           advisor_id: selectedAdvisor.id,
           content,
@@ -210,9 +210,9 @@ export default function ConseilPage() {
 
       {bookingConfirmed && selectedSlot && (
         <div className="mt-4 p-4 bg-emerald-50 border border-emerald-200 rounded-xl">
-          <p className="font-semibold text-emerald-800 text-sm">Rendez-vous reserve</p>
+          <p className="font-semibold text-emerald-800 text-sm">Rendez-vous réservé</p>
           <p className="text-xs text-emerald-700 mt-1">
-            Creneau : {selectedSlot}
+            Créneau : {selectedSlot}
             {selectedAdvisor.meetLink && (
               <>
                 {" "}
@@ -232,7 +232,7 @@ export default function ConseilPage() {
       )}
 
       {selectedAdvisor.availableSlots.length === 0 && (
-        <p className="mt-4 text-sm text-[#6a697c]">Aucun creneau disponible pour le moment.</p>
+        <p className="mt-4 text-sm text-[#6a697c]">Aucun créneau disponible pour le moment.</p>
       )}
     </>
   ) : null;
@@ -261,11 +261,11 @@ export default function ConseilPage() {
         <PageHeader
           eyebrow="Mentorat"
           title="Mentorat & Conseil"
-          description="Discute avec un etudiant ou prends rendez-vous pour un appel video"
+          description="Discute avec un étudiant ou prends rendez-vous pour un appel vidéo"
         />
         <EmptyState
           title="Aucun mentor disponible"
-          description="Les mentors inscrits apparaitront ici. Reviens bientot ou inscris-toi pour devenir mentor."
+          description="Les mentors inscrits apparaîtront ici. Reviens bientôt ou inscris-toi pour devenir mentor."
         />
       </PageShell>
     );
@@ -277,7 +277,7 @@ export default function ConseilPage() {
         <PageHeader
           eyebrow="Mentorat"
           title="Mentorat & Conseil"
-          description="Consulte les profils mentors et reserve un creneau d'appel video"
+          description="Consulte les profils mentors et réserver un créneau d'appel vidéo"
         />
 
         <div className="flex flex-col lg:grid lg:grid-cols-12 gap-5 md:gap-7">
@@ -327,7 +327,7 @@ export default function ConseilPage() {
                 <div className="flex flex-col items-center justify-center h-full py-16 text-center">
                   <h3 className="text-lg font-bold text-[#121117] mb-2">Choisis un mentor</h3>
                   <p className="text-sm text-[#4d4c5c] max-w-sm">
-                    Selectionne un etudiant dans la liste pour voir son profil et reserver un creneau.
+                    Sélectionne un étudiant dans la liste pour voir son profil et réserver un créneau.
                   </p>
                 </div>
               )}
@@ -369,7 +369,7 @@ export default function ConseilPage() {
             <div className="p-5 md:p-6 space-y-4">
               {messageSent ? (
                 <p className="text-sm font-medium text-emerald-700 bg-emerald-50 rounded-lg px-4 py-3">
-                  Message envoye ! Le mentor sera notifie.
+                  Message envoyé ! Le mentor sera notifié.
                 </p>
               ) : (
                 <>

@@ -18,11 +18,11 @@ const inputClass =
   "w-full px-4 py-3 rounded-lg border border-[#dcdce5] bg-white focus:outline-none focus:border-[#121117] text-base md:text-sm transition-all";
 
 function sectorLabel(sector: InstitutionSector): string {
-  return sector === "public" ? "Public" : "Prive";
+  return sector === "public" ? "Public" : "Privé";
 }
 
 function kindLabel(kind: InstitutionKind): string {
-  return kind === "universite" ? "Universite" : "Institut";
+  return kind === "université" ? "Université" : "Institut";
 }
 
 function InstitutionCard({ inst }: { inst: Institution }) {
@@ -80,10 +80,10 @@ function InstitutionCard({ inst }: { inst: Institution }) {
             </a>
           )}
           <Link
-            href={`/assistant?q=${encodeURIComponent(`Ou etudier ${inst.filieres[0] || inst.shortName} a ${inst.city} ?`)}`}
+            href={`/assistant?q=${encodeURIComponent(`Ou étudier ${inst.filieres[0] || inst.shortName} à ${inst.city} ?`)}`}
             className="btn-primary text-sm !py-2 !px-3"
           >
-            Demander a Kampus
+            Demander à Kampus
           </Link>
         </div>
       </div>
@@ -102,15 +102,15 @@ function InstitutionCard({ inst }: { inst: Institution }) {
 
       <div className="mt-4 pt-4 border-t border-[#dcdce5]">
         <p className="text-sm font-semibold text-[#121117] mb-2">
-          Principales filieres ({inst.filieres.length})
+          Principales filières ({inst.filieres.length})
         </p>
         <div className="flex flex-wrap gap-2">
-          {(expanded ? inst.filieres : inst.filieres.slice(0, 8)).map((filiere) => (
+          {(expanded ? inst.filieres : inst.filieres.slice(0, 8)).map((filière) => (
             <span
-              key={filiere}
+              key={filière}
               className="text-xs md:text-sm px-2.5 py-1 rounded-md bg-[#f4f4f8] text-[#4d4c5c] border border-[#dcdce5]"
             >
-              {filiere}
+              {filière}
             </span>
           ))}
           {!expanded && inst.filieres.length > 8 && (
@@ -128,7 +128,7 @@ function InstitutionCard({ inst }: { inst: Institution }) {
   );
 }
 
-export default function UniversitesPage() {
+export default function UniversitésPage() {
   const cities = useMemo(() => getInstitutionCities(), []);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedSector, setSelectedSector] = useState<InstitutionSector | "all">("all");
@@ -148,20 +148,20 @@ export default function UniversitesPage() {
   );
 
   const publicCount = INSTITUTIONS.filter((i) => i.sector === "public").length;
-  const privateCount = INSTITUTIONS.filter((i) => i.sector === "prive").length;
+  const privateCount = INSTITUTIONS.filter((i) => i.sector === "privé").length;
 
   return (
     <PageShell>
       <PageHeader
         eyebrow="Orientation"
-        title="Universites & Ecoles"
-        description="Referentiel des etablissements d'enseignement superieur en Guinee — filieres, villes et sites officiels."
+        title="Universités & Écoles"
+        description="Référentiel des établissements d'enseignement supérieur en Guinée — filières, villes et sites officiels."
       />
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
         <div className="card p-4 text-center">
           <p className="text-2xl font-bold text-[#121117]">{INSTITUTIONS.length}</p>
-          <p className="text-sm text-[#6a697c]">Etablissements</p>
+          <p className="text-sm text-[#6a697c]">Établissements</p>
         </div>
         <div className="card p-4 text-center">
           <p className="text-2xl font-bold text-[#166534]">{publicCount}</p>
@@ -169,7 +169,7 @@ export default function UniversitesPage() {
         </div>
         <div className="card p-4 text-center">
           <p className="text-2xl font-bold text-[#5b21b6]">{privateCount}</p>
-          <p className="text-sm text-[#6a697c]">Prives</p>
+          <p className="text-sm text-[#6a697c]">Privés</p>
         </div>
         <div className="card p-4 text-center">
           <p className="text-2xl font-bold text-[#121117]">{cities.length}</p>
@@ -194,7 +194,7 @@ export default function UniversitesPage() {
           </svg>
           <input
             type="text"
-            placeholder="Rechercher une universite, une filiere, une ville..."
+            placeholder="Rechercher une université, une filière, une ville..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full pl-11 pr-4 py-3 rounded-lg border border-[#dcdce5] bg-white focus:outline-none focus:border-[#121117] text-base md:text-sm transition-all"
@@ -225,7 +225,7 @@ export default function UniversitesPage() {
             >
               <option value="all">Tous</option>
               <option value="public">Public</option>
-              <option value="prive">Prive</option>
+              <option value="privé">Privé</option>
             </select>
           </div>
           <div>
@@ -236,7 +236,7 @@ export default function UniversitesPage() {
               className={inputClass}
             >
               <option value="all">Tous</option>
-              <option value="universite">Universites</option>
+              <option value="université">Universités</option>
               <option value="institut">Instituts</option>
             </select>
           </div>
@@ -266,8 +266,8 @@ export default function UniversitesPage() {
 
       {filtered.length === 0 ? (
         <EmptyState
-          title="Aucun etablissement trouve"
-          description="Essaie un autre mot-cle ou reinitialise les filtres."
+          title="Aucun établissement trouvé"
+          description="Essaie un autre mot-clé ou réinitialise les filtres."
         />
       ) : (
         <div className="space-y-5">
@@ -278,14 +278,14 @@ export default function UniversitesPage() {
       )}
 
       <div className="card p-6 mt-8 text-center">
-        <h3 className="text-lg font-bold text-[#121117] mb-2">Tu hesites entre plusieurs etablissements ?</h3>
+        <h3 className="text-lg font-bold text-[#121117] mb-2">Tu hésites entre plusieurs établissements ?</h3>
         <p className="text-sm text-[#4d4c5c] mb-4 max-w-xl mx-auto">
-          Kampus connait ce referentiel et peut te recommander ou etudier selon ta serie au bac, ta ville et ton
+          Kampus connaît ce référentiel et peut te recommander ou étudier selon ta serie au bac, ta ville et ton
           projet.
         </p>
         <div className="flex flex-wrap justify-center gap-3">
           <Link href="/assistant" className="btn-primary text-sm">
-            Parler a l&apos;assistant IA
+            Parler à l&apos;assistant IA
           </Link>
           <Link href="/conseil" className="btn-secondary text-sm">
             Contacter un mentor

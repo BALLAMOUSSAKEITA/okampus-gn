@@ -13,7 +13,7 @@ const statCards = [
   { key: "stories", label: "Success Stories", href: "/admin/stories", pill: "blue" as const },
   { key: "scholarships", label: "Bourses", href: "/admin/bourses", pill: "violet" as const },
   { key: "resources", label: "Ressources", href: "/admin/ressources", pill: "green" as const },
-  { key: "calendar_events", label: "Evenements", href: "/admin/calendrier", pill: "orange" as const },
+  { key: "calendar_events", label: "Événements", href: "/admin/calendrier", pill: "orange" as const },
   { key: "entrepreneur_projects", label: "Projets", href: "/admin/entrepreneuriat", pill: "blue" as const },
   { key: "forum_posts", label: "Posts forum", href: "/admin/forum", pill: "violet" as const },
 ] as const;
@@ -24,18 +24,18 @@ export default function AdminDashboardPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (!session?.accessToken) return;
-    adminFetch<AdminStats>("/stats", session.accessToken)
+    if (!session?.accèssToken) return;
+    adminFetch<AdminStats>("/stats", session.accèssToken)
       .then(setStats)
       .catch((e) => setError(e instanceof Error ? e.message : "Erreur"));
-  }, [session?.accessToken]);
+  }, [session?.accèssToken]);
 
   return (
     <div>
       <AdminPageHeader
         pill={{ label: "Vue d'ensemble", variant: "blue" }}
         title="Tableau de bord"
-        description={`Bienvenue ${session?.user?.name ?? "Admin"} — suivi en temps reel de la plateforme.`}
+        description={`Bienvenue ${session?.user?.name ?? "Admin"} — suivi en temps réel de la plateforme.`}
       />
 
       {error && <div className="admin-alert-error">{error}</div>}
@@ -47,7 +47,7 @@ export default function AdminDashboardPage() {
             <p className="admin-stat-value">
               {stats ? stats[card.key as keyof AdminStats] : "—"}
             </p>
-            <p className="admin-stat-label">elements enregistres</p>
+            <p className="admin-stat-label">elements enregistrés</p>
           </Link>
         ))}
       </div>
@@ -65,7 +65,7 @@ export default function AdminDashboardPage() {
             + Bourse
           </Link>
           <Link href="/admin/users" className="admin-btn-secondary">
-            Gerer les utilisateurs
+            Gèrer les utilisateurs
           </Link>
           <Link href="/admin/assistant" className="admin-btn-secondary">
             Consommation IA

@@ -43,7 +43,7 @@ export default function AdminContentManager({
   pillVariant = "blue",
 }: AdminContentManagerProps) {
   const { data: session } = useSession();
-  const token = session?.accessToken;
+  const token = session?.accèssToken;
 
   const [items, setItems] = useState<Record<string, unknown>[]>([]);
   const [loading, setLoading] = useState(true);
@@ -173,7 +173,7 @@ export default function AdminContentManager({
           className={selectClass}
           required={field.required}
         >
-          <option value="">Selectionner</option>
+          <option value="">Sélectionner</option>
           {field.options.map((o) => (
             <option key={o} value={o}>
               {o}
@@ -220,7 +220,7 @@ export default function AdminContentManager({
           ))}
           <div className="admin-form-span-2 flex gap-2 pt-2">
             <button type="submit" disabled={saving} className="admin-btn-primary">
-              {saving ? "Enregistrement..." : editingId ? "Mettre a jour" : "Creer"}
+              {saving ? "Enregistrement..." : editingId ? "Mettre à jour" : "Créer"}
             </button>
             {editingId && (
               <button type="button" onClick={resetForm} className="admin-btn-secondary">

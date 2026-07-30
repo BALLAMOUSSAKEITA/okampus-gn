@@ -7,7 +7,7 @@ import { adminFetch, type AdminMentor } from "@/lib/admin-api";
 
 export default function AdminMentorsPage() {
   const { data: session } = useSession();
-  const token = session?.accessToken;
+  const token = session?.accèssToken;
   const [mentors, setMentors] = useState<AdminMentor[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -43,7 +43,7 @@ export default function AdminMentorsPage() {
       <AdminPageHeader
         pill={{ label: "Mentorat", variant: "green" }}
         title="Mentors"
-        description="Etudiants conseillers inscrits et actifs sur la plateforme."
+        description="Étudiants conseillers inscrits et actifs sur la plateforme."
       />
 
       {error && <div className="admin-alert-error">{error}</div>}
@@ -58,7 +58,7 @@ export default function AdminMentorsPage() {
             <table className="admin-table">
               <thead>
                 <tr>
-                  {["Nom", "Contact", "Filiere", "Universite", "Annee", "Description", ""].map((h) => (
+                  {["Nom", "Contact", "Filière", "Université", "Année", "Description", ""].map((h) => (
                     <th key={h || "actions"}>{h}</th>
                   ))}
                 </tr>

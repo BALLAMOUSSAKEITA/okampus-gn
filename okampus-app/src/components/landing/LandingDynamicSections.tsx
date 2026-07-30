@@ -39,7 +39,7 @@ export function LandingFeaturedMentors() {
             Mentors
           </h2>
           <p className="mt-3 text-[#4d4c5c] max-w-md mx-auto">
-            Aucun mentor disponible pour le moment. Reviens bientot ou inscris-toi pour devenir mentor.
+            Aucun mentor disponible pour le moment. Reviens bientôt ou inscris-toi pour devenir mentor.
           </p>
           <Link href="/inscription" className="btn-primary mt-6 inline-flex">
             Devenir mentor
@@ -57,7 +57,7 @@ export function LandingFeaturedMentors() {
             <h2 className="font-display text-[28px] sm:text-[36px] font-bold text-[#121117] leading-tight">
               Mentors disponibles
             </h2>
-            <p className="mt-2 text-[#4d4c5c]">Des etudiants qui connaissent deja le terrain</p>
+            <p className="mt-2 text-[#4d4c5c]">Des étudiants qui connaissent déjà le terrain</p>
           </div>
           <Link href="/conseil" className="btn-secondary shrink-0">
             Voir tous les mentors
