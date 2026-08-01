@@ -7,9 +7,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.auth import get_current_user
 from app.config import settings
 from app.database import get_db
-from app.models import AssistantUsage, User
+from app.models import AssistantMessage, AssistantUsage, User
 from app.rate_limit import check_rate_limit
-from app.schemas import AssistantConsumeOut, AssistantModeRequest, AssistantQuotaOut
+from app.schemas import AssistantConsumeOut, AssistantLogIn, AssistantModeRequest, AssistantQuotaOut
 
 router = APIRouter(prefix="/assistant", tags=["assistant"])
 
@@ -123,3 +123,21 @@ async def consume_quota(
     await db.commit()
     quota = _quota_response(mode, usage, unlimited=False)
     return AssistantConsumeOut(allowed=True, **quota.model_dump())
+
+
+@router.post("/log", status_code=204)
+async def log_messages(
+    body: AssistantLogIn,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    for message in body.messages:
+        db.add(
+            AssistantMessage(
+                user_id=current_user.id,
+                mode=body.mode,
+                role=message.role,
+                content=message.content,
+            )
+        )
+    await db.commit()

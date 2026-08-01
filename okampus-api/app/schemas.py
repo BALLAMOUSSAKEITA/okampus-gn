@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Any, Optional
 
-from pydantic import BaseModel, EmailStr, field_validator, model_validator
+from pydantic import BaseModel, EmailStr, Field, field_validator, model_validator
 
 from app.phone import looks_like_email, normalize_phone
 from app.password_policy import validate_password_strength
@@ -531,6 +531,60 @@ class AdminAssistantUsageUserOut(BaseModel):
 class AdminAssistantUsageOut(BaseModel):
     summary: AdminAssistantUsageSummaryOut
     users: list[AdminAssistantUsageUserOut]
+
+
+class AssistantLogMessageIn(BaseModel):
+    role: str
+    content: str = Field(min_length=1, max_length=4000)
+
+    @field_validator("role")
+    @classmethod
+    def validate_role(cls, v: str) -> str:
+        if v not in ("user", "assistant"):
+            raise ValueError("Rôle invalide")
+        return v
+
+
+class AssistantLogIn(BaseModel):
+    mode: str
+    messages: list[AssistantLogMessageIn] = Field(min_length=1, max_length=10)
+
+    @field_validator("mode")
+    @classmethod
+    def validate_mode(cls, v: str) -> str:
+        if v not in ("chat", "orientation"):
+            raise ValueError("Mode assistant invalide")
+        return v
+
+
+class AdminAssistantConversationOut(BaseModel):
+    user_id: str
+    name: str
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    role: str
+    message_count: int
+    chat_count: int
+    orientation_count: int
+    last_message_at: Optional[datetime] = None
+    last_preview: Optional[str] = None
+
+
+class AdminAssistantMessageOut(BaseModel):
+    id: str
+    mode: str
+    role: str
+    content: str
+    created_at: datetime
+
+
+class AdminAssistantConversationDetailOut(BaseModel):
+    user_id: str
+    name: str
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    role: str
+    messages: list[AdminAssistantMessageOut]
 
 
 class MentorOut(BaseModel):

@@ -1,7 +1,7 @@
 from typing import Any, Type
 
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy import func, or_, select
+from sqlalchemy import case, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -10,6 +10,7 @@ from app.config import settings
 from app.database import get_db
 from app.models import (
     AdvisorProfile,
+    AssistantMessage,
     AssistantUsage,
     CalendarEvent,
     EntrepreneurProject,
@@ -21,6 +22,9 @@ from app.models import (
     User,
 )
 from app.schemas import (
+    AdminAssistantConversationDetailOut,
+    AdminAssistantConversationOut,
+    AdminAssistantMessageOut,
     AdminAssistantUsageOut,
     AdminAssistantUsageSummaryOut,
     AdminAssistantUsageUserOut,
@@ -208,6 +212,122 @@ async def admin_assistant_usage(db: AsyncSession = Depends(get_db)):
     )
 
     return AdminAssistantUsageOut(summary=summary, users=user_rows)
+
+
+@router.get("/assistant-conversations", response_model=list[AdminAssistantConversationOut])
+async def admin_assistant_conversations(
+    db: AsyncSession = Depends(get_db),
+    search: str | None = None,
+    limit: int = 100,
+):
+    limit = min(max(limit, 1), 500)
+    query = (
+        select(
+            User.id,
+            User.name,
+            User.email,
+            User.phone,
+            User.role,
+            func.count(AssistantMessage.id).label("message_count"),
+            func.sum(case((AssistantMessage.mode == "chat", 1), else_=0)).label("chat_count"),
+            func.sum(case((AssistantMessage.mode == "orientation", 1), else_=0)).label(
+                "orientation_count"
+            ),
+            func.max(AssistantMessage.created_at).label("last_message_at"),
+        )
+        .join(AssistantMessage, AssistantMessage.user_id == User.id)
+        .group_by(User.id, User.name, User.email, User.phone, User.role)
+        .order_by(func.max(AssistantMessage.created_at).desc())
+        .limit(limit)
+    )
+
+    if search and search.strip():
+        term = f"%{search.strip().lower()}%"
+        query = query.where(
+            or_(
+                func.lower(User.name).like(term),
+                func.lower(User.email).like(term),
+                func.lower(User.phone).like(term),
+            )
+        )
+
+    rows = (await db.execute(query)).all()
+
+    conversations: list[AdminAssistantConversationOut] = []
+    for row in rows:
+        last_msg_result = await db.execute(
+            select(AssistantMessage.content)
+            .where(AssistantMessage.user_id == row.id)
+            .order_by(AssistantMessage.created_at.desc())
+            .limit(1)
+        )
+        last_preview = last_msg_result.scalar_one_or_none()
+        if last_preview and len(last_preview) > 120:
+            last_preview = last_preview[:117] + "..."
+
+        conversations.append(
+            AdminAssistantConversationOut(
+                user_id=row.id,
+                name=row.name,
+                email=row.email,
+                phone=row.phone,
+                role=row.role,
+                message_count=row.message_count or 0,
+                chat_count=int(row.chat_count or 0),
+                orientation_count=int(row.orientation_count or 0),
+                last_message_at=row.last_message_at,
+                last_preview=last_preview,
+            )
+        )
+
+    return conversations
+
+
+@router.get(
+    "/assistant-conversations/{user_id}",
+    response_model=AdminAssistantConversationDetailOut,
+)
+async def admin_assistant_conversation_detail(
+    user_id: str,
+    db: AsyncSession = Depends(get_db),
+    mode: str | None = None,
+    limit: int = 200,
+):
+    limit = min(max(limit, 1), 500)
+
+    user_result = await db.execute(select(User).where(User.id == user_id))
+    user = user_result.scalar_one_or_none()
+    if user is None:
+        raise HTTPException(status_code=404, detail="Utilisateur introuvable")
+
+    msg_query = (
+        select(AssistantMessage)
+        .where(AssistantMessage.user_id == user_id)
+        .order_by(AssistantMessage.created_at.asc())
+        .limit(limit)
+    )
+    if mode in ("chat", "orientation"):
+        msg_query = msg_query.where(AssistantMessage.mode == mode)
+
+    messages = (await db.execute(msg_query)).scalars().all()
+
+    return AdminAssistantConversationDetailOut(
+        user_id=user.id,
+        name=user.name,
+        email=user.email,
+        phone=user.phone,
+        role=user.role,
+        messages=[
+            AdminAssistantMessageOut(
+                id=msg.id,
+                mode=msg.mode,
+                role=msg.role,
+                content=msg.content,
+                created_at=msg.created_at,
+            )
+            for msg in messages
+        ],
+    )
 
 
 # ── Users ─────────────────────────────────────────────────────────────────────

@@ -93,6 +93,36 @@ export type AdminAssistantUsage = {
   users: AdminAssistantUsageUser[];
 };
 
+export type AdminAssistantConversation = {
+  user_id: string;
+  name: string;
+  email?: string | null;
+  phone?: string | null;
+  role: string;
+  message_count: number;
+  chat_count: number;
+  orientation_count: number;
+  last_message_at?: string | null;
+  last_preview?: string | null;
+};
+
+export type AdminAssistantMessage = {
+  id: string;
+  mode: string;
+  role: string;
+  content: string;
+  created_at: string;
+};
+
+export type AdminAssistantConversationDetail = {
+  user_id: string;
+  name: string;
+  email?: string | null;
+  phone?: string | null;
+  role: string;
+  messages: AdminAssistantMessage[];
+};
+
 export type FieldConfig = {
   key: string;
   label: string;

@@ -14,6 +14,7 @@ import {
 } from "@/lib/orientation-fallback";
 import { buildProfileContext, SYSTEM_PROMPT } from "@/lib/assistant-prompt";
 import { formatAssistantReply } from "@/lib/assistant-format";
+import { logAssistantMessages } from "@/lib/assistant-log-server";
 import { checkAssistantRateLimit } from "@/lib/rate-limit";
 import { buildUniversitiesContextForAI } from "@/lib/universities";
 
@@ -127,6 +128,19 @@ export async function POST(request: Request) {
           ? generateOrientationAdvice(profile)
           : generateChatFallback(getLastUserMessage(parsed.data.messages));
 
+      if (parsed.data.mode === "orientation") {
+        void logAssistantMessages("orientation", [
+          { role: "user", content: buildProfileContext(profile) },
+          { role: "assistant", content: fallback },
+        ]);
+      } else {
+        const lastUser = getLastUserMessage(parsed.data.messages);
+        void logAssistantMessages("chat", [
+          { role: "user", content: lastUser },
+          { role: "assistant", content: fallback },
+        ]);
+      }
+
       return NextResponse.json({
         content: fallback,
         fallback: true,
@@ -154,6 +168,11 @@ Analyse ce profil. Respecte le format et la limite de 100 mots.`,
           completion.choices[0]?.message?.content?.trim() || ""
         );
         if (!content) throw new Error("Réponse vide");
+
+        void logAssistantMessages("orientation", [
+          { role: "user", content: buildProfileContext(profile) },
+          { role: "assistant", content },
+        ]);
 
         return NextResponse.json({
           content,
@@ -186,6 +205,12 @@ Analyse ce profil. Respecte le format et la limite de 100 mots.`,
       );
       if (!content) throw new Error("Réponse vide");
 
+      const lastUser = getLastUserMessage(parsed.data.messages);
+      void logAssistantMessages("chat", [
+        { role: "user", content: lastUser },
+        { role: "assistant", content },
+      ]);
+
       return NextResponse.json({
         content,
         fallback: false,
@@ -202,17 +227,29 @@ Analyse ce profil. Respecte le format et la limite de 100 mots.`,
         const intro = isLowBalance
           ? "Analyse de secours :\n\n"
           : "";
+        const content = `${intro}${generateOrientationAdvice(profile)}`;
+
+        void logAssistantMessages("orientation", [
+          { role: "user", content: buildProfileContext(profile) },
+          { role: "assistant", content },
+        ]);
 
         return NextResponse.json({
-          content: `${intro}${generateOrientationAdvice(profile)}`,
+          content,
           fallback: true,
         });
       }
 
       const lastUser = getLastUserMessage(parsed.data.messages);
+      const content = generateChatFallback(lastUser);
+
+      void logAssistantMessages("chat", [
+        { role: "user", content: lastUser },
+        { role: "assistant", content },
+      ]);
 
       return NextResponse.json({
-        content: generateChatFallback(lastUser),
+        content,
         fallback: true,
       });
     }

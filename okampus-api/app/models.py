@@ -361,6 +361,21 @@ class AssistantUsage(Base):
     )
 
 
+class AssistantMessage(Base):
+    __tablename__ = "assistant_messages"
+
+    id: Mapped[str] = mapped_column("id", String, primary_key=True, default=gen_id)
+    user_id: Mapped[str] = mapped_column("userId", String, ForeignKey("users.id", ondelete="CASCADE"))
+    mode: Mapped[str] = mapped_column("mode", String, nullable=False)
+    role: Mapped[str] = mapped_column("role", String, nullable=False)
+    content: Mapped[str] = mapped_column("content", String, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        "createdAt", DateTime(timezone=True), server_default=func.now()
+    )
+
+    user: Mapped["User"] = relationship(foreign_keys=[user_id])
+
+
 class PushSubscription(Base):
     __tablename__ = "push_subscriptions"
     __table_args__ = (UniqueConstraint("userId", "endpoint"),)
