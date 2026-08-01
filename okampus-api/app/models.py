@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import Optional
 
 from sqlalchemy import (
-    Boolean, DateTime, Float, ForeignKey, Integer, String,
+    Boolean, DateTime, Float, ForeignKey, Integer, String, Text,
     UniqueConstraint, func,
 )
 from sqlalchemy.dialects.postgresql import ARRAY, JSON
@@ -382,6 +382,7 @@ class PlatformNews(Base):
     id: Mapped[str] = mapped_column("id", String, primary_key=True, default=gen_id)
     title: Mapped[str] = mapped_column("title", String, nullable=False)
     summary: Mapped[str] = mapped_column("summary", String, nullable=False)
+    content: Mapped[Optional[str]] = mapped_column("content", Text, nullable=True)
     link: Mapped[Optional[str]] = mapped_column("link", String, nullable=True)
     category: Mapped[str] = mapped_column("category", String, nullable=False, default="Actualité")
     is_active: Mapped[bool] = mapped_column("isActive", Boolean, default=True)

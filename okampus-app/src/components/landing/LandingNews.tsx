@@ -8,6 +8,7 @@ type NewsItem = {
   id: string;
   title: string;
   summary: string;
+  content?: string | null;
   link?: string | null;
   category: string;
   published_at: string;
@@ -26,29 +27,6 @@ function formatDate(iso: string) {
     month: "long",
     year: "numeric",
   });
-}
-
-function NewsLink({
-  href,
-  children,
-  className,
-}: {
-  href: string;
-  children: React.ReactNode;
-  className?: string;
-}) {
-  if (href.startsWith("/")) {
-    return (
-      <Link href={href} className={className}>
-        {children}
-      </Link>
-    );
-  }
-  return (
-    <a href={href} target="_blank" rel="noopener noreferrer" className={className}>
-      {children}
-    </a>
-  );
 }
 
 export function LandingNews() {
@@ -84,42 +62,37 @@ export function LandingNews() {
           {items.map((item) => {
             const badgeClass =
               CATEGORY_STYLES[item.category] ?? "bg-[#f4f4f8] text-[#4d4c5c]";
-            const card = (
-              <article className="card h-full p-5 flex flex-col group hover:border-[#121117]/20 transition-colors">
-                <div className="flex items-center justify-between gap-2 mb-3">
-                  <span className={`text-[11px] font-semibold px-2 py-0.5 rounded ${badgeClass}`}>
-                    {item.category}
-                  </span>
-                  <time className="text-[11px] text-[#6a697c] shrink-0">
-                    {formatDate(item.published_at)}
-                  </time>
-                </div>
-                <h3 className="font-display text-lg font-bold text-[#121117] leading-snug group-hover:underline underline-offset-2">
-                  {item.title}
-                </h3>
-                <p className="mt-2 text-sm text-[#4d4c5c] leading-relaxed line-clamp-3 flex-1">
-                  {item.summary}
-                </p>
-                {item.link && (
+
+            return (
+              <Link
+                key={item.id}
+                href={`/actualites/${item.id}`}
+                className="block h-full group"
+              >
+                <article className="card h-full p-5 flex flex-col hover:border-[#121117]/20 transition-colors">
+                  <div className="flex items-center justify-between gap-2 mb-3">
+                    <span className={`text-[11px] font-semibold px-2 py-0.5 rounded ${badgeClass}`}>
+                      {item.category}
+                    </span>
+                    <time className="text-[11px] text-[#6a697c] shrink-0">
+                      {formatDate(item.published_at)}
+                    </time>
+                  </div>
+                  <h3 className="font-display text-lg font-bold text-[#121117] leading-snug group-hover:underline underline-offset-2">
+                    {item.title}
+                  </h3>
+                  <p className="mt-2 text-sm text-[#4d4c5c] leading-relaxed line-clamp-3 flex-1">
+                    {item.summary}
+                  </p>
                   <span className="mt-4 text-sm font-semibold text-[#121117] inline-flex items-center gap-1">
                     En savoir plus
                     <span aria-hidden="true" className="group-hover:translate-x-0.5 transition-transform">
                       →
                     </span>
                   </span>
-                )}
-              </article>
+                </article>
+              </Link>
             );
-
-            if (item.link) {
-              return (
-                <NewsLink key={item.id} href={item.link} className="block h-full">
-                  {card}
-                </NewsLink>
-              );
-            }
-
-            return <div key={item.id}>{card}</div>;
           })}
         </div>
       </div>

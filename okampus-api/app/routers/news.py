@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -21,3 +21,17 @@ async def get_news(
         .limit(limit)
     )
     return result.scalars().all()
+
+
+@router.get("/{news_id}", response_model=NewsOut)
+async def get_news_item(news_id: str, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(
+        select(PlatformNews).where(
+            PlatformNews.id == news_id,
+            PlatformNews.is_active == True,
+        )
+    )
+    item = result.scalar_one_or_none()
+    if item is None:
+        raise HTTPException(status_code=404, detail="Actualité introuvable")
+    return item

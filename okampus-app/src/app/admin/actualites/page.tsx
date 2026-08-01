@@ -20,6 +20,13 @@ export default function AdminActualitesPage() {
           placeholder: "Court texte affiché sur la carte (2-3 phrases max)",
         },
         {
+          key: "content",
+          label: "Article complet",
+          type: "textarea",
+          rows: 8,
+          placeholder: "Texte affiché sur la page de détail (paragraphes séparés par une ligne vide)",
+        },
+        {
           key: "category",
           label: "Catégorie",
           type: "select",
@@ -28,8 +35,8 @@ export default function AdminActualitesPage() {
         },
         {
           key: "link",
-          label: "Lien (optionnel)",
-          placeholder: "/bourses ou https://...",
+          label: "Lien complémentaire (optionnel)",
+          placeholder: "/universites ou https://... — bouton en bas de l'article",
         },
         { key: "published_at", label: "Date de publication", type: "date" },
         { key: "is_active", label: "Visible sur l'accueil", type: "checkbox" },

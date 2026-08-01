@@ -365,6 +365,7 @@ NEWS_CATEGORIES = ("Actualité", "Événement", "Bourse", "Plateforme")
 class NewsCreate(BaseModel):
     title: str = Field(min_length=3, max_length=200)
     summary: str = Field(min_length=10, max_length=500)
+    content: Optional[str] = Field(default=None, max_length=10000)
     link: Optional[str] = Field(default=None, max_length=500)
     category: str = "Actualité"
     published_at: Optional[datetime] = None
@@ -391,6 +392,7 @@ class NewsOut(BaseModel):
     id: str
     title: str
     summary: str
+    content: Optional[str] = None
     link: Optional[str] = None
     category: str
     is_active: bool = True
@@ -404,6 +406,7 @@ class NewsOut(BaseModel):
 class NewsUpdate(BaseModel):
     title: Optional[str] = Field(default=None, min_length=3, max_length=200)
     summary: Optional[str] = Field(default=None, min_length=10, max_length=500)
+    content: Optional[str] = Field(default=None, max_length=10000)
     link: Optional[str] = Field(default=None, max_length=500)
     category: Optional[str] = None
     is_active: Optional[bool] = None
