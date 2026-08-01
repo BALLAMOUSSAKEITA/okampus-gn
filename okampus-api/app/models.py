@@ -376,6 +376,24 @@ class AssistantMessage(Base):
     user: Mapped["User"] = relationship(foreign_keys=[user_id])
 
 
+class PlatformNews(Base):
+    __tablename__ = "platform_news"
+
+    id: Mapped[str] = mapped_column("id", String, primary_key=True, default=gen_id)
+    title: Mapped[str] = mapped_column("title", String, nullable=False)
+    summary: Mapped[str] = mapped_column("summary", String, nullable=False)
+    link: Mapped[Optional[str]] = mapped_column("link", String, nullable=True)
+    category: Mapped[str] = mapped_column("category", String, nullable=False, default="Actualité")
+    is_active: Mapped[bool] = mapped_column("isActive", Boolean, default=True)
+    published_at: Mapped[datetime] = mapped_column(
+        "publishedAt", DateTime(timezone=True), server_default=func.now()
+    )
+    created_at: Mapped[datetime] = mapped_column("createdAt", DateTime(timezone=True), server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(
+        "updatedAt", DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
+
+
 class PushSubscription(Base):
     __tablename__ = "push_subscriptions"
     __table_args__ = (UniqueConstraint("userId", "endpoint"),)

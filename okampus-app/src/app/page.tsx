@@ -5,6 +5,7 @@ import GetStartedLink from "@/components/GetStartedLink";
 import SubjectIcon from "@/components/SubjectIcon";
 import OrientationDemo from "@/components/OrientationDemo";
 import { LandingFeaturedMentors } from "@/components/landing/LandingDynamicSections";
+import { LandingNews } from "@/components/landing/LandingNews";
 import LandingHero from "@/components/landing/LandingHero";
 
 const subjects = [
@@ -122,6 +123,8 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      <LandingNews />
 
       <OrientationDemo />
 

@@ -357,6 +357,76 @@ class ScholarshipOut(BaseModel):
         from_attributes = True
 
 
+# ── Actualités ────────────────────────────────────────────────────────────────
+
+NEWS_CATEGORIES = ("Actualité", "Événement", "Bourse", "Plateforme")
+
+
+class NewsCreate(BaseModel):
+    title: str = Field(min_length=3, max_length=200)
+    summary: str = Field(min_length=10, max_length=500)
+    link: Optional[str] = Field(default=None, max_length=500)
+    category: str = "Actualité"
+    published_at: Optional[datetime] = None
+
+    @field_validator("category")
+    @classmethod
+    def validate_category(cls, v: str) -> str:
+        if v not in NEWS_CATEGORIES:
+            raise ValueError("Catégorie invalide")
+        return v
+
+    @field_validator("link")
+    @classmethod
+    def validate_link(cls, value: Optional[str]) -> Optional[str]:
+        if not value or not value.strip():
+            return None
+        value = value.strip()
+        if value.startswith("/"):
+            return value
+        return validate_optional_external_url(value)
+
+
+class NewsOut(BaseModel):
+    id: str
+    title: str
+    summary: str
+    link: Optional[str] = None
+    category: str
+    is_active: bool = True
+    published_at: datetime
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class NewsUpdate(BaseModel):
+    title: Optional[str] = Field(default=None, min_length=3, max_length=200)
+    summary: Optional[str] = Field(default=None, min_length=10, max_length=500)
+    link: Optional[str] = Field(default=None, max_length=500)
+    category: Optional[str] = None
+    is_active: Optional[bool] = None
+    published_at: Optional[datetime] = None
+
+    @field_validator("category")
+    @classmethod
+    def validate_category(cls, v: Optional[str]) -> Optional[str]:
+        if v is not None and v not in NEWS_CATEGORIES:
+            raise ValueError("Catégorie invalide")
+        return v
+
+    @field_validator("link")
+    @classmethod
+    def validate_link(cls, value: Optional[str]) -> Optional[str]:
+        if value is None or not value.strip():
+            return value
+        value = value.strip()
+        if value.startswith("/"):
+            return value
+        return validate_optional_external_url(value)
+
+
 # ── Stages ────────────────────────────────────────────────────────────────────
 
 class StageOfferCreate(BaseModel):
@@ -462,6 +532,7 @@ class AdminStatsOut(BaseModel):
     calendar_events: int
     entrepreneur_projects: int
     forum_posts: int
+    news: int = 0
 
 
 class AdminUserOut(BaseModel):

@@ -15,6 +15,7 @@ from app.models import (
     CalendarEvent,
     EntrepreneurProject,
     ForumPost,
+    PlatformNews,
     Resource,
     Scholarship,
     StageOffer,
@@ -41,6 +42,9 @@ from app.schemas import (
     ForumPostCreate,
     ForumPostOut,
     ForumPostUpdate,
+    NewsCreate,
+    NewsOut,
+    NewsUpdate,
     ResourceCreate,
     ResourceOut,
     ResourceUpdate,
@@ -89,6 +93,7 @@ async def admin_stats(db: AsyncSession = Depends(get_db)):
         calendar_events=await count(CalendarEvent),
         entrepreneur_projects=await count(EntrepreneurProject),
         forum_posts=await count(ForumPost),
+        news=await count(PlatformNews),
     )
 
 
@@ -667,5 +672,41 @@ async def admin_update_forum(item_id: str, body: ForumPostUpdate, db: AsyncSessi
 @router.delete("/forum/{item_id}", status_code=204)
 async def admin_delete_forum(item_id: str, db: AsyncSession = Depends(get_db)):
     item = await _get_or_404(db, ForumPost, item_id)
+    await db.delete(item)
+    await db.commit()
+
+
+# ── Actualités ────────────────────────────────────────────────────────────────
+
+@router.get("/news", response_model=list[NewsOut])
+async def admin_list_news(db: AsyncSession = Depends(get_db)):
+    result = await db.execute(
+        select(PlatformNews).order_by(PlatformNews.published_at.desc())
+    )
+    return result.scalars().all()
+
+
+@router.post("/news", response_model=NewsOut, status_code=201)
+async def admin_create_news(body: NewsCreate, db: AsyncSession = Depends(get_db)):
+    data = body.model_dump()
+    item = PlatformNews(**data)
+    db.add(item)
+    await db.commit()
+    await db.refresh(item)
+    return item
+
+
+@router.patch("/news/{item_id}", response_model=NewsOut)
+async def admin_update_news(item_id: str, body: NewsUpdate, db: AsyncSession = Depends(get_db)):
+    item = await _get_or_404(db, PlatformNews, item_id)
+    _apply_updates(item, body.model_dump(exclude_unset=True))
+    await db.commit()
+    await db.refresh(item)
+    return item
+
+
+@router.delete("/news/{item_id}", status_code=204)
+async def admin_delete_news(item_id: str, db: AsyncSession = Depends(get_db)):
+    item = await _get_or_404(db, PlatformNews, item_id)
     await db.delete(item)
     await db.commit()

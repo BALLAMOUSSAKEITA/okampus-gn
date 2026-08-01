@@ -10,6 +10,7 @@ const links: Array<{
   dot: string;
 }> = [
   { href: "/admin", label: "Tableau de bord", dot: "bg-[#2563eb]" },
+  { href: "/admin/actualites", label: "Actualités", dot: "bg-[#ea580c]" },
   { href: "/admin/users", label: "Utilisateurs", dot: "bg-[#7c3aed]" },
   { href: "/admin/assistant", label: "Assistant IA", dot: "bg-[#2563eb]" },
   { href: "/admin/mentors", label: "Mentors", dot: "bg-[#16a34a]" },

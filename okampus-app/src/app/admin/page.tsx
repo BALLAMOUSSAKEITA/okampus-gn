@@ -16,6 +16,7 @@ const statCards = [
   { key: "calendar_events", label: "Événements", href: "/admin/calendrier", pill: "orange" as const },
   { key: "entrepreneur_projects", label: "Projets", href: "/admin/entrepreneuriat", pill: "blue" as const },
   { key: "forum_posts", label: "Posts forum", href: "/admin/forum", pill: "violet" as const },
+  { key: "news", label: "Actualités", href: "/admin/actualites", pill: "orange" as const },
 ] as const;
 
 export default function AdminDashboardPage() {
@@ -63,6 +64,9 @@ export default function AdminDashboardPage() {
           </Link>
           <Link href="/admin/bourses" className="admin-btn-secondary">
             + Bourse
+          </Link>
+          <Link href="/admin/actualites" className="admin-btn-secondary">
+            + Actualité
           </Link>
           <Link href="/admin/users" className="admin-btn-secondary">
             Gèrer les utilisateurs

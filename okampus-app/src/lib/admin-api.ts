@@ -30,6 +30,7 @@ export type AdminStats = {
   calendar_events: number;
   entrepreneur_projects: number;
   forum_posts: number;
+  news: number;
 };
 
 export type AdminUser = {
