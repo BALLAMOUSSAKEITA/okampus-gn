@@ -7,6 +7,7 @@ from sqlalchemy import text
 from app.database import engine, Base
 from app.security_headers import SecurityHeadersMiddleware
 from app.seed_news import seed_default_news
+from app.seed_pearson_scholarship import seed_pearson_scholarship
 from app.routers import admin, assistant, auth, calendar, cv, entrepreneur, forum, mentor_messages, mentors, news, parcours, resources, scholarships, stages, stats, success_stories, users
 
 # Importer tous les modèles pour que Base.metadata les connaisse
@@ -57,6 +58,13 @@ async def _ensure_schema(conn) -> None:
     except Exception as exc:
         print(f"[SCHEMA] platform_news.content skipped/failed: {type(exc).__name__}: {exc}")
 
+    try:
+        await conn.execute(text('ALTER TABLE scholarships ADD COLUMN IF NOT EXISTS content TEXT'))
+        await conn.execute(text('ALTER TABLE scholarships ADD COLUMN IF NOT EXISTS views INTEGER DEFAULT 0'))
+        await conn.execute(text('ALTER TABLE platform_news ADD COLUMN IF NOT EXISTS views INTEGER DEFAULT 0'))
+    except Exception as exc:
+        print(f"[SCHEMA] views/content columns skipped/failed: {type(exc).__name__}: {exc}")
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -65,6 +73,7 @@ async def lifespan(app: FastAPI):
         await conn.run_sync(Base.metadata.create_all)
         await _ensure_schema(conn)
     await seed_default_news()
+    await seed_pearson_scholarship()
     yield
 
 

@@ -24,7 +24,11 @@ async def get_news(
 
 
 @router.get("/{news_id}", response_model=NewsOut)
-async def get_news_item(news_id: str, db: AsyncSession = Depends(get_db)):
+async def get_news_item(
+    news_id: str,
+    count_view: bool = Query(False),
+    db: AsyncSession = Depends(get_db),
+):
     result = await db.execute(
         select(PlatformNews).where(
             PlatformNews.id == news_id,
@@ -34,4 +38,8 @@ async def get_news_item(news_id: str, db: AsyncSession = Depends(get_db)):
     item = result.scalar_one_or_none()
     if item is None:
         raise HTTPException(status_code=404, detail="Actualité introuvable")
+    if count_view:
+        item.views = (item.views or 0) + 1
+        await db.commit()
+        await db.refresh(item)
     return item

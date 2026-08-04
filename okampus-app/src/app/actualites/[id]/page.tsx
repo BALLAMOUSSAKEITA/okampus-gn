@@ -1,9 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { API_URL } from "@/lib/api";
+import { getSiteUrl } from "@/lib/share";
+import ShareButtons from "@/components/ShareButtons";
 import PageHeader from "@/components/ui/PageHeader";
 import PageShell from "@/components/ui/PageShell";
 
@@ -14,6 +16,7 @@ type NewsDetail = {
   content?: string | null;
   link?: string | null;
   category: string;
+  views: number;
   published_at: string;
 };
 
@@ -41,7 +44,7 @@ export default function ActualiteDetailPage() {
 
   useEffect(() => {
     if (!id) return;
-    fetch(`${API_URL}/news/${id}`)
+    fetch(`${API_URL}/news/${id}?count_view=true`)
       .then(async (r) => {
         if (!r.ok) throw new Error("Actualité introuvable");
         return r.json() as Promise<NewsDetail>;
@@ -49,6 +52,13 @@ export default function ActualiteDetailPage() {
       .then(setItem)
       .catch((e) => setError(e instanceof Error ? e.message : "Erreur"))
       .finally(() => setLoading(false));
+  }, [id]);
+
+  const shareUrl = useMemo(() => {
+    if (typeof window !== "undefined") {
+      return `${window.location.origin}/actualites/${id}`;
+    }
+    return `${getSiteUrl()}/actualites/${id}`;
   }, [id]);
 
   if (loading) {
@@ -92,11 +102,16 @@ export default function ActualiteDetailPage() {
             {item.category}
           </span>
           <time className="text-sm text-[#6a697c]">{formatDate(item.published_at)}</time>
+          <span className="text-sm text-[#6a697c]">
+            {item.views} lecture{item.views !== 1 ? "s" : ""}
+          </span>
         </div>
 
         <PageHeader title={item.title} />
 
-        <p className="text-lg text-[#4d4c5c] leading-relaxed mb-8">{item.summary}</p>
+        <p className="text-lg text-[#4d4c5c] leading-relaxed mb-6">{item.summary}</p>
+
+        <ShareButtons url={shareUrl} title={item.title} className="mb-8" />
 
         <div className="card p-6 sm:p-8 bg-white space-y-5">
           {paragraphs.map((paragraph, index) => (
@@ -109,8 +124,8 @@ export default function ActualiteDetailPage() {
         {item.link && (
           <div className="mt-8">
             {item.link.startsWith("/") ? (
-              <Link href={item.link} className="btn-secondary inline-flex">
-                Voir les universités & écoles
+              <Link href={item.link} className="btn-primary inline-flex">
+                {item.category === "Bourse" ? "Voir la fiche bourse complète" : "En savoir plus"}
               </Link>
             ) : (
               <a

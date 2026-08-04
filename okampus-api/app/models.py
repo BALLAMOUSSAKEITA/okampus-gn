@@ -294,7 +294,9 @@ class Scholarship(Base):
     type: Mapped[str] = mapped_column("type", String, nullable=False)
     organization: Mapped[str] = mapped_column("organization", String, nullable=False)
     description: Mapped[str] = mapped_column("description", String, nullable=False)
+    content: Mapped[Optional[str]] = mapped_column("content", Text, nullable=True)
     eligibility: Mapped[Optional[str]] = mapped_column("eligibility", String, nullable=True)
+    views: Mapped[int] = mapped_column("views", Integer, default=0)
     amount: Mapped[Optional[str]] = mapped_column("amount", String, nullable=True)
     deadline: Mapped[Optional[datetime]] = mapped_column("deadline", DateTime(timezone=True), nullable=True)
     apply_link: Mapped[Optional[str]] = mapped_column("applyLink", String, nullable=True)
@@ -385,6 +387,7 @@ class PlatformNews(Base):
     content: Mapped[Optional[str]] = mapped_column("content", Text, nullable=True)
     link: Mapped[Optional[str]] = mapped_column("link", String, nullable=True)
     category: Mapped[str] = mapped_column("category", String, nullable=False, default="Actualité")
+    views: Mapped[int] = mapped_column("views", Integer, default=0)
     is_active: Mapped[bool] = mapped_column("isActive", Boolean, default=True)
     published_at: Mapped[datetime] = mapped_column(
         "publishedAt", DateTime(timezone=True), server_default=func.now()

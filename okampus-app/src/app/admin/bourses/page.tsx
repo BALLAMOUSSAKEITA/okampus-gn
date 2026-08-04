@@ -20,7 +20,8 @@ export default function AdminBoursesPage() {
         { key: "apply_link", label: "Lien candidature" },
         { key: "contact_info", label: "Contact" },
         { key: "description", label: "Description", type: "textarea", required: true, rows: 4 },
-        { key: "eligibility", label: "Eligibilite", type: "textarea", rows: 2 },
+        { key: "content", label: "Contenu detaille", type: "textarea", rows: 8 },
+        { key: "eligibility", label: "Eligibilite", type: "textarea", rows: 3 },
         { key: "is_active", label: "Actif", type: "checkbox" },
       ]}
       columns={[

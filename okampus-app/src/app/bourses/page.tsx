@@ -23,6 +23,7 @@ interface Scholarship {
   contactInfo?: string;
   domain?: string;
   location: string;
+  views: number;
 }
 
 export default function BoursesPage() {
@@ -54,6 +55,7 @@ export default function BoursesPage() {
           contact_info?: string | null;
           domain?: string | null;
           location?: string | null;
+          views?: number;
         }>;
         setScholarships(
           data.map((s) => ({
@@ -69,6 +71,7 @@ export default function BoursesPage() {
             contactInfo: s.contact_info ?? undefined,
             domain: s.domain ?? undefined,
             location: s.location ?? "Non specifiee",
+            views: s.views ?? 0,
           }))
         );
       } catch (e) {
@@ -203,7 +206,6 @@ export default function BoursesPage() {
               className="card p-6 md:p-8 transition-all group"
             >
               <div className="flex flex-col lg:flex-row lg:items-start gap-6">
-                {/* Contenu principal */}
                 <div className="flex-1">
                   <div className="flex flex-wrap items-start gap-2 mb-4">
                     <span
@@ -218,6 +220,9 @@ export default function BoursesPage() {
                     <span className="px-3 py-1.5 bg-[#f4f4f8] text-[#4d4c5c] rounded-full text-xs font-semibold">
                       {scholarship.location}
                     </span>
+                    <span className="px-3 py-1.5 bg-[#f4f4f8] text-[#6a697c] rounded-full text-xs font-medium">
+                      {scholarship.views} lecture{scholarship.views !== 1 ? "s" : ""}
+                    </span>
                     {scholarship.deadline && isDeadlineSoon(scholarship.deadline) && (
                       <span className="px-3 py-1.5 bg-amber-50 text-amber-600 rounded-full text-xs font-bold animate-pulse">
                         Date limite proche !
@@ -225,9 +230,13 @@ export default function BoursesPage() {
                     )}
                   </div>
 
-                  <h3 className="text-lg md:text-xl font-bold text-[#121117] mb-2 group-hover:text-[#121117] transition-colors">{scholarship.title}</h3>
+                  <Link href={`/bourses/${scholarship.id}`}>
+                    <h3 className="text-lg md:text-xl font-bold text-[#121117] mb-2 group-hover:underline underline-offset-2 transition-colors">
+                      {scholarship.title}
+                    </h3>
+                  </Link>
                   <p className="text-sm font-medium text-[#4d4c5c] mb-2">{scholarship.organization}</p>
-                  <p className="text-sm text-[#4d4c5c] leading-relaxed mb-5">{scholarship.description}</p>
+                  <p className="text-sm text-[#4d4c5c] leading-relaxed mb-5 line-clamp-3">{scholarship.description}</p>
 
                   {/* Détails */}
                   <div className="space-y-3 text-sm">
@@ -289,12 +298,18 @@ export default function BoursesPage() {
 
                 {/* Actions */}
                 <div className="flex flex-row lg:flex-col gap-3 lg:w-52">
+                  <Link
+                    href={`/bourses/${scholarship.id}`}
+                    className="btn-primary flex-1 lg:flex-none px-5 py-3 text-center text-sm"
+                  >
+                    Lire la fiche
+                  </Link>
                   {scholarship.applyLink && (
                     <a
                       href={scholarship.applyLink}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="btn-primary flex-1 lg:flex-none px-5 py-3 text-center text-sm"
+                      className="btn-secondary flex-1 lg:flex-none px-5 py-3 text-center text-sm"
                     >
                       Postuler en ligne
                     </a>

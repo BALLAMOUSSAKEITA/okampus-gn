@@ -324,6 +324,7 @@ class ScholarshipCreate(BaseModel):
     type: str
     organization: str
     description: str
+    content: Optional[str] = None
     eligibility: Optional[str] = None
     amount: Optional[str] = None
     deadline: Optional[datetime] = None
@@ -344,6 +345,7 @@ class ScholarshipOut(BaseModel):
     type: str
     organization: str
     description: str
+    content: Optional[str] = None
     eligibility: Optional[str] = None
     amount: Optional[str] = None
     deadline: Optional[datetime] = None
@@ -351,6 +353,7 @@ class ScholarshipOut(BaseModel):
     contact_info: Optional[str] = None
     domain: Optional[str] = None
     location: Optional[str] = None
+    views: int = 0
     created_at: datetime
 
     class Config:
@@ -396,6 +399,7 @@ class NewsOut(BaseModel):
     link: Optional[str] = None
     category: str
     is_active: bool = True
+    views: int = 0
     published_at: datetime
     created_at: datetime
 
@@ -719,6 +723,7 @@ class ScholarshipUpdate(BaseModel):
     type: Optional[str] = None
     organization: Optional[str] = None
     description: Optional[str] = None
+    content: Optional[str] = None
     eligibility: Optional[str] = None
     amount: Optional[str] = None
     deadline: Optional[datetime] = None
