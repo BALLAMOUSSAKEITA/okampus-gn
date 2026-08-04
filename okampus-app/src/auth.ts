@@ -4,6 +4,31 @@ import { refreshTokenRole, ROLE_REFRESH_MS, SERVER_API_URL } from "@/lib/server-
 
 const PUBLIC_PATHS = ["/", "/inscription", "/connexion", "/confidentialite", "/offline"]
 
+/** Pages consultables sans connexion (SEO, partage Facebook, découverte). */
+const PUBLIC_PREFIXES = [
+  "/bourses",
+  "/actualites",
+  "/forum",
+  "/stages",
+  "/conseil",
+  "/assistant",
+  "/ressources",
+  "/success-stories",
+  "/entrepreneuriat",
+  "/universites",
+  "/cv",
+  "/calendrier",
+]
+
+function isPublicPath(pathname: string): boolean {
+  if (PUBLIC_PATHS.includes(pathname)) return true
+  if (pathname === "/opengraph-image" || pathname === "/twitter-image") return true
+  if (pathname.endsWith("/opengraph-image") || pathname.endsWith("/twitter-image")) return true
+  return PUBLIC_PREFIXES.some(
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`)
+  )
+}
+
 export const { handlers, signIn, signOut, auth } = NextAuth({
   trustHost: true,
   providers: [
@@ -53,7 +78,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (pathname.startsWith("/api/auth")) return true
       if (pathname.startsWith("/api/backend")) return true
       if (pathname.startsWith("/api/assistant")) return true
-      if (PUBLIC_PATHS.includes(pathname)) return true
+      if (isPublicPath(pathname)) return true
 
       if (pathname.startsWith("/admin")) {
         return auth?.user?.role === "admin"
