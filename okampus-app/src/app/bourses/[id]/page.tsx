@@ -1,16 +1,16 @@
 import type { Metadata } from "next";
 import ScholarshipDetailClient from "./ScholarshipDetail";
-import { getApiBase, getSiteOrigin } from "@/lib/site-config";
+import { getApiBase } from "@/lib/site-config";
 
 const API = getApiBase();
-const SITE = getSiteOrigin();
+const OG_SHARE_IMAGE = "/images/og-share.png";
 
 type Props = { params: Promise<{ id: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
   const pageUrl = `/bourses/${id}`;
-  const ogImage = `${pageUrl}/opengraph-image`;
+  const ogImage = OG_SHARE_IMAGE;
 
   try {
     const res = await fetch(`${API}/scholarships/${id}`, { next: { revalidate: 300 } });

@@ -2,12 +2,9 @@ import { ImageResponse } from "next/og";
 import { OgShareCard } from "@/lib/og-share-card";
 import { OG_SIZE } from "@/lib/site-config";
 
-export const runtime = "edge";
-export const alt = "BacheliO — La plateforme étudiante";
-export const size = OG_SIZE;
-export const contentType = "image/png";
+export const runtime = "nodejs";
 
-export default function Image() {
+export async function GET() {
   return new ImageResponse(
     (
       <OgShareCard
@@ -17,6 +14,12 @@ export default function Image() {
         footer="www.bachelio.com"
       />
     ),
-    { ...size }
+    {
+      width: OG_SIZE.width,
+      height: OG_SIZE.height,
+      headers: {
+        "Cache-Control": "public, max-age=3600, s-maxage=86400",
+      },
+    }
   );
 }

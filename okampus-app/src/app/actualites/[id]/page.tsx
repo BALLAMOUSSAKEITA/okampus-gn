@@ -9,7 +9,7 @@ type Props = { params: Promise<{ id: string }> };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
   const pageUrl = `/actualites/${id}`;
-  const ogImage = `${pageUrl}/opengraph-image`;
+  const ogImage = "/images/og-share.png";
 
   try {
     const res = await fetch(`${API}/news/${id}`, { next: { revalidate: 300 } });

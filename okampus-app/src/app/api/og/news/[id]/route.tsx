@@ -1,16 +1,14 @@
 import { ImageResponse } from "next/og";
+import { NextRequest } from "next/server";
 import { OgShareCard } from "@/lib/og-share-card";
 import { getApiBase, OG_SIZE } from "@/lib/site-config";
 
-export const runtime = "edge";
-export const alt = "Actualité BacheliO";
-export const size = OG_SIZE;
-export const contentType = "image/png";
+export const runtime = "nodejs";
 
-type Props = { params: Promise<{ id: string }> };
+type RouteContext = { params: Promise<{ id: string }> };
 
-export default async function Image({ params }: Props) {
-  const { id } = await params;
+export async function GET(_request: NextRequest, context: RouteContext) {
+  const { id } = await context.params;
   const api = getApiBase();
 
   let badge = "Actualité";
@@ -18,13 +16,9 @@ export default async function Image({ params }: Props) {
   let detail = "Nouveautés et opportunités pour les étudiants guinéens";
 
   try {
-    const res = await fetch(`${api}/news/${id}`, { next: { revalidate: 300 } });
+    const res = await fetch(`${api}/news/${id}`, { cache: "no-store" });
     if (res.ok) {
-      const n = (await res.json()) as {
-        title: string;
-        summary: string;
-        category: string;
-      };
+      const n = (await res.json()) as { title: string; summary: string; category: string };
       badge = n.category || "Actualité";
       title = n.title;
       detail = n.summary;
@@ -42,6 +36,12 @@ export default async function Image({ params }: Props) {
         footer="bachelio.com/actualites"
       />
     ),
-    { ...size }
+    {
+      width: OG_SIZE.width,
+      height: OG_SIZE.height,
+      headers: {
+        "Cache-Control": "public, max-age=3600, s-maxage=86400",
+      },
+    }
   );
 }

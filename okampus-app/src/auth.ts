@@ -78,6 +78,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (pathname.startsWith("/api/auth")) return true
       if (pathname.startsWith("/api/backend")) return true
       if (pathname.startsWith("/api/assistant")) return true
+      if (pathname.startsWith("/api/og")) return true
       if (isPublicPath(pathname)) return true
 
       if (pathname.startsWith("/admin")) {

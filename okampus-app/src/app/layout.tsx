@@ -42,13 +42,13 @@ export const metadata: Metadata = {
     title: "BacheliO — La plateforme étudiante",
     description:
       "Orientation IA, mentorat, forum, bourses et stages pour les étudiants guinéens.",
-    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "BacheliO" }],
+    images: [{ url: "/images/og-share.png", width: 1200, height: 630, alt: "BacheliO" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "BacheliO",
     description: "La plateforme étudiante guinéenne",
-    images: ["/opengraph-image"],
+    images: ["/images/og-share.png"],
   },
   manifest: "/manifest.json",
   appleWebApp: {
