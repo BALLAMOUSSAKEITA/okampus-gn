@@ -7,6 +7,7 @@ import PWAInstallPrompt from "@/components/PWAInstallPrompt";
 import OnboardingTour from "@/components/OnboardingTour";
 import { AuthProvider } from "@/context/AuthContext";
 import { SessionProvider } from "next-auth/react";
+import { getSiteOrigin } from "@/lib/site-config";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -26,11 +27,29 @@ const figtree = Figtree({
   weight: ["400", "500", "600"],
 });
 
+const SITE_ORIGIN = getSiteOrigin();
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_ORIGIN),
   title: "BacheliO - La plateforme étudiante",
   description:
     "BacheliO t'accompagne : orientation IA, mentorat, forum, CV, stages, bourses et insertion professionnelle.",
   applicationName: "BacheliO",
+  openGraph: {
+    type: "website",
+    locale: "fr_FR",
+    siteName: "BacheliO",
+    title: "BacheliO — La plateforme étudiante",
+    description:
+      "Orientation IA, mentorat, forum, bourses et stages pour les étudiants guinéens.",
+    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "BacheliO" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "BacheliO",
+    description: "La plateforme étudiante guinéenne",
+    images: ["/opengraph-image"],
+  },
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,

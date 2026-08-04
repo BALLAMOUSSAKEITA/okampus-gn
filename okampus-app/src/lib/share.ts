@@ -1,13 +1,11 @@
+import { getSiteOrigin } from "@/lib/site-config";
+
 /** URL publique canonique du site (partage, Open Graph). */
 export function getSiteUrl(): string {
   if (typeof window !== "undefined") {
     return window.location.origin;
   }
-  return (
-    process.env.NEXT_PUBLIC_SITE_URL?.trim() ||
-    process.env.NEXTAUTH_URL?.trim() ||
-    "https://www.bachelio.com"
-  );
+  return getSiteOrigin();
 }
 
 export function buildFacebookShareUrl(pageUrl: string): string {
