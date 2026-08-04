@@ -1,10 +1,12 @@
 from contextlib import asynccontextmanager
 import os
+import time
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 
-from app.database import engine, Base
+from app.database import engine, Base, AsyncSessionLocal
+from app.logging_config import setup_logging
 from app.security_headers import SecurityHeadersMiddleware
 from app.seed_news import seed_default_news
 from app.seed_pearson_scholarship import seed_pearson_scholarship
@@ -12,6 +14,8 @@ from app.routers import admin, assistant, auth, calendar, cv, entrepreneur, foru
 
 # Importer tous les modèles pour que Base.metadata les connaisse
 import app.models  # noqa: F401
+
+_start_time = time.time()
 
 
 async def _ensure_schema(conn) -> None:
@@ -68,6 +72,7 @@ async def _ensure_schema(conn) -> None:
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    setup_logging()
     # Créer toutes les tables au démarrage (si elles n'existent pas)
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
@@ -131,4 +136,21 @@ app.include_router(stats.router)
 
 @app.get("/health")
 async def health():
-    return {"status": "ok"}
+    from app.config import settings
+
+    db_status = "connected"
+    try:
+        async with AsyncSessionLocal() as session:
+            await session.execute(text("SELECT 1"))
+    except Exception:
+        db_status = "disconnected"
+
+    openai_status = "configured" if settings.openai_api_key else "not configured"
+
+    return {
+        "status": "ok" if db_status == "connected" else "degraded",
+        "version": app.version,
+        "database": db_status,
+        "openai": openai_status,
+        "uptime_seconds": int(time.time() - _start_time),
+    }
