@@ -7,6 +7,8 @@ import OrientationDemo from "@/components/OrientationDemo";
 import { LandingFeaturedMentors } from "@/components/landing/LandingDynamicSections";
 import { LandingNews } from "@/components/landing/LandingNews";
 import LandingHero from "@/components/landing/LandingHero";
+import WhatsAppCommunityBanner from "@/components/landing/WhatsAppCommunityBanner";
+import { WHATSAPP_COMMUNITY_URL } from "@/lib/site-config";
 
 const subjects = [
   { id: "universites", title: "Universités & Écoles", count: "12 établissements", link: "/universites" },
@@ -59,7 +61,8 @@ export default function Home() {
     <div className="landing">
       {/* Hero */}
       <section className="hero-canvas px-4 sm:px-6 pt-8 sm:pt-10 pb-12 sm:pb-16 md:pb-24 overflow-hidden">
-        <div className="max-w-[1200px] mx-auto grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
+        <div className="max-w-[1200px] mx-auto">
+        <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
           <LandingHero />
 
           {/* Mobile: une seule photo */}
@@ -121,6 +124,9 @@ export default function Home() {
               La réussite, à deux
             </div>
           </div>
+        </div>
+
+        <WhatsAppCommunityBanner />
         </div>
       </section>
 
@@ -261,6 +267,7 @@ export default function Home() {
               {
                 title: "Communauté",
                 links: [
+                  { href: WHATSAPP_COMMUNITY_URL, label: "Groupe WhatsApp", external: true },
                   { href: "/entrepreneuriat", label: "Entrepreneuriat" },
                   { href: "/success-stories", label: "Success Stories" },
                   { href: "/parcours", label: "Mon parcours" },
@@ -271,11 +278,23 @@ export default function Home() {
               <div key={col.title}>
                 <h4 className="text-sm font-semibold uppercase text-white mb-4">{col.title}</h4>
                 <div className="space-y-2">
-                  {col.links.map((link) => (
-                    <Link key={link.href} href={link.href} className="block text-sm text-[#dcdce5] hover:text-white transition-colors">
-                      {link.label}
-                    </Link>
-                  ))}
+                  {col.links.map((link) =>
+                    "external" in link && link.external ? (
+                      <a
+                        key={link.href}
+                        href={link.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block text-sm text-[#dcdce5] hover:text-white transition-colors"
+                      >
+                        {link.label}
+                      </a>
+                    ) : (
+                      <Link key={link.href} href={link.href} className="block text-sm text-[#dcdce5] hover:text-white transition-colors">
+                        {link.label}
+                      </Link>
+                    )
+                  )}
                 </div>
               </div>
             ))}

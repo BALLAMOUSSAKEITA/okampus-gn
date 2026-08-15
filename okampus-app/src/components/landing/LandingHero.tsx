@@ -2,7 +2,9 @@
 
 import Link from "next/link";
 import GetStartedLink from "@/components/GetStartedLink";
+import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { useAuth } from "@/context/AuthContext";
+import { WHATSAPP_COMMUNITY_URL } from "@/lib/site-config";
 
 export default function LandingHero() {
   const { user, isLoaded, isAuthenticated } = useAuth();
@@ -43,6 +45,17 @@ export default function LandingHero() {
             Mon profil
           </Link>
         </div>
+        <a
+          href={WHATSAPP_COMMUNITY_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-[#128C7E] hover:text-[#0f7a6e] transition-colors"
+        >
+          <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#25D366] text-white">
+            <WhatsAppIcon className="h-3.5 w-3.5" />
+          </span>
+          Rejoins la communauté WhatsApp pour ne rien rater
+        </a>
       </div>
     );
   }

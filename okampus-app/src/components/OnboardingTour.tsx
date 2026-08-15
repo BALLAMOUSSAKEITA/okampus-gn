@@ -5,14 +5,34 @@ import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { hasCompletedOnboarding, markOnboardingComplete, resetOnboarding } from "@/lib/onboarding";
+import { WHATSAPP_COMMUNITY_URL } from "@/lib/site-config";
+import { markWhatsAppPromptDismissed } from "@/lib/whatsapp-prompt";
 
-const steps = [
+type OnboardingCta = {
+  href: string;
+  label: string;
+  external?: boolean;
+};
+
+const steps: Array<{
+  emoji: string;
+  title: string;
+  description: string;
+  cta: OnboardingCta | null;
+}> = [
   {
     emoji: "👋",
     title: "Bienvenue sur BacheliO !",
     description:
       "La plateforme qui t'accompagne après le bac : orientation, mentors, forum et opportunités en Guinée.",
     cta: null,
+  },
+  {
+    emoji: "📱",
+    title: "Rejoins la communauté WhatsApp",
+    description:
+      "Annonces, bourses, dates clés et opportunités — reçois l'essentiel directement sur WhatsApp pour ne rien rater.",
+    cta: { href: WHATSAPP_COMMUNITY_URL, label: "Rejoindre le groupe", external: true },
   },
   {
     emoji: "🤖",
@@ -56,7 +76,7 @@ const steps = [
       "Explore la plateforme à ton rythme. Tu retrouveras ton profil en haut à droite pour gérer ton compte et devenir mentor.",
     cta: { href: "/profil", label: "Mon profil" },
   },
-] as const;
+];
 
 const SKIP_PATHS = ["/connexion", "/inscription", "/confidentialite", "/offline"];
 
@@ -67,7 +87,10 @@ export default function OnboardingTour() {
   const [step, setStep] = useState(0);
 
   const dismiss = useCallback(() => {
-    if (user) markOnboardingComplete(user.id);
+    if (user) {
+      markOnboardingComplete(user.id);
+      markWhatsAppPromptDismissed(user.id);
+    }
     setOpen(false);
   }, [user]);
 
@@ -141,15 +164,26 @@ export default function OnboardingTour() {
           </h2>
           <p className="text-[#4d4c5c] leading-relaxed text-base">{current.description}</p>
 
-          {current.cta && (
-            <Link
-              href={current.cta.href}
-              onClick={dismiss}
-              className="inline-block mt-4 text-sm font-semibold text-[#14b887] hover:underline"
-            >
-              {current.cta.label} →
-            </Link>
-          )}
+          {current.cta &&
+            (current.cta.external ? (
+              <a
+                href={current.cta.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={dismiss}
+                className="inline-block mt-4 text-sm font-semibold text-[#14b887] hover:underline"
+              >
+                {current.cta.label} →
+              </a>
+            ) : (
+              <Link
+                href={current.cta.href}
+                onClick={dismiss}
+                className="inline-block mt-4 text-sm font-semibold text-[#14b887] hover:underline"
+              >
+                {current.cta.label} →
+              </Link>
+            ))}
 
           <div className="flex gap-2 mt-8">
             {step > 0 && (

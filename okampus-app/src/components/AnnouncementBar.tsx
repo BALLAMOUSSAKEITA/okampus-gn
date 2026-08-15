@@ -1,5 +1,9 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { WHATSAPP_COMMUNITY_URL } from "@/lib/site-config";
+
+const linkClass =
+  "underline underline-offset-2 hover:text-[#ffdf3d] transition-colors font-semibold";
 
 const messages = [
   <>
@@ -9,7 +13,18 @@ const messages = [
   <>Orientation IA, mentorat et stages réunis au même endroit</>,
   <>Des étudiants mentors disponibles pour te guider filière par filière</>,
   <>
-    <Link href="/inscription" className="underline underline-offset-2 hover:text-[#ffdf3d] transition-colors font-semibold">
+    <a
+      href={WHATSAPP_COMMUNITY_URL}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={linkClass}
+    >
+      Rejoins notre communauté WhatsApp
+    </a>
+    {", ne rate aucune annonce ni opportunité"}
+  </>,
+  <>
+    <Link href="/inscription" className={linkClass}>
       Crée ton compte
     </Link>
     {", ça prend moins de 2 minutes"}
@@ -47,8 +62,16 @@ export default function AnnouncementBar() {
       {/* Mobile: message statique lisible */}
       <div className="md:hidden flex items-center justify-center h-full px-4 text-center">
         <p className="truncate">
+          <a
+            href={WHATSAPP_COMMUNITY_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[#ffdf3d] font-semibold hover:underline underline-offset-2"
+          >
+            WhatsApp
+          </a>
+          {", orientation, mentors et stages — "}
           <span className="text-[#ffdf3d] font-semibold">BacheliO</span>
-          {", orientation, mentors et stages"}
         </p>
       </div>
 

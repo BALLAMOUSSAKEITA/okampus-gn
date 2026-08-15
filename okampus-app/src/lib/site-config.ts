@@ -15,3 +15,6 @@ export function getApiBase(): string {
 }
 
 export const OG_SIZE = { width: 1200, height: 630 } as const;
+
+export const WHATSAPP_COMMUNITY_URL =
+  "https://chat.whatsapp.com/DBDMMx3ZWvaCDrFXAwt2W1";

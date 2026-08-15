@@ -9,8 +9,16 @@ import AnnouncementBar from "./AnnouncementBar";
 import GetStartedLink from "./GetStartedLink";
 import Logo from "./Logo";
 import UserAvatar from "./UserAvatar";
+import WhatsAppIcon from "./WhatsAppIcon";
+import { WHATSAPP_COMMUNITY_URL } from "@/lib/site-config";
 
-const mainNavLinks = [
+type NavLink = {
+  href: string;
+  label: string;
+  external?: boolean;
+};
+
+const mainNavLinks: NavLink[] = [
   { href: "/assistant", label: "Assistant IA" },
   { href: "/conseil", label: "Mentorat" },
   { href: "/messages", label: "Messages" },
@@ -18,7 +26,7 @@ const mainNavLinks = [
   { href: "/stages", label: "Stages" },
 ];
 
-const mobilePrimaryLinks = [
+const mobilePrimaryLinks: NavLink[] = [
   { href: "/assistant", label: "Assistant IA" },
   { href: "/conseil", label: "Mentorat" },
   { href: "/messages", label: "Messages" },
@@ -27,7 +35,7 @@ const mobilePrimaryLinks = [
   { href: "/bourses", label: "Bourses" },
 ];
 
-const moreLinks = [
+const moreLinks: NavLink[] = [
   { href: "/universites", label: "Universités & Écoles" },
   { href: "/parcours", label: "Mon parcours" },
   { href: "/ressources", label: "Ressources" },
@@ -36,11 +44,70 @@ const moreLinks = [
   { href: "/entrepreneuriat", label: "Entrepreneuriat" },
   { href: "/success-stories", label: "Success Stories" },
   { href: "/cv", label: "Générateur CV" },
+  { href: WHATSAPP_COMMUNITY_URL, label: "Communauté WhatsApp", external: true },
 ];
 
 const mobileMoreLinks = moreLinks.filter((link) => link.href !== "/bourses");
 
 const linkTouchClass = "flex items-center min-h-11 px-3 py-2.5 text-base font-medium rounded";
+
+function MoreMenuLink({
+  link,
+  pathname,
+  onSelect,
+  touch = false,
+}: {
+  link: NavLink;
+  pathname: string;
+  onSelect: () => void;
+  touch?: boolean;
+}) {
+  const baseClass = touch
+    ? linkTouchClass
+    : "block px-4 py-2.5 text-sm font-medium";
+  const active = !link.external && pathname === link.href;
+  const className = `${baseClass} ${
+    link.external
+      ? "text-[#128C7E] hover:bg-[#ecfdf3] hover:text-[#0f7a6e]"
+      : active
+        ? "bg-[#f4f4f8] text-[#121117]"
+        : "text-[#4d4c5c] hover:bg-[#f4f4f8] hover:text-[#121117]"
+  }`;
+
+  const content = (
+    <>
+      {link.external && (
+        <WhatsAppIcon className={`${touch ? "h-4 w-4 mr-2" : "inline h-3.5 w-3.5 mr-2 align-[-2px]"} shrink-0`} />
+      )}
+      {link.label}
+      {link.external && !touch && (
+        <span className="ml-1 text-xs opacity-60" aria-hidden="true">
+          ↗
+        </span>
+      )}
+    </>
+  );
+
+  if (link.external) {
+    return (
+      <a
+        href={link.href}
+        target="_blank"
+        rel="noopener noreferrer"
+        onClick={onSelect}
+        className={className}
+      >
+        {content}
+      </a>
+    );
+  }
+
+  return (
+    <Link href={link.href} onClick={onSelect} className={className}>
+      {content}
+    </Link>
+  );
+}
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -68,7 +135,7 @@ export default function Navbar() {
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
-  const isMoreLinkActive = moreLinks.some((link) => pathname === link.href);
+  const isMoreLinkActive = moreLinks.some((link) => !link.external && pathname === link.href);
   const isHome = pathname === "/";
   const isAdmin = pathname.startsWith("/admin");
 
@@ -120,18 +187,12 @@ export default function Navbar() {
                 {showMoreDropdown && (
                   <div className="absolute right-0 mt-2 w-56 bg-white border border-[#dcdce5] rounded-lg py-2 animate-scaleIn origin-top-right">
                     {moreLinks.map((link) => (
-                      <Link
+                      <MoreMenuLink
                         key={link.href}
-                        href={link.href}
-                        onClick={() => setShowMoreDropdown(false)}
-                        className={`block px-4 py-2.5 text-sm font-medium ${
-                          pathname === link.href
-                            ? "bg-[#f4f4f8] text-[#121117]"
-                            : "text-[#4d4c5c] hover:bg-[#f4f4f8] hover:text-[#121117]"
-                        }`}
-                      >
-                        {link.label}
-                      </Link>
+                        link={link}
+                        pathname={pathname}
+                        onSelect={() => setShowMoreDropdown(false)}
+                      />
                     ))}
                   </div>
                 )}
@@ -228,16 +289,13 @@ export default function Navbar() {
                 {showMobileMore && (
                   <div className="pl-2 space-y-0.5 border-l-2 border-[#dcdce5] ml-3">
                     {mobileMoreLinks.map((link) => (
-                      <Link
+                      <MoreMenuLink
                         key={link.href}
-                        href={link.href}
-                        onClick={() => setIsOpen(false)}
-                        className={`${linkTouchClass} ${
-                          pathname === link.href ? "text-[#121117] bg-[#f4f4f8]" : "text-[#4d4c5c]"
-                        }`}
-                      >
-                        {link.label}
-                      </Link>
+                        link={link}
+                        pathname={pathname}
+                        onSelect={() => setIsOpen(false)}
+                        touch
+                      />
                     ))}
                   </div>
                 )}
