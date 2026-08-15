@@ -49,7 +49,7 @@ export default function LandingHero() {
           href={WHATSAPP_COMMUNITY_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-[#128C7E] hover:text-[#0f7a6e] transition-colors"
+          className="mt-4 hidden lg:inline-flex items-center gap-2 text-sm font-semibold text-[#128C7E] hover:text-[#0f7a6e] transition-colors"
         >
           <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#25D366] text-white">
             <WhatsAppIcon className="h-3.5 w-3.5" />

@@ -60,8 +60,9 @@ export default function Home() {
   return (
     <div className="landing">
       {/* Hero */}
-      <section className="hero-canvas px-4 sm:px-6 pt-8 sm:pt-10 pb-12 sm:pb-16 md:pb-24 overflow-hidden">
+      <section className="hero-canvas px-4 sm:px-6 pt-4 sm:pt-10 pb-12 sm:pb-16 md:pb-24 overflow-hidden">
         <div className="max-w-[1200px] mx-auto">
+        <WhatsAppCommunityBanner variant="compact" className="lg:hidden mb-5 sm:mb-6" />
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
           <LandingHero />
 
@@ -126,7 +127,7 @@ export default function Home() {
           </div>
         </div>
 
-        <WhatsAppCommunityBanner />
+        <WhatsAppCommunityBanner className="hidden lg:block" />
         </div>
       </section>
 

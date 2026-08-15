@@ -1,9 +1,45 @@
 import { WHATSAPP_COMMUNITY_URL } from "@/lib/site-config";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 
-export default function WhatsAppCommunityBanner() {
+type WhatsAppCommunityBannerProps = {
+  variant?: "default" | "compact";
+  className?: string;
+};
+
+export default function WhatsAppCommunityBanner({
+  variant = "default",
+  className = "",
+}: WhatsAppCommunityBannerProps) {
+  if (variant === "compact") {
+    return (
+      <div className={`animate-fadeInUp ${className}`.trim()}>
+        <a
+          href={WHATSAPP_COMMUNITY_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="group flex items-center gap-3 rounded-lg border border-[#25D366]/25 bg-[#ecfdf3] px-3.5 py-3 shadow-[0_4px_16px_rgba(37,211,102,0.12)] transition-all hover:border-[#25D366]/45"
+        >
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#25D366] text-white">
+            <WhatsAppIcon className="h-5 w-5" />
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block font-display text-[15px] font-bold leading-tight text-[#121117]">
+              Communauté WhatsApp
+            </span>
+            <span className="block text-xs text-[#4d4c5c] leading-snug mt-0.5">
+              Ne rate aucune annonce ni opportunité
+            </span>
+          </span>
+          <span className="shrink-0 rounded bg-[#25D366] px-3 py-2 text-xs font-semibold text-white group-hover:bg-[#1ebe5d] transition-colors">
+            Rejoindre
+          </span>
+        </a>
+      </div>
+    );
+  }
+
   return (
-    <div className="mt-8 sm:mt-10 lg:mt-12 animate-fadeInUp">
+    <div className={`mt-8 sm:mt-10 lg:mt-12 animate-fadeInUp ${className}`.trim()}>
       <a
         href={WHATSAPP_COMMUNITY_URL}
         target="_blank"
