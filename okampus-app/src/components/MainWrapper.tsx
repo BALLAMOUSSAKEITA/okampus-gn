@@ -12,9 +12,9 @@ export default function MainWrapper({ children }: { children: React.ReactNode })
     return <>{children}</>;
   }
 
-  // Home: barre annonce (h-9 mobile / h-10 md) + nav h-16
+  // Home mobile: annonce + nav + bandeau WhatsApp ; desktop: annonce + nav seulement
   return (
-    <main className={`min-h-screen ${isHome ? "pt-[100px] md:pt-[104px]" : "pt-16"}`}>
+    <main className={`min-h-screen ${isHome ? "pt-[164px] md:pt-[168px] lg:pt-[104px]" : "pt-16"}`}>
       <WhatsAppAuthPrompt />
       {children}
     </main>

@@ -10,6 +10,7 @@ import GetStartedLink from "./GetStartedLink";
 import Logo from "./Logo";
 import UserAvatar from "./UserAvatar";
 import WhatsAppIcon from "./WhatsAppIcon";
+import WhatsAppCommunityBanner from "./landing/WhatsAppCommunityBanner";
 import { WHATSAPP_COMMUNITY_URL } from "@/lib/site-config";
 
 type NavLink = {
@@ -144,6 +145,13 @@ export default function Navbar() {
   return (
     <header className="fixed top-0 left-0 right-0 z-50">
       {isHome && <AnnouncementBar />}
+      {isHome && (
+        <div className="lg:hidden bg-[#ecfdf3] border-b border-[#25D366]/20 px-4 sm:px-6 py-2">
+          <div className="max-w-[1200px] mx-auto">
+            <WhatsAppCommunityBanner variant="strip" />
+          </div>
+        </div>
+      )}
       <nav className="bg-white border-b border-[#dcdce5]">
         <div className="max-w-[1200px] mx-auto px-4 sm:px-6">
           <div className="flex justify-between items-center h-16">
